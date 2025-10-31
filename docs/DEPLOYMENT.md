@@ -187,13 +187,45 @@ NEXT_PUBLIC_API_URL=https://api.bizbo.com
 
 #### Vercel
 
-1. Go to Project Settings → Environment Variables
-2. Add variables for each environment:
-   - Production
-   - Preview
-   - Development
-3. Secrets are encrypted and secure
-4. Changes require redeployment
+**Step-by-step guide to add environment variables:**
+
+1. **Access your project:**
+   - Go to [vercel.com/dashboard](https://vercel.com/dashboard)
+   - Find your `bizbo-brochure` project
+   - Click on the project name
+
+2. **Navigate to Settings:**
+   - Click on the **Settings** tab in the project navigation
+   - Select **Environment Variables** from the left sidebar
+
+3. **Add a variable:**
+   - Click the **Add** button
+   - Enter the **Key** (e.g., `NEXT_PUBLIC_API_URL`)
+   - Enter the **Value** (your actual value)
+   - Select which environments to apply:
+     - ✅ Production
+     - ✅ Preview (for PR deployments)
+     - ✅ Development (for local testing)
+   - Click **Save**
+
+4. **Important notes:**
+   - Secrets are encrypted and secure
+   - Changes require redeployment to take effect
+   - Use `NEXT_PUBLIC_` prefix for variables exposed to the browser
+   - Variables without prefix are server-side only
+
+**Via Vercel CLI (alternative method):**
+
+```bash
+# Add environment variable
+vercel env add VARIABLE_NAME production
+
+# List all environment variables
+vercel env ls
+
+# Pull environment variables to local .env.local
+vercel env pull .env.local
+```
 
 #### Other Platforms
 
