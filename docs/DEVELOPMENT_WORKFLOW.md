@@ -44,7 +44,7 @@ This document outlines the development workflow, local setup procedures, and dev
 ### 1. Clone Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/bizbo-corp/bizbo-brochure.git
 cd bizbo-brochure
 ```
 

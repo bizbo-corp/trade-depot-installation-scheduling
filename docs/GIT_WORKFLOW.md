@@ -4,15 +4,23 @@
 
 This document outlines the Git workflow, branching strategy, and commit conventions for the Bizbo Brochure project. Following these guidelines ensures a clean, organised git history and facilitates collaboration.
 
+## Repository Information
+
+- **Repository:** https://github.com/bizbo-corp/bizbo-brochure
+- **Organization:** bizbo-corp
+- **Primary Branch:** main
+- **Visibility:** Private
+
 ## Table of Contents
 
-1. [Branching Strategy](#branching-strategy)
-2. [Commit Conventions](#commit-conventions)
-3. [Pull Request Process](#pull-request-process)
-4. [Branch Naming](#branch-naming)
-5. [Git Best Practices](#git-best-practices)
-6. [Common Git Tasks](#common-git-tasks)
-7. [Troubleshooting](#troubleshooting)
+1. [Repository Information](#repository-information)
+2. [Branching Strategy](#branching-strategy)
+3. [Commit Conventions](#commit-conventions)
+4. [Pull Request Process](#pull-request-process)
+5. [Branch Naming](#branch-naming)
+6. [Git Best Practices](#git-best-practices)
+7. [Common Git Tasks](#common-git-tasks)
+8. [Troubleshooting](#troubleshooting)
 
 ## Branching Strategy
 

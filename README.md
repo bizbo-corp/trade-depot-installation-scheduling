@@ -2,6 +2,8 @@
 
 A modern brochure website built with Next.js, React, and Tailwind CSS.
 
+**Repository:** [github.com/bizbo-corp/bizbo-brochure](https://github.com/bizbo-corp/bizbo-brochure)
+
 ## Quick Start
 
 First, install dependencies:
