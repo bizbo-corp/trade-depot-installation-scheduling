@@ -1,465 +1,412 @@
 "use client"
 
-import { useState } from "react"
-import { Search, Home, Settings, User, Mail, Bell } from "lucide-react"
-import { ThemeToggle } from "@/components/theme-toggle"
+import * as React from "react"
+import Image from "next/image"
+import { ArrowLeft, ArrowRight, Check, Linkedin, Mail, Menu, Phone, Star, UserRound } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { AspectRatio } from "@/components/ui/aspect-ratio"
+import { Separator } from "@/components/ui/separator"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Skeleton } from "@/components/ui/skeleton"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu"
-import { toast } from "sonner"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-export default function DemoPage() {
-  const [progress, setProgress] = useState(35)
-  const [comboboxOpen, setComboboxOpen] = useState(false)
+const Logo = () => (
+  <div className="flex items-center gap-2">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-foreground">
+      <rect width="36" height="36" rx="18" fill="currentColor"/>
+      <rect x="10" y="10" width="8" height="8" rx="4" fill="hsl(var(--background))"/>
+      <rect x="10" y="20" width="16" height="6" rx="3" fill="hsl(var(--background))"/>
+    </svg>
+    <svg width="84" height="36" viewBox="0 0 84 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="hidden md:block text-foreground">
+      <path d="M11.8383 13.9189C11.8383 12.0628 12.3888 10.4215 13.49 9.00977C14.5911 7.58411 16.0967 6.87128 17.9818 6.87128C19.7828 6.87128 21.2333 7.51997 22.3344 8.81836L21.0772 10.4215C20.26 9.46289 19.2705 8.98358 18.1089 8.98358C16.5192 8.98358 15.3452 9.71032 14.5825 11.1618C13.8337 12.5995 13.4593 14.4556 13.4593 16.7297V18.1674H18.7241V19.9546H13.4593V28H11.8383V13.9189Z" fill="currentColor"/>
+      <path d="M26.9744 28H25.3534V7.12372H26.9744V28Z" fill="currentColor"/>
+      <path d="M37.7554 21.362C38.643 22.5641 39.6146 23.1652 40.6703 23.1652C41.726 23.1652 42.5053 22.7809 43.0019 22.0124C43.5123 21.2301 43.7675 20.0811 43.7675 18.5654V18.0026H39.5027V16.3816H45.3885V18.5654C45.3885 20.7395 44.838 22.3969 43.7369 23.5386C42.6358 24.6663 41.2255 25.2301 39.5027 25.2301C37.892 25.2301 36.4399 24.5173 35.1415 23.0916L36.3266 21.6277C36.837 22.2531 37.4598 22.7595 38.1947 23.1438C37.6981 22.4048 37.3837 21.9082 37.2551 21.654C35.039 20.1384 33.931 18.0026 33.931 15.264C33.931 12.4277 35.039 10.2197 37.2551 8.63007C38.6032 7.61901 40.1335 7.11347 41.8424 7.12372C43.5513 7.13396 44.9751 7.71032 46.1044 8.85888L44.8612 10.4215C44.0304 9.53388 43.0409 9.09003 41.8885 9.09003C40.2348 9.09003 38.9916 9.89062 38.1608 11.4938C37.33 13.083 36.9146 14.9948 36.9146 17.2285C36.9146 18.8495 37.229 20.2285 37.7554 21.362Z" fill="currentColor"/>
+      <path d="M57.9627 21.362C58.8493 22.5641 59.8209 23.1652 60.8766 23.1652C61.9323 23.1652 62.7116 22.7809 63.2082 22.0124C63.7186 21.2301 63.9738 20.0811 63.9738 18.5654V18.0026H59.709V16.3816H65.5948V18.5654C65.5948 20.7395 65.0443 22.3969 63.9432 23.5386C62.8421 24.6663 61.4318 25.2301 59.709 25.2301C58.0983 25.2301 56.6462 24.5173 55.3478 23.0916L56.5329 21.6277C57.0433 22.2531 57.6661 22.7595 58.401 23.1438C57.9044 22.4048 57.59 21.9082 57.4614 21.654C55.2453 20.1384 54.1373 18.0026 54.1373 15.264C54.1373 12.4277 55.2453 10.2197 57.4614 8.63007C58.8095 7.61901 60.3398 7.11347 62.0487 7.12372C63.7576 7.13396 65.1814 7.71032 66.3107 8.85888L65.0675 10.4215C64.2367 9.53388 63.2472 9.09003 62.0948 9.09003C60.4411 9.09003 59.1979 9.89062 58.3671 11.4938C57.5363 13.083 57.1209 14.9948 57.1209 17.2285C57.1209 18.8495 57.4353 20.2285 57.9627 21.362Z" fill="currentColor"/>
+      <path d="M78.611 13.5332C77.4959 12.2349 76.0152 11.5862 74.1685 11.5862C72.2378 11.5862 70.7109 12.2831 69.5816 13.6771C68.4664 15.0571 67.9088 16.8214 67.9088 18.9691C67.9088 21.129 68.4664 22.8934 69.5816 24.2733C70.7109 25.6393 72.2378 26.3223 74.1685 26.3223C76.0152 26.3223 77.4959 25.6736 78.611 24.3752L77.3538 22.7721C76.5363 23.7307 75.5204 24.21 74.2964 24.21C72.7667 24.21 71.5816 23.5386 70.7387 22.1963C70.0244 20.9801 69.6672 19.4977 69.6672 17.7492V16.8214H77.9442V18.5916C77.9442 17.4859 77.9022 16.5983 77.8181 15.9289H69.6395C69.8317 14.4912 70.4585 13.4355 71.5142 12.7621C72.5699 12.0886 73.5858 11.7519 74.5651 11.7519C75.3959 11.7519 76.1209 12.0171 76.7298 12.5475L78.611 13.5332Z" fill="currentColor"/>
+    </svg>
+  </div>
+)
 
-  const frameworks = [
-    { value: "next.js", label: "Next.js" },
-    { value: "react", label: "React" },
-    { value: "vue", label: "Vue" },
-    { value: "angular", label: "Angular" },
+const Navbar = () => {
+  const [isOpen, setIsOpen] = React.useState(false)
+  const navLinks = [
+    { name: "Consultancy workshops", href: "#" },
+    { name: "UX Design", href: "#" },
+    { name: "Development", href: "#" },
+    { name: "Shopify", href: "#" },
+    { name: "Contact", href: "#" },
   ]
 
-  const handleToast = (type: string) => {
-    switch (type) {
-      case "success":
-        toast.success("Operation completed successfully!")
-        break
-      case "error":
-        toast.error("Something went wrong!")
-        break
-      case "info":
-        toast.info("Here's some information for you")
-        break
-      default:
-        toast("Hello, this is a toast notification")
+  return (
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
+      <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-6">
+        <Logo />
+        <nav className="hidden items-center gap-1 md:flex">
+          {navLinks.map((link) => (
+            <Button key={link.name} variant="ghost" asChild>
+              <a href={link.href}>{link.name}</a>
+            </Button>
+          ))}
+          <Button variant="ghost" size="icon">
+            <UserRound className="h-4 w-4" />
+            <span className="sr-only">Account</span>
+          </Button>
+        </nav>
+        <div className="md:hidden">
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left">
+              <SheetHeader>
+                <SheetTitle>
+                  <Logo />
+                </SheetTitle>
+              </SheetHeader>
+              <nav className="mt-8 flex flex-col gap-4">
+                {navLinks.map((link) => (
+                  <Button key={link.name} variant="ghost" asChild className="justify-start">
+                    <a href={link.href} onClick={() => setIsOpen(false)}>{link.name}</a>
+                  </Button>
+                ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+    </header>
+  )
+}
+
+const HeroSection = () => {
+  return (
+    <section className="bg-background py-12 md:py-24">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-4">
+              <h1 className="text-3xl font-bold tracking-tight md:text-5xl">
+                From idea to app. We build it.
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                Simplify the process of building a market-defining digital web app - one your customers can&apos;t live without and your rivals will desperately want to copy.
+              </p>
+            </div>
+            <ul className="flex flex-col gap-3">
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
+                <span>Build the right product with real customer value</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
+                <span>Test, gain buy-in, and secure funding fast</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
+                <span>Beat your competition to market</span>
+              </li>
+            </ul>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button size="lg" className="w-full sm:w-auto">Schedule a discovery call</Button>
+              <Button size="lg" variant="ghost" className="w-full sm:w-auto">
+                Get a website analysis <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          <div className="hidden lg:block">
+            <AspectRatio ratio={1 / 1}>
+              <Image
+                src="https://ui.shadcn.com/placeholder.svg"
+                alt="Hero Image"
+                fill
+                className="rounded-xl object-cover"
+              />
+            </AspectRatio>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+const BentoCard = ({ title, number, subtitle, description, imageUrl, className }: { title: string, number: string, subtitle: string, description: string, imageUrl: string, className?: string }) => (
+  <div className={`flex flex-col overflow-hidden rounded-xl border bg-muted ${className}`}>
+    <Image
+      src={imageUrl}
+      alt={title}
+      width={400}
+      height={236}
+      className="h-auto w-full object-cover"
+    />
+    <div className="flex flex-col gap-2 p-6">
+      <div className="flex items-start gap-2">
+        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-accent text-accent-foreground">
+          {number}
+        </div>
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold">{title}</h3>
+          <p className="text-sm text-accent-foreground">{subtitle}</p>
+        </div>
+      </div>
+      <p className="text-sm text-muted-foreground">{description}</p>
+    </div>
+  </div>
+);
+
+const ValuePropositionSection = () => {
+  const steps = [
+    {
+      number: "1",
+      title: "DesignThinker 1-day workshop",
+      subtitle: "Get clarity on your idea, fast",
+      description: "Whether you have a complex challenge or a rough idea, this workshop cuts through the noise and will ensure diverse perspectives and customer pain points get solved. Stop risking capital on assumptions. In one-day intensive workshop, you'll gain expert validation to ensure a strong, undeniable product-market fit.",
+      imageUrl: "https://ui.shadcn.com/placeholder.svg",
+      className: "md:col-span-1"
+    },
+    {
+      number: "2",
+      title: "Prototype and actionable roadmap",
+      subtitle: "Validate your idea & get buy-in",
+      description: "Move from concept to a precise, actionable strategy with high-fidelity prototypes delivered just 2 weeks after the workshop. Use these clickable prototypes to secure investor buy-in, test inexpensively, and ensure your product roadmap builds the right features in the right sequence for maximum market success.",
+      imageUrl: "https://ui.shadcn.com/placeholder.svg",
+      className: "md:col-span-1"
+    },
+    {
+      number: "3",
+      title: "Technology kick-off",
+      subtitle: "Get expert consultancy and build right",
+      description: "Partner with a dedicated industry expert who guides you through every stage: strategy, design, and development. You'll not only choose the optimal tech stack, but gain immediate access to my vetted network of platform gurus when you need it - from mobile and web app developers to systems integration specialists.",
+      imageUrl: "https://ui.shadcn.com/placeholder.svg",
+      className: "md:col-span-1"
+    },
+     {
+      number: "4",
+      title: "Feature Card",
+      subtitle: "Placeholder subtitle",
+      description: "This is a placeholder description for the feature card. It gives an overview of what the feature is about.",
+      imageUrl: "https://ui.shadcn.com/placeholder.svg",
+      className: "md:col-span-1 lg:col-span-3"
     }
-  }
+  ];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header with theme toggle */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <h1 className="text-2xl font-bold">ShadCN UI Demo</h1>
-          <ThemeToggle />
-        </div>
-      </header>
-
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h2 className="mb-2 text-3xl font-bold">Component Showcase</h2>
+    <section className="py-12 md:py-24 bg-background">
+      <div className="container mx-auto flex flex-col items-center gap-12 px-4 md:px-6">
+        <div className="flex max-w-xl flex-col items-center gap-4 text-center">
+          <p className="text-sm text-muted-foreground">What you'll get</p>
+          <h2 className="text-3xl font-bold tracking-tight">Idea to action, in 3 simple steps</h2>
           <p className="text-muted-foreground">
-            A comprehensive demonstration of all installed ShadCN UI components
+            Clarity, Validation, and Quality-First Execution. We replace &quot;vibe code&quot; with a clear path forward, securing long-term success.
           </p>
         </div>
+        <div className="grid w-full max-w-6xl grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+          {steps.map((step, index) => (
+            <BentoCard key={index} {...step} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
-        {/* Buttons Section */}
-        <section className="mb-12">
-          <h3 className="mb-4 text-2xl font-semibold">Buttons</h3>
-          <div className="flex flex-wrap gap-4">
-            <Button>Default</Button>
-            <Button variant="destructive">Destructive</Button>
-            <Button variant="outline">Outline</Button>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="ghost">Ghost</Button>
-            <Button variant="link">Link</Button>
-            <Button disabled>Disabled</Button>
-          </div>
-        </section>
-
-        {/* Badges Section */}
-        <section className="mb-12">
-          <h3 className="mb-4 text-2xl font-semibold">Badges</h3>
-          <div className="flex flex-wrap gap-4">
-            <Badge>Default</Badge>
-            <Badge variant="secondary">Secondary</Badge>
-            <Badge variant="destructive">Destructive</Badge>
-            <Badge variant="outline">Outline</Badge>
-          </div>
-        </section>
-
-        {/* Cards Section */}
-        <section className="mb-12">
-          <h3 className="mb-4 text-2xl font-semibold">Cards</h3>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Card Title</CardTitle>
-                <CardDescription>Card description goes here</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>Card content with some information.</p>
-              </CardContent>
-              <CardFooter>
-                <Button>Action</Button>
-              </CardFooter>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Another Card</CardTitle>
-                <CardDescription>More card details</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>Another example of card content.</p>
-              </CardContent>
-              <CardFooter>
-                <Button variant="outline">Secondary</Button>
-              </CardFooter>
-            </Card>
-          </div>
-        </section>
-
-        {/* Form Elements Section */}
-        <section className="mb-12">
-          <h3 className="mb-4 text-2xl font-semibold">Form Elements</h3>
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Form Inputs</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="Enter your email" />
-                </div>
-                <div>
-                  <Label htmlFor="password">Password</Label>
-                  <Input id="password" type="password" placeholder="Enter your password" />
-                </div>
-                <div>
-                  <Label htmlFor="message">Message</Label>
-                  <Textarea id="message" placeholder="Type your message here..." />
-                </div>
-                <div>
-                  <Label htmlFor="select">Framework</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a framework" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="nextjs">Next.js</SelectItem>
-                      <SelectItem value="react">React</SelectItem>
-                      <SelectItem value="vue">Vue</SelectItem>
-                      <SelectItem value="angular">Angular</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Choose an option</Label>
-                  <RadioGroup defaultValue="option-one">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="option-one" id="option-one" />
-                      <Label htmlFor="option-one">Option One</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="option-two" id="option-two" />
-                      <Label htmlFor="option-two">Option Two</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="option-three" id="option-three" />
-                      <Label htmlFor="option-three">Option Three</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Interactive Elements</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label>Toast Notifications</Label>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    <Button size="sm" onClick={() => handleToast("success")}>
-                      Success Toast
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleToast("error")}>
-                      Error Toast
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleToast("info")}>
-                      Info Toast
-                    </Button>
-                  </div>
-                </div>
-                <div>
-                  <Label>Progress Bar</Label>
-                  <div className="mt-2 space-y-2">
-                    <Progress value={progress} />
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={() => setProgress(progress + 10)}>
-                        Increase
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => setProgress(progress - 10)}>
-                        Decrease
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <Label>Combobox</Label>
-                  <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" role="combobox" className="w-full justify-between mt-2">
-                        Select framework...
-                        <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandInput placeholder="Search framework..." />
-                        <CommandList>
-                          <CommandEmpty>No framework found.</CommandEmpty>
-                          <CommandGroup>
-                            {frameworks.map((framework) => (
-                              <CommandItem
-                                key={framework.value}
-                                value={framework.value}
-                                onSelect={() => {
-                                  setComboboxOpen(false)
-                                  toast.success(`Selected: ${framework.label}`)
-                                }}
-                              >
-                                {framework.label}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive">Open Alert Dialog</Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete your data.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction>Continue</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-
-        {/* Tabs Section */}
-        <section className="mb-12">
-          <h3 className="mb-4 text-2xl font-semibold">Tabs</h3>
-          <Tabs defaultValue="account" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="account">Account</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            </TabsList>
-            <TabsContent value="account" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Account</CardTitle>
-                  <CardDescription>
-                    Make changes to your account here. Click save when done.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" defaultValue="Pedro Duarte" />
-                  </div>
-                  <div>
-                    <Label htmlFor="username">Username</Label>
-                    <Input id="username" defaultValue="@peduarte" />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button>Save changes</Button>
-                </CardFooter>
-              </Card>
-            </TabsContent>
-            <TabsContent value="settings" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Settings</CardTitle>
-                  <CardDescription>
-                    Manage your app settings here.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p>Settings content goes here.</p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="notifications" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Notifications</CardTitle>
-                  <CardDescription>
-                    Configure your notification preferences.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p>Notifications content goes here.</p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </section>
-
-        {/* Navigation Menu Section */}
-        <section className="mb-12">
-          <h3 className="mb-4 text-2xl font-semibold">Navigation Menu</h3>
-          <Card>
-            <CardContent className="pt-6">
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="grid gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                        <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
-                          <div className="flex items-center gap-2">
-                            <Home className="h-4 w-4" />
-                            <div className="text-sm font-medium leading-none">Home</div>
-                          </div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Navigate to the home page
-                          </p>
-                        </NavigationMenuLink>
-                        <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
-                          <div className="flex items-center gap-2">
-                            <Mail className="h-4 w-4" />
-                            <div className="text-sm font-medium leading-none">Contact</div>
-                          </div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Get in touch with us
-                          </p>
-                        </NavigationMenuLink>
-                        <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
-                          <div className="flex items-center gap-2">
-                            <Settings className="h-4 w-4" />
-                            <div className="text-sm font-medium leading-none">Settings</div>
-                          </div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Configure your preferences
-                          </p>
-                        </NavigationMenuLink>
-                        <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4" />
-                            <div className="text-sm font-medium leading-none">Profile</div>
-                          </div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            View your profile
-                          </p>
-                        </NavigationMenuLink>
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger>More</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="grid gap-3 p-4 md:w-[400px]">
-                        <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
-                          <div className="flex items-center gap-2">
-                            <Bell className="h-4 w-4" />
-                            <div className="text-sm font-medium leading-none">Notifications</div>
-                          </div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Manage your notifications
-                          </p>
-                        </NavigationMenuLink>
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
-            </CardContent>
-          </Card>
-        </section>
-
-        {/* Skeleton Section */}
-        <section className="mb-12">
-          <h3 className="mb-4 text-2xl font-semibold">Skeleton Loaders</h3>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <Skeleton className="h-12 w-12 rounded-full" />
-                  <div className="space-y-2 flex-1">
-                    <Skeleton className="h-4 w-[250px]" />
-                    <Skeleton className="h-4 w-[200px]" />
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <Skeleton className="h-12 w-12 rounded-full" />
-                  <div className="space-y-2 flex-1">
-                    <Skeleton className="h-4 w-[250px]" />
-                    <Skeleton className="h-4 w-[200px]" />
+const TestimonialsSection = () => {
+  return (
+    <section className="bg-muted py-12 md:py-24">
+      <div className="container mx-auto flex flex-col items-center gap-6 px-4 md:px-6">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <p className="text-sm text-muted-foreground">Testimonial section</p>
+          <h2 className="text-3xl font-bold">Customer love</h2>
+        </div>
+        <div className="flex items-center gap-2">
+          {[...Array(5)].map((_, i) => (
+            <Star key={i} className="h-6 w-6 text-muted-foreground/30 fill-muted-foreground" />
+          ))}
+        </div>
+        <Carousel className="w-full max-w-4xl">
+          <CarouselContent>
+            <CarouselItem>
+              <div className="flex flex-col items-center gap-8 text-center">
+                <blockquote className="max-w-2xl text-lg md:text-xl">
+                  "Michael ran a Design Thinking Workshop with us after we approached him with some ideas on how we could better lean into AI tools to improve our processes and outputs. He drive the process extremely effectively, ensuring we gathered information from our clients to lay the groundwork, before running an in-person workshop. He was organised, creative, thoughtful and insightful. We are grateful for the talents, knowledge and skills he brought to the table and would recommend him to any future client."
+                </blockquote>
+                <div className="flex flex-col items-center gap-4 md:flex-row">
+                  <Avatar>
+                    <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                    <AvatarFallback>IC</AvatarFallback>
+                  </Avatar>
+                  <div className="text-center md:text-left">
+                    <p className="font-semibold">Irene Chapple</p>
+                    <p className="text-sm text-muted-foreground">Founder, Better Aotearoa</p>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </section>
-
-        {/* Footer */}
-        <footer className="border-t py-8">
-          <div className="text-center text-muted-foreground">
-            <p>ShadCN UI Component Demo - All components integrated with your Figma design system</p>
+            </CarouselItem>
+          </CarouselContent>
+          <div className="hidden md:block">
+            <CarouselPrevious />
+            <CarouselNext />
           </div>
-        </footer>
+        </Carousel>
       </div>
+    </section>
+  )
+}
+
+const LogoSection = () => {
+    const logos = Array(6).fill("https://ui.shadcn.com/placeholder.svg");
+    return (
+        <section className="py-12 md:py-24 bg-background">
+            <div className="container mx-auto px-4 md:px-6">
+                <div className="grid grid-cols-2 items-center justify-center gap-4 sm:grid-cols-3 lg:grid-cols-6">
+                    {logos.map((src, index) => (
+                        <div key={index} className="flex justify-center p-6 bg-muted">
+                            <Image src={src} alt={`Logo ${index + 1}`} width={140} height={40} className="grayscale" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    )
+}
+
+const AboutSection = () => {
+  return (
+    <section className="bg-background py-12 md:py-24">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-4">
+              <h2 className="text-3xl font-bold tracking-tight">About Michael</h2>
+              <p className="text-muted-foreground">
+                Founder of Bizbo is a design and technology professional with expertise in UX, product design and development. Michael has broad experience across media, e-commerce, agencies and service design, building digital experiences for brands such as Woolworths, AA Insurance, The Times, BMW and Mini. A skilled workshop facilitator specialising in design-thinking methodologies. With a passion for fresh challenges, he thrives on finding the sweet spot between user needs, business strategy and technology innovation. There&apos;s nothing that can&apos;t be solved through collaborative activities, a sheet of paper and a group of motivated individuals. At home, Michael is a dedicated dad, builder of Lego, chef to ungrateful toddlers, and enthusiast of sport and the outdoors.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <Mail className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                <span className="font-medium">michael@bizbo.co.nz</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Phone className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                <span className="font-medium">022 328 7067</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Linkedin className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                <span className="font-medium">linkedin.com/in/mchristie79/</span>
+              </div>
+            </div>
+            <div className="mt-4">
+              <Button>Schedule a Call</Button>
+            </div>
+          </div>
+          <div className="order-first lg:order-last">
+            <AspectRatio ratio={1 / 1}>
+              <Image
+                src="https://ui.shadcn.com/placeholder.svg"
+                alt="About Michael"
+                fill
+                className="rounded-xl object-cover"
+              />
+            </AspectRatio>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+
+const CtaSection = () => {
+  return (
+    <section className="py-12 md:py-24 bg-background">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="max-w-7xl mx-auto rounded-xl bg-primary text-primary-foreground p-8 md:p-16 shadow-lg">
+          <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
+            <div className="order-last lg:order-first">
+              <AspectRatio ratio={4/3} className="hidden lg:block">
+                 <Image src="https://ui.shadcn.com/placeholder.svg" alt="CTA Image" fill className="rounded-lg object-cover" />
+              </AspectRatio>
+               <Image src="https://ui.shadcn.com/placeholder.svg" alt="CTA Image" width={336} height={260} className="block lg:hidden rounded-lg object-cover w-full h-auto" />
+            </div>
+            <div className="flex flex-col gap-8">
+              <div className="flex flex-col gap-4 text-center lg:text-left">
+                <p className="text-sm font-medium opacity-80">Limited availability</p>
+                <h2 className="text-3xl font-bold">Free discovery session</h2>
+              </div>
+              <div className="flex flex-col gap-6 text-center lg:text-left">
+                <p className="text-lg opacity-80 whitespace-pre-line">
+                  Go from stuck idea to funded prototype
+                  <br/><br/>
+                  x Don't let your high-value idea remains trapped in complexity
+                  <br/>
+                  x Don't let your competitors seize the market opportunity
+                  <br/>
+                  x Don't go it alone and ship hastily made spaghetti code
+                  <br/><br/>
+                  Starting with one conversation today
+                </p>
+                <div className="flex justify-center lg:justify-start">
+                  <Button variant="secondary" size="lg">
+                    Schedule a discovery session <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+const Footer = () => {
+  return (
+    <footer className="bg-background py-12 md:py-24">
+      <div className="container mx-auto flex max-w-7xl flex-col gap-12 px-4 md:px-6">
+        <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
+          <div className="flex flex-col items-center gap-8 md:flex-row md:gap-12">
+            <Logo />
+            <nav className="flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
+              <a href="#" className="hover:text-foreground">Home</a>
+              <a href="#" className="hover:text-foreground">Consultancy workshops</a>
+              <a href="#" className="hover:text-foreground">UX Design</a>
+              <a href="#" className="hover:text-foreground">Development</a>
+              <a href="#" className="hover:text-foreground">Shopify</a>
+            </nav>
+          </div>
+        </div>
+        <Separator />
+        <div className="flex flex-col-reverse items-center justify-between gap-4 text-sm text-muted-foreground md:flex-row">
+          <p>Copyright © bizbo.co.nz</p>
+          <a href="#" className="hover:text-foreground">Privacy Policy</a>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+export default function Home() {
+  return (
+    <div className="flex min-h-screen flex-col">
+      <Navbar />
+      <main>
+        <HeroSection />
+        <ValuePropositionSection />
+        <TestimonialsSection />
+        <LogoSection />
+        <AboutSection />
+        <CtaSection />
+      </main>
+      <Footer />
     </div>
   )
 }
