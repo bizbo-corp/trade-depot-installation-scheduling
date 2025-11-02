@@ -11,6 +11,7 @@ export interface ValuePropositionSectionProps {
   description?: string
   steps: ValuePropositionStep[]
   imageCards?: Array<Pick<ImageCardProps, "imageUrl" | "alt">>
+  mode?: "default" | "olive"
 }
 
 export const ValuePropositionSection = ({
@@ -18,10 +19,11 @@ export const ValuePropositionSection = ({
   subheading = "What you'll get",
   description = "Clarity, Validation, and Quality-First Execution. We replace \"vibe code\" with a clear path forward, securing long-term success.",
   steps,
-  imageCards = []
+  imageCards = [],
+  mode = "default"
 }: ValuePropositionSectionProps) => {
   return (
-    <section className="py-12 md:py-24 bg-background">
+    <section className={`py-12 md:py-24 bg-background ${mode === "olive" ? "olive" : ""}`}>
       <div className="container mx-auto flex flex-col items-center gap-12 px-4 md:px-6">
         <div className="flex max-w-xl flex-col items-center gap-4 text-center">
           {subheading && <p className="text-sm text-muted-foreground">{subheading}</p>}

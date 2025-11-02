@@ -1,0 +1,12 @@
+<svg width="400" height="360" viewBox="0 0 400 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M365 175C365 179.418 361.418 183 357 183L176 183C171.582 183 168 179.418 168 175L168 151C168 146.582 171.582 143 176 143L357 143C361.418 143 365 146.582 365 151L365 175Z" fill="#9EA88D"/>
+<path d="M233 201C233 196.582 236.582 193 241 193H357C361.418 193 365 196.582 365 201V225C365 229.418 361.418 233 357 233H241C236.582 233 233 229.418 233 225V201Z" fill="#C9D0BC"/>
+<path d="M168 101C168 96.5817 171.582 93 176 93L310 93C314.418 93 318 96.5817 318 101V125C318 129.418 314.418 133 310 133H176C171.582 133 168 129.418 168 125V101Z" fill="#B1BCA0"/>
+<path d="M60 210C60 197.85 69.6259 188 81.5 188C93.3741 188 103 197.85 103 210L103 236" stroke="#B1BCA0" stroke-width="2" stroke-linecap="round"/>
+<circle cx="59.5" cy="225.5" r="14.5" stroke="#B1BCA0" stroke-width="2"/>
+<circle cx="81.5" cy="147.5" r="14.5" stroke="#B1BCA0" stroke-width="2"/>
+<circle cx="81.5" cy="90.5" r="14.5" stroke="#B1BCA0" stroke-width="2"/>
+<circle cx="102.5" cy="250.5" r="14.5" stroke="#B1BCA0" stroke-width="2"/>
+<line x1="82" y1="162" x2="82" y2="188" stroke="#B1BCA0" stroke-width="2" stroke-linecap="round"/>
+<line x1="82" y1="105" x2="82" y2="131" stroke="#B1BCA0" stroke-width="2" stroke-linecap="round"/>
+</svg>

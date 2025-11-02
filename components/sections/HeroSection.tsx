@@ -3,6 +3,7 @@ import { ArrowRight, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { ReactNode } from "react"
+import { LottieAnimation } from "@/components/LottieAnimation"
 
 export interface HeroFeature {
   text: string
@@ -16,7 +17,7 @@ export interface HeroCta {
 }
 
 export interface HeroSectionProps {
-  title: string | ReactNode
+  title?: string | ReactNode
   description: string
   features?: HeroFeature[]
   primaryCta?: HeroCta
@@ -26,6 +27,7 @@ export interface HeroSectionProps {
     alt: string
   }
   imageOrder?: "first" | "last"
+  lottieSrc?: string
 }
 
 export const HeroSection = ({
@@ -35,18 +37,38 @@ export const HeroSection = ({
   primaryCta,
   secondaryCta,
   image,
-  imageOrder = "last"
+  imageOrder = "last",
+  lottieSrc
 }: HeroSectionProps) => {
   return (
-    <section className="bg-background py-12 md:py-24">
-      <div className="container mx-auto px-4 md:px-6">
+    <section className="bg-background pt-0 pb-12 md:pb-24 md:min-h-screen relative overflow-hidden flex items-center">
+      {/* Lottie Animation Background - spans full width on desktop */}
+      {lottieSrc && (
+        <div className="absolute inset-0 md:-top-32 -top-2 w-screen pointer-events-none">
+          <div className="w-full h-full">
+            <LottieAnimation 
+              src={lottieSrc} 
+              className="w-full h-full"
+              loop={false}
+              autoplay={true}
+            />
+          </div>
+        </div>
+      )}
+      
+      <div className="container mx-auto px-4 md:px-6 relative z-10 w-full pt-16 md:pt-16">
         <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-4">
-              <h1 className="text-3xl font-bold tracking-tight leading-tight md:text-5xl">
-                {title}
+            <h1 className="text-4xl lg:text-6xl font-extrabold text-neutral-olive-200 text-primary">
+            From idea to app. <br /><span className="text-olive-500 dark:text-olive-600">We build it.</span>
               </h1>
+
+
               <p className="text-lg text-muted-foreground">{description}</p>
+            </div>
+            <div className="flex flex-col gap-3 my-8">
+            
             </div>
             {features.length > 0 && (
               <ul className="flex flex-col gap-3">

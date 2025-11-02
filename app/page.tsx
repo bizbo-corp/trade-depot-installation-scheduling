@@ -8,15 +8,12 @@ import { LogoSection } from "@/components/sections/LogoSection"
 import { AboutSection } from "@/components/sections/AboutSection"
 import { CtaSection } from "@/components/sections/CtaSection"
 import { Footer } from "@/components/sections/Footer"
+import { animations, svgGraphics, bitmapImages } from "@/lib/images"
 
 export default function Home() {
   // Hero Section Data
   const heroData = {
-    title: (
-      <>
-        From idea to app. <br />We build it.
-      </>
-    ),
+
     description: "Simplify the process of building a market-defining digital web app - one your customers can't live without and your rivals will desperately want to copy.",
     features: [
       { text: "Build the right product with real customer value" },
@@ -32,10 +29,7 @@ export default function Home() {
       variant: "ghost" as const,
       showArrow: true
     },
-    image: {
-      src: "https://ui.shadcn.com/placeholder.svg",
-      alt: "Hero Image"
-    }
+    lottieSrc: animations.hero.path
   }
 
   // Value Proposition Section Data
@@ -49,7 +43,7 @@ export default function Home() {
         title: "DesignThinker 1-day workshop",
         subtitle: "Get clarity on your idea, fast",
         description: "Whether you have a complex challenge or a rough idea, this workshop cuts through the noise and will ensure diverse perspectives and customer pain points get solved. Stop risking capital on assumptions. In one-day intensive workshop, you'll gain expert validation to ensure a strong, undeniable product-market fit.",
-        imageUrl: "https://ui.shadcn.com/placeholder.svg",
+        imageUrl: svgGraphics.designThinkerWorkshop.path,
         className: "md:col-span-1"
       },
       {
@@ -57,7 +51,7 @@ export default function Home() {
         title: "Prototype and actionable roadmap",
         subtitle: "Validate your idea & get buy-in",
         description: "Move from concept to a precise, actionable strategy with high-fidelity prototypes delivered just 2 weeks after the workshop. Use these clickable prototypes to secure investor buy-in, test inexpensively, and ensure your product roadmap builds the right features in the right sequence for maximum market success.",
-        imageUrl: "https://ui.shadcn.com/placeholder.svg",
+        imageUrl: svgGraphics.prototypeActionableRoadmap.path,
         className: "md:col-span-1"
       },
       {
@@ -65,22 +59,22 @@ export default function Home() {
         title: "Technology kick-off",
         subtitle: "Get expert consultancy and build right",
         description: "Partner with a dedicated industry expert who guides you through every stage: strategy, design, and development. You'll not only choose the optimal tech stack, but gain immediate access to my vetted network of platform gurus when you need it - from mobile and web app developers to systems integration specialists.",
-        imageUrl: "https://ui.shadcn.com/placeholder.svg",
+        imageUrl: svgGraphics.buildStrategyPartner.path,
         className: "md:col-span-1"
       }
     ],
     imageCards: [
       {
-        imageUrl: "https://ui.shadcn.com/placeholder.svg",
-        alt: "Image 1"
+        imageUrl: bitmapImages.mobilePrototype.path,
+        alt: bitmapImages.techStrategy.alt
       },
       {
-        imageUrl: "https://ui.shadcn.com/placeholder.svg",
-        alt: "Image 2"
+        imageUrl: bitmapImages.workshopSession.path,
+        alt: bitmapImages.workshopSession.alt
       },
       {
-        imageUrl: "https://ui.shadcn.com/placeholder.svg",
-        alt: "Image 3"
+        imageUrl: bitmapImages.techStrategy.path,
+        alt: svgGraphics.buildStrategyPartner.alt
       }
     ]
   }
@@ -147,7 +141,7 @@ export default function Home() {
       <Header />
       <main>
         <HeroSection {...heroData} />
-        <ValuePropositionSection {...valuePropositionData} />
+        <ValuePropositionSection {...valuePropositionData} mode="olive" />
         <TestimonialsSection {...testimonialsData} />
         <LogoSection {...logoData} />
         <AboutSection {...aboutData} />

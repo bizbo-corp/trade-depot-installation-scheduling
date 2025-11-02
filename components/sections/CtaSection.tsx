@@ -34,35 +34,35 @@ export const CtaSection = ({
   imageOrder = "first"
 }: CtaSectionProps) => {
   return (
-    <section className="py-12 md:py-24 bg-background">
+    <section className="py-12 md:py-24 bg-background ">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="rounded-xl bg-primary text-primary-foreground p-8 md:p-16 shadow-lg">
+        <div className="rounded-xl olive bg-background text-foreground p-8 md:p-16 shadow-lg">
           <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
             <div className={imageOrder === "first" ? "order-last lg:order-first" : "order-last lg:order-last"}>
-              <AspectRatio ratio={4/3} className="hidden lg:block">
+              <AspectRatio ratio={4 / 3} className="hidden lg:block">
                 <Image src={image.src} alt={image.alt} fill className="rounded-lg object-cover" />
               </AspectRatio>
-              <Image 
-                src={image.src} 
-                alt={image.alt} 
-                width={336} 
-                height={260} 
-                className="block lg:hidden rounded-lg object-cover w-full h-auto" 
+              <Image
+                src={image.src}
+                alt={image.alt}
+                width={336}
+                height={260}
+                className="block lg:hidden rounded-lg object-cover w-full h-auto"
               />
             </div>
             <div className="flex flex-col gap-8">
               <div className="flex flex-col gap-4 text-center lg:text-left">
-                {subtitle && <p className="text-sm font-medium opacity-80">{subtitle}</p>}
+                {subtitle && <p className="text-sm font-medium text-muted-foreground">{subtitle}</p>}
                 <h2 className="text-3xl font-bold">{title}</h2>
               </div>
               <div className="flex flex-col gap-6 text-center lg:text-left">
-                <p className="text-lg opacity-80">{description}</p>
+                <p className="text-lg text-muted-foreground">{description}</p>
                 {features.length > 0 && (
                   <ul className="flex flex-col gap-3">
                     {features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-3">
-                        <X className="h-5 w-5 shrink-0 opacity-80 mt-0.5" />
-                        <span className="opacity-80">{feature.text}</span>
+                        <X className="h-5 w-5 shrink-0 text-muted-foreground mt-0.5" />
+                        <span className="text-muted-foreground">{feature.text}</span>
                       </li>
                     ))}
                   </ul>
