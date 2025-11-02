@@ -5,7 +5,8 @@
 :root {
   --primary: oklch(0.341 0.027 128.129);
   --accent: oklch(0.945 0.004 106.476);
-  --background: oklch(0.982 0.001 106.424);
+  /* --background: oklch(0.982 0.001 106.424); */
+  --background: oklch(0.945 0.004 106.476);  
   --border: oklch(0.877 0.007 115.722);
   --card: oklch(0.982 0.001 106.424);
   --card-foreground: oklch(0.298 0.028 128.327);
