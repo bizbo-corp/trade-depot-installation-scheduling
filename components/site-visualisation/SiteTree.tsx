@@ -29,6 +29,11 @@ export type FilterType = 'pages' | 'files' | 'api' | 'components';
 interface SiteTreeProps {
   tree: SiteNode[];
   filters: Set<FilterType>;
+  importMap: [string, string[]][];  // Serialized version of Map<string, Set<string>>
+  showRelationships: boolean;
+  activeRelationshipNodes: Set<string>;
+  onRelationshipToggle: (nodePath: string) => void;
+  relationshipDepth: number;
 }
 
 /**
@@ -56,14 +61,9 @@ function getNodeCategory(node: SiteNode): FilterType {
   if (node.type !== 'directory') {
     const fileNode = node as FileNode;
 
-    // Files filter should only control page.tsx entries (green nodes)
-    if (fileNode.type === 'page') {
+    // Files filter should control page.tsx and layout.tsx entries (green nodes)
+    if (fileNode.type === 'page' || fileNode.type === 'layout') {
       return 'files';
-    }
-
-    // Layouts belong with their page directories so they follow the Pages toggle
-    if (fileNode.type === 'layout') {
-      return 'pages';
     }
 
     // Component and UI component files should follow the Components toggle
@@ -213,6 +213,15 @@ function isAppHomepage(node: SiteNode): boolean {
   if (node.type === 'directory') return false;
   const fileNode = node as FileNode;
   return fileNode.path === 'app/page.tsx' || fileNode.relativePath === 'app/page.tsx';
+}
+
+/**
+ * Check if node is app layout (app/layout.tsx)
+ */
+function isAppLayout(node: SiteNode): boolean {
+  if (node.type === 'directory') return false;
+  const fileNode = node as FileNode;
+  return fileNode.path === 'app/layout.tsx' || fileNode.relativePath === 'app/layout.tsx';
 }
 
 /**
@@ -415,10 +424,11 @@ function calculateNodePositions(
       positions.set(appNodeId, { x: centerX, y: appY });
       appY += verticalSpacing;
       
-      // Find app/page.tsx (file)
+      // Find app/page.tsx and app/layout.tsx (files)
       if ('children' in appNode) {
         const dirNode = appNode as DirectoryNode;
         const pageFile = dirNode.children.find(child => isAppHomepage(child));
+        const layoutFile = dirNode.children.find(child => isAppLayout(child));
         
         // Position the page file if it exists (may be filtered out)
         let pageFileY = appY;
@@ -429,11 +439,19 @@ function calculateNodePositions(
           appY += verticalSpacing;
         }
         
+        // Position the layout file if it exists (may be filtered out)
+        if (layoutFile) {
+          const layoutFileId = `node-${layoutFile.path}`;
+          positions.set(layoutFileId, { x: centerX, y: appY });
+          pageFileY = appY; // Use layout Y as reference for directories
+          appY += verticalSpacing;
+        }
+        
         // 2. Place app directories horizontally next to page file (or app node if no page file)
         let appDirX = centerX + horizontalSpacing;
         // Separate api from other app directories
         const appDirectories = dirNode.children.filter(child => 
-          child.type === 'directory' && !isAppHomepage(child) && child.name !== 'api'
+          child.type === 'directory' && !isAppHomepage(child) && !isAppLayout(child) && child.name !== 'api'
         );
         const apiDirectory = dirNode.children.find(child => 
           child.type === 'directory' && child.name === 'api'
@@ -757,7 +775,9 @@ function buildFlowGraph(
   tree: SiteNode[],
   filters: Set<FilterType>,
   expandedNodes: Set<string>,
-  positions: Map<string, { x: number; y: number }>
+  positions: Map<string, { x: number; y: number }>,
+  activeRelationshipNodes: Set<string> = new Set(),
+  onRelationshipToggle?: (nodePath: string) => void
 ): { nodes: Node[]; edges: Edge[]; nodeInfo: Map<string, NodeInfo> } {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
@@ -860,6 +880,10 @@ function buildFlowGraph(
       });
     }
     
+    // Check if this file node has active relationships
+    const fileNode = !isDirectory ? (node as FileNode) : null;
+    const hasActiveRelationships = fileNode ? activeRelationshipNodes.has(fileNode.relativePath) : false;
+    
     // Create node with fixed position
     const flowNode: Node = {
       id: nodeId,
@@ -872,6 +896,9 @@ function buildFlowGraph(
         color,
         depth: level,
         isExpanded: isDirectory ? expandedNodes.has(nodeId) : undefined,
+        hasActiveRelationships,
+        onRelationshipToggle,
+        showRelationshipToggle: !!onRelationshipToggle,
       },
     };
     
@@ -913,6 +940,105 @@ function buildFlowGraph(
   });
   
   return { nodes, edges, nodeInfo };
+}
+
+/**
+ * Build relationship edges from import data
+ */
+function buildRelationshipEdges(
+  importMap: Map<string, Set<string>>,
+  activeNodes: Set<string>,
+  depth: number,
+  nodePositions: Map<string, { x: number; y: number }>,
+  maxDepth: number = 10
+): Edge[] {
+  const relationshipEdges: Edge[] = [];
+  const visited = new Set<string>();
+  
+  function addEdgesForNode(sourcePath: string, currentDepth: number) {
+    if (currentDepth > depth || visited.has(sourcePath)) {
+      return;
+    }
+    visited.add(sourcePath);
+    
+    const sourceNodeId = `node-${sourcePath}`;
+    const imports = importMap.get(sourcePath);
+    
+    if (!imports) {
+      return;
+    }
+    
+    for (const targetPath of imports) {
+      const targetNodeId = `node-${targetPath}`;
+      
+      // Check if both nodes have positions (are visible)
+      if (!nodePositions.has(sourceNodeId) || !nodePositions.has(targetNodeId)) {
+        continue;
+      }
+      
+      // Determine relationship type and color based on source and target file types
+      const getRelationshipColor = (from: string, to: string): string => {
+        // Determine file types from paths
+        const fromIsPage = from.includes('/page.tsx');
+        const fromIsLayout = from.includes('/layout.tsx');
+        const fromIsApi = from.includes('/api/');
+        const fromIsComponent = from.startsWith('components/');
+        
+        const toIsPage = to.includes('/page.tsx');
+        const toIsLayout = to.includes('/layout.tsx');
+        const toIsApi = to.includes('/api/');
+        const toIsComponent = to.startsWith('components/');
+        
+        // Page/Layout → Component
+        if ((fromIsPage || fromIsLayout) && (toIsComponent || fromIsComponent)) {
+          return '#06b6d4'; // Cyan
+        }
+        
+        // Component → Component
+        if (fromIsComponent && toIsComponent) {
+          return '#8b5cf6'; // Purple
+        }
+        
+        // Page → API
+        if (fromIsPage && toIsApi) {
+          return '#ef4444'; // Red
+        }
+        
+        // Default color for other relationships
+        return '#64748b'; // Slate
+      };
+      
+      // Create Bezier curve edge for relationship
+      relationshipEdges.push({
+        id: `rel-${sourceNodeId}-${targetNodeId}`,
+        source: sourceNodeId,
+        target: targetNodeId,
+        type: 'default', // Use default type which creates smooth Bezier curves
+        animated: true,
+        style: {
+          stroke: getRelationshipColor(sourcePath, targetPath),
+          strokeWidth: 2,
+          strokeDasharray: '5,5',
+        },
+        markerEnd: {
+          type: 'arrowclosed',
+          color: getRelationshipColor(sourcePath, targetPath),
+        },
+      });
+      
+      // If depth > 1, recursively add edges for the target node
+      if (currentDepth < depth) {
+        addEdgesForNode(targetPath, currentDepth + 1);
+      }
+    }
+  }
+  
+  // Process all active nodes
+  for (const sourcePath of activeNodes) {
+    addEdgesForNode(sourcePath, 1);
+  }
+  
+  return relationshipEdges;
 }
 
 /**
@@ -994,7 +1120,24 @@ function findAutoExpandNodes(
   return autoExpand;
 }
 
-export function SiteTree({ tree, filters }: SiteTreeProps) {
+export function SiteTree({ 
+  tree, 
+  filters, 
+  importMap: importMapSerialized,
+  showRelationships,
+  activeRelationshipNodes,
+  onRelationshipToggle,
+  relationshipDepth
+}: SiteTreeProps) {
+  // Reconstruct the import map from serialized data
+  const importMap = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    for (const [key, values] of importMapSerialized) {
+      map.set(key, new Set(values));
+    }
+    return map;
+  }, [importMapSerialized]);
+  
   // Calculate initial auto-expanded nodes (directories with visible content at level <= 3)
   const initialExpanded = useMemo(
     () => findAutoExpandNodes(tree, filters),
@@ -1019,8 +1162,8 @@ export function SiteTree({ tree, filters }: SiteTreeProps) {
   
   // Build graph with fixed positions
   const { nodes: initialNodes, edges: initialEdges, nodeInfo: initialNodeInfo } = useMemo(
-    () => buildFlowGraph(tree, filters, expandedNodes, nodePositions),
-    [tree, filters, expandedNodes, nodePositions]
+    () => buildFlowGraph(tree, filters, expandedNodes, nodePositions, activeRelationshipNodes, onRelationshipToggle),
+    [tree, filters, expandedNodes, nodePositions, activeRelationshipNodes, onRelationshipToggle]
   );
   
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -1187,18 +1330,30 @@ export function SiteTree({ tree, filters }: SiteTreeProps) {
     setExpandedNodes(newExpandedNodes);
   }, [expandedNodes, nodeInfoMap]);
   
+  // Build relationship edges
+  const relationshipEdges = useMemo(() => {
+    if (!showRelationships || activeRelationshipNodes.size === 0) {
+      return [];
+    }
+    return buildRelationshipEdges(importMap, activeRelationshipNodes, relationshipDepth, nodePositions);
+  }, [importMap, activeRelationshipNodes, relationshipDepth, nodePositions, showRelationships]);
+  
   // Update nodes/edges when tree, filters, or expanded state changes
   useEffect(() => {
     const { nodes: newNodes, edges: newEdges, nodeInfo: newNodeInfo } = buildFlowGraph(
       tree,
       filters,
       expandedNodes,
-      nodePositions
+      nodePositions,
+      activeRelationshipNodes,
+      onRelationshipToggle
     );
     setNodes(newNodes);
-    setEdges(newEdges);
+    // Combine hierarchy edges with relationship edges
+    const allEdges = [...newEdges, ...relationshipEdges];
+    setEdges(allEdges);
     setNodeInfoMap(newNodeInfo);
-  }, [tree, filters, expandedNodes, nodePositions, setNodes, setEdges]);
+  }, [tree, filters, expandedNodes, nodePositions, relationshipEdges, activeRelationshipNodes, onRelationshipToggle, setNodes, setEdges]);
   
   return (
     <div className="h-[calc(100vh-200px)] w-full border rounded-lg">

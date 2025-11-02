@@ -109,7 +109,10 @@ async function SiteStructureContent({ refreshParam }: { refreshParam?: string })
         </div>
       </div>
       
-      <SiteArchitectureView tree={structure.tree} />
+      <SiteArchitectureView 
+        tree={structure.tree} 
+        importMap={Array.from(structure.importMap.entries()).map(([key, value]) => [key, Array.from(value)])}
+      />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { memo } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import { File, Folder, FileCode, ChevronRight, ChevronDown } from 'lucide-react';
+import { File, Folder, FileCode, ChevronRight, ChevronDown, Network } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { FileNode as FileNodeType, DirectoryNode } from '@/lib/site-analyzer';
 
@@ -12,6 +12,9 @@ interface FileNodeData {
   color: string;
   depth?: number;
   isExpanded?: boolean;
+  hasActiveRelationships?: boolean;
+  onRelationshipToggle?: (nodePath: string) => void;
+  showRelationshipToggle?: boolean;
 }
 
 export const FileNodeComponent = memo(({ data }: NodeProps) => {
@@ -19,7 +22,15 @@ export const FileNodeComponent = memo(({ data }: NodeProps) => {
     return null;
   }
   
-  const { label = '', node, color = '#6b7280', isExpanded } = (data as unknown) as FileNodeData;
+  const { 
+    label = '', 
+    node, 
+    color = '#6b7280', 
+    isExpanded,
+    hasActiveRelationships = false,
+    onRelationshipToggle,
+    showRelationshipToggle = false
+  } = (data as unknown) as FileNodeData;
   
   if (!node) {
     return null;
@@ -105,6 +116,25 @@ export const FileNodeComponent = memo(({ data }: NodeProps) => {
             </>
           )}
         </div>
+        {!isDirectory && showRelationshipToggle && fileNode && fileNode.imports.length > 0 && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onRelationshipToggle) {
+                onRelationshipToggle(fileNode.relativePath);
+              }
+            }}
+            className={cn(
+              "mt-0.5 p-1 rounded transition-colors",
+              hasActiveRelationships 
+                ? "bg-cyan-500 text-white hover:bg-cyan-600" 
+                : "bg-muted hover:bg-muted/80 text-muted-foreground"
+            )}
+            title={hasActiveRelationships ? "Hide relationships" : "Show relationships"}
+          >
+            <Network className="h-3 w-3" />
+          </button>
+        )}
       </div>
       
       <Handle type="source" position={Position.Bottom} className="w-2 h-2" />

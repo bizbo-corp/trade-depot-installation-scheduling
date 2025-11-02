@@ -42,6 +42,7 @@ export interface SiteStructure {
   components: FileInfo[];
   uiComponents: FileInfo[];
   tree: SiteNode[];
+  importMap: Map<string, Set<string>>;
   analyzedAt: number;
 }
 
@@ -49,6 +50,99 @@ const ROOT_DIR = process.cwd();
 const APP_DIR = join(ROOT_DIR, 'app');
 const COMPONENTS_DIR = join(ROOT_DIR, 'components');
 const LIB_DIR = join(ROOT_DIR, 'lib');
+
+/**
+ * Resolve import path to a relative path that matches our file structure
+ * Handles: @/, ./, ../, with/without extensions
+ */
+export function resolveImportPath(
+  importPath: string,
+  fromFile: string,
+  allFiles: FileInfo[]
+): string | null {
+  let resolvedPath: string;
+  
+  // Handle alias imports (@/ -> root directory)
+  if (importPath.startsWith('@/')) {
+    resolvedPath = importPath.substring(2); // Remove '@/'
+  }
+  // Handle relative imports
+  else if (importPath.startsWith('./') || importPath.startsWith('../')) {
+    const fromDir = dirname(fromFile);
+    resolvedPath = join(fromDir, importPath);
+    
+    // Get relative path from ROOT_DIR
+    const fullPath = resolvedPath;
+    resolvedPath = relative(ROOT_DIR, fullPath);
+  } else {
+    // Absolute import (not supported in this context)
+    return null;
+  }
+  
+  // Normalize path separators
+  resolvedPath = resolvedPath.replace(/\\/g, '/');
+  
+  // Try to match the resolved path with existing files
+  // First, try exact match
+  const exactMatch = allFiles.find(f => f.relativePath === resolvedPath);
+  if (exactMatch) {
+    return exactMatch.relativePath;
+  }
+  
+  // Try with .tsx extension
+  const withTsx = `${resolvedPath}.tsx`;
+  const tsxMatch = allFiles.find(f => f.relativePath === withTsx);
+  if (tsxMatch) {
+    return tsxMatch.relativePath;
+  }
+  
+  // Try with .ts extension
+  const withTs = `${resolvedPath}.ts`;
+  const tsMatch = allFiles.find(f => f.relativePath === withTs);
+  if (tsMatch) {
+    return tsMatch.relativePath;
+  }
+  
+  // Try directory imports (index files)
+  const indexTsx = `${resolvedPath}/index.tsx`;
+  const indexTsxMatch = allFiles.find(f => f.relativePath === indexTsx);
+  if (indexTsxMatch) {
+    return indexTsxMatch.relativePath;
+  }
+  
+  const indexTs = `${resolvedPath}/index.ts`;
+  const indexTsMatch = allFiles.find(f => f.relativePath === indexTs);
+  if (indexTsMatch) {
+    return indexTsMatch.relativePath;
+  }
+  
+  // No match found
+  return null;
+}
+
+/**
+ * Build a map of import paths to resolved file paths
+ */
+export function buildImportMap(files: FileInfo[]): Map<string, Set<string>> {
+  const importMap = new Map<string, Set<string>>();
+  
+  for (const file of files) {
+    const resolvedImports = new Set<string>();
+    
+    for (const importPath of file.imports) {
+      const resolved = resolveImportPath(importPath, file.relativePath, files);
+      if (resolved) {
+        resolvedImports.add(resolved);
+      }
+    }
+    
+    if (resolvedImports.size > 0) {
+      importMap.set(file.relativePath, resolvedImports);
+    }
+  }
+  
+  return importMap;
+}
 
 /**
  * Determine file type based on path
@@ -315,11 +409,15 @@ export async function analyzeSiteStructure(): Promise<SiteStructure> {
   // Build tree structure
   const tree = buildTree(files);
   
+  // Build import map
+  const importMap = buildImportMap(files);
+  
   return {
     pages,
     components,
     uiComponents,
     tree,
+    importMap,
     analyzedAt: Date.now(),
   };
 }
