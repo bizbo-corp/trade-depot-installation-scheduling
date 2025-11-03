@@ -5,7 +5,6 @@
 :root {
   --primary: oklch(0.341 0.027 128.129);
   --accent: oklch(0.945 0.004 106.476);
-  /* --background: oklch(0.982 0.001 106.424); */
   --background: oklch(0.945 0.004 106.476);  
   --border: oklch(0.877 0.007 115.722);
   --card: oklch(0.982 0.001 106.424);
@@ -18,7 +17,7 @@
   --popover-foreground: oklch(0.298 0.028 128.327);
   --primary-foreground: oklch(0.982 0.001 106.424);
   --ring: oklch(0.734 0.010 119.646);
-  --secondary: oklch(0.945 0.004 106.476);
+  --secondary: oklch(0.877 0.007 115.722);
   --secondary-foreground: oklch(0.341 0.027 128.129);
   --muted-foreground: oklch(0.661 0.013 121.822);
   --sidebar-foreground: oklch(0.298 0.028 128.327);
@@ -27,7 +26,6 @@
   --sidebar-accent-foreground: oklch(0.341 0.027 128.129);
   --sidebar-border: oklch(0.877 0.007 115.722);
   --sidebar-ring: oklch(0.734 0.010 119.646);
-  --sidebar: oklch(0.982 0.001 106.424);
   --radius: 0.5rem;
 }
 
@@ -142,6 +140,8 @@
   --secondary: #62675c;
   --secondary-foreground: #f9f9f8;
   --muted-foreground: #ededea;
+  --destructive: #dc2626;
+  --destructive-foreground: #f9f9f8;
   --sidebar: #797e73;
   --sidebar-foreground: #f9f9f8;
   --sidebar-primary: #f9f9f8;
@@ -150,6 +150,50 @@
   --sidebar-accent-foreground: #f9f9f8;
   --sidebar-border: #8a8e84;
   --sidebar-ring: #8a8e84;
+}
+
+/* Ensure olive colors cascade to all descendants */
+.olive,
+.olive * {
+  color-scheme: dark;
+}
+
+/* Ensure text elements in olive sections use foreground color */
+.olive h1,
+.olive h2,
+.olive h3,
+.olive h4,
+.olive h5,
+.olive h6,
+.olive p {
+  color: var(--foreground);
+}
+
+/* Ensure olive CSS variables take precedence when combined with dark mode */
+/* CSS variable cascade ensures .olive variables override .dark variables */
+
+/* Override dark mode utility classes within olive sections using CSS specificity */
+/* When both .olive and .dark are present, ensure olive colors are used */
+@layer utilities {
+  .olive.dark [class*="bg-input"] {
+    background-color: var(--input);
+  }
+  
+  .olive.dark [class*="border-input"] {
+    border-color: var(--input);
+  }
+  
+  .olive.dark [class*="bg-accent"] {
+    background-color: var(--accent);
+  }
+  
+  .olive.dark [class*="bg-destructive"] {
+    background-color: var(--destructive, #dc2626);
+  }
+  
+  .olive.dark [class*="ring-destructive"] {
+    --tw-ring-color: var(--destructive, #dc2626);
+  }
 }
 
 /* Neutral-olive colour palette */

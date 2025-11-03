@@ -14,16 +14,20 @@ interface LottieAnimationProps {
   className?: string;
   loop?: boolean;
   autoplay?: boolean;
+  scaleToFit?: boolean;
 }
 
 export function LottieAnimation({ 
   src, 
   className = "", 
   loop = true,
-  autoplay = true 
+  autoplay = true,
+  scaleToFit = false 
 }: LottieAnimationProps) {
   // Load the JSON file dynamically
   const [animationData, setAnimationData] = useState<any>(null);
+  const [scale, setScale] = useState(1);
+  const [ref, setRef] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
     fetch(src)
@@ -34,12 +38,42 @@ export function LottieAnimation({
       });
   }, [src]);
 
+  // Handle scaling when scaleToFit is enabled
+  useEffect(() => {
+    if (!scaleToFit || !ref) return;
+
+    const calculateScale = () => {
+      const section = ref.closest('section');
+      if (!section) return;
+
+      const sectionHeight = section.offsetHeight;
+      const viewportHeight = window.innerHeight;
+      
+      if (sectionHeight > viewportHeight) {
+        const scaleFactor = viewportHeight / sectionHeight;
+        setScale(scaleFactor);
+      } else {
+        setScale(1);
+      }
+    };
+
+    // Calculate on mount and resize
+    calculateScale();
+    window.addEventListener('resize', calculateScale);
+
+    return () => window.removeEventListener('resize', calculateScale);
+  }, [scaleToFit, ref, animationData]);
+
   if (!animationData) {
     return null; // or a loading spinner
   }
 
   return (
-    <div className={className}>
+    <div 
+      ref={setRef}
+      className={className}
+      style={scaleToFit && scale !== 1 ? { transform: `scale(${scale})`, transformOrigin: 'top left' } : undefined}
+    >
       <Lottie
         animationData={animationData}
         loop={loop}

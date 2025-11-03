@@ -1,5 +1,6 @@
 import { BentoCard, BentoCardProps } from "@/components/sections/cards/BentoCard"
 import { ImageCard, ImageCardProps } from "@/components/sections/cards/ImageCard"
+import { Button } from "@/components/ui/button"
 
 export interface ValuePropositionStep extends Omit<BentoCardProps, "className"> {
   className?: string
