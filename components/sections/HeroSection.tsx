@@ -1,9 +1,12 @@
+"use client"
+
 import Image from "next/image";
 import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ReactNode } from "react";
 import { LottieAnimation } from "@/components/LottieAnimation";
+import { BookingDialog } from "@/components/booking/BookingDialog";
 
 export interface HeroFeature {
   text: string;
@@ -68,7 +71,7 @@ export const HeroSection = ({
                 </span>
               </h1>
 
-              <p className="text-lg text-muted-foreground">{description}</p>
+              <p className="text-xl text-foreground">{description}</p>
             </div>
 
             {features.length > 0 && (
@@ -76,7 +79,7 @@ export const HeroSection = ({
                 {features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <Check className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
-                    <span>{feature.text}</span>
+                    <span className="text-lg text-accent-foreground">{feature.text}</span>
                   </li>
                 ))}
               </ul>
@@ -99,16 +102,18 @@ export const HeroSection = ({
                       </a>
                     </Button>
                   ) : (
-                    <Button
-                      size="lg"
-                      className="w-full sm:w-auto"
-                      variant={primaryCta.variant}
-                    >
-                      {primaryCta.text}
-                      {primaryCta.showArrow && (
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      )}
-                    </Button>
+                    <BookingDialog>
+                      <Button
+                        size="lg"
+                        className="w-full sm:w-auto"
+                        variant={primaryCta.variant}
+                      >
+                        {primaryCta.text}
+                        {primaryCta.showArrow && (
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        )}
+                      </Button>
+                    </BookingDialog>
                   ))}
                 {secondaryCta &&
                   (secondaryCta.href ? (

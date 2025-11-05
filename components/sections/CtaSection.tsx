@@ -1,7 +1,10 @@
+"use client"
+
 import Image from "next/image"
 import { ArrowRight, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
+import { BookingDialog } from "@/components/booking/BookingDialog"
 
 export interface CtaFeature {
   text: string
@@ -75,9 +78,11 @@ export const CtaSection = ({
                       </a>
                     </Button>
                   ) : (
-                    <Button variant={buttonVariant} size="lg">
-                      {buttonText} <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
+                    <BookingDialog>
+                      <Button variant={buttonVariant} size="lg">
+                        {buttonText} <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </BookingDialog>
                   )}
                 </div>
               </div>

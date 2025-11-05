@@ -1,7 +1,10 @@
+"use client"
+
 import Image from "next/image"
 import { Linkedin, Mail, Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
+import { BookingDialog } from "@/components/booking/BookingDialog"
 
 export interface ContactInfo {
   email?: string
@@ -68,8 +71,12 @@ export const AboutSection = ({
                   <Button asChild>
                     <a href={ctaButton.href}>{ctaButton.text}</a>
                   </Button>
-                ) : (
+                ) : ctaButton.onClick ? (
                   <Button onClick={ctaButton.onClick}>{ctaButton.text}</Button>
+                ) : (
+                  <BookingDialog>
+                    <Button>{ctaButton.text}</Button>
+                  </BookingDialog>
                 )}
               </div>
             )}
