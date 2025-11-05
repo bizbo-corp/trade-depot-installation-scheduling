@@ -7,7 +7,7 @@ export interface ImageCardProps {
 
 export const ImageCard = ({ imageUrl, alt }: ImageCardProps) => {
   return (
-    <div className="flex overflow-hidden rounded-xl border bg-muted">
+    <div className="flex overflow-hidden rounded-xl border-0 bg-muted">
       <Image
         src={imageUrl}
         alt={alt}

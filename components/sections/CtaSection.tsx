@@ -11,27 +11,34 @@ export interface CtaFeature {
 }
 
 export interface CtaSectionProps {
-  title: string
+  title?: string
   subtitle?: string
-  description: string
+  description?: string
   features?: CtaFeature[]
-  image: {
+  image?: {
     src: string
     alt: string
   }
-  buttonText: string
+  buttonText?: string
   buttonHref?: string
   buttonVariant?: "default" | "secondary" | "outline" | "ghost"
   imageOrder?: "first" | "last"
 }
 
 export const CtaSection = ({
-  title,
-  subtitle,
-  description,
-  features = [],
-  image,
-  buttonText,
+  title = "Free discovery session",
+  subtitle = "Limited availability",
+  description = "Go from stuck idea to funded prototype",
+  features = [
+    { text: "Don't let your high-value idea remains trapped in complexity" },
+    { text: "Don't let your competitors seize the market opportunity" },
+    { text: "Don't go it alone and ship hastily made spaghetti code" }
+  ],
+  image = {
+    src: "https://ui.shadcn.com/placeholder.svg",
+    alt: "CTA Image"
+  },
+  buttonText = "Schedule a discovery session",
   buttonHref,
   buttonVariant = "secondary",
   imageOrder = "first"
@@ -41,6 +48,7 @@ export const CtaSection = ({
       <div className="container mx-auto px-4 md:px-6">
         <div className="rounded-xl olive bg-background text-foreground p-8 md:p-16 shadow-lg">
           <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
+            {image && (
             <div className={imageOrder === "first" ? "order-last lg:order-first" : "order-last lg:order-last"}>
               <AspectRatio ratio={4 / 3} className="hidden lg:block">
                 <Image src={image.src} alt={image.alt} fill className="rounded-lg object-cover" />
@@ -53,13 +61,14 @@ export const CtaSection = ({
                 className="block lg:hidden rounded-lg object-cover w-full h-auto"
               />
             </div>
+            )}
             <div className="flex flex-col gap-8">
               <div className="flex flex-col gap-4 text-center lg:text-left">
                 {subtitle && <p className="text-sm font-medium text-muted-foreground">{subtitle}</p>}
-                <h2 className="text-3xl font-bold">{title}</h2>
+                {title && <h2 className="text-3xl font-bold">{title}</h2>}
               </div>
               <div className="flex flex-col gap-6 text-center lg:text-left">
-                <p className="text-lg text-muted-foreground">{description}</p>
+                {description && <p className="text-lg text-muted-foreground">{description}</p>}
                 {features.length > 0 && (
                   <ul className="flex flex-col gap-3">
                     {features.map((feature, index) => (
@@ -70,6 +79,7 @@ export const CtaSection = ({
                     ))}
                   </ul>
                 )}
+                {buttonText && (
                 <div className="flex justify-center lg:justify-start">
                   {buttonHref ? (
                     <Button variant={buttonVariant} size="lg" asChild>
@@ -85,6 +95,7 @@ export const CtaSection = ({
                     </BookingDialog>
                   )}
                 </div>
+                )}
               </div>
             </div>
           </div>

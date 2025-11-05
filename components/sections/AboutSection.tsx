@@ -14,9 +14,9 @@ export interface ContactInfo {
 
 export interface AboutSectionProps {
   title?: string
-  description: string
-  contactInfo: ContactInfo
-  image: {
+  description?: string
+  contactInfo?: ContactInfo
+  image?: {
     src: string
     alt: string
   }
@@ -30,10 +30,19 @@ export interface AboutSectionProps {
 
 export const AboutSection = ({
   title = "About Michael",
-  description,
-  contactInfo,
-  image,
-  ctaButton,
+  description = "Founder of Bizbo is a design and technology professional with expertise in UX, product design and development. Michael has broad experience across media, e-commerce, agencies and service design, building digital experiences for brands such as Woolworths, AA Insurance, The Times, BMW and Mini. A skilled workshop facilitator specialising in design-thinking methodologies. With a passion for fresh challenges, he thrives on finding the sweet spot between user needs, business strategy and technology innovation. There's nothing that can't be solved through collaborative activities, a sheet of paper and a group of motivated individuals. At home, Michael is a dedicated dad, builder of Lego, chef to ungrateful toddlers, and enthusiast of sport and the outdoors.",
+  contactInfo = {
+    email: "michael@bizbo.co.nz",
+    phone: "022 328 7067",
+    linkedin: "linkedin.com/in/mchristie79/"
+  },
+  image = {
+    src: "https://ui.shadcn.com/placeholder.svg",
+    alt: "About Michael"
+  },
+  ctaButton = {
+    text: "Schedule a Call"
+  },
   imageOrder = "last"
 }: AboutSectionProps) => {
   return (
@@ -43,8 +52,9 @@ export const AboutSection = ({
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-4">
               <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
-              <p className="text-muted-foreground">{description}</p>
+              {description && <p className="text-muted-foreground">{description}</p>}
             </div>
+            {contactInfo && (
             <div className="flex flex-col gap-3">
               {contactInfo.email && (
                 <div className="flex items-center gap-3">
@@ -65,6 +75,7 @@ export const AboutSection = ({
                 </div>
               )}
             </div>
+            )}
             {ctaButton && (
               <div className="mt-4">
                 {ctaButton.href ? (
@@ -81,6 +92,7 @@ export const AboutSection = ({
               </div>
             )}
           </div>
+          {image && (
           <div className={imageOrder === "first" ? "order-first lg:order-first" : "order-first lg:order-last"}>
             <AspectRatio ratio={1 / 1}>
               <Image
@@ -91,6 +103,7 @@ export const AboutSection = ({
               />
             </AspectRatio>
           </div>
+          )}
         </div>
       </div>
     </section>

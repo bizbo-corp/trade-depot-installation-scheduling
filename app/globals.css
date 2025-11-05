@@ -241,6 +241,32 @@
   --inset-shadow-sm: var(--inset-shadow-sm);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-sidebar-background: var(--sidebar-background);
+  
+  /* Olive color palette */
+  --color-olive-50: var(--olive-50);
+  --color-olive-100: var(--olive-100);
+  --color-olive-200: var(--olive-200);
+  --color-olive-300: var(--olive-300);
+  --color-olive-400: var(--olive-400);
+  --color-olive-500: var(--olive-500);
+  --color-olive-600: var(--olive-600);
+  --color-olive-700: var(--olive-700);
+  --color-olive-800: var(--olive-800);
+  --color-olive-900: var(--olive-900);
+  --color-olive-950: var(--olive-950);
+  
+  /* Neutral-olive color palette */
+  --color-neutral-olive-50: var(--neutral-olive-50);
+  --color-neutral-olive-100: var(--neutral-olive-100);
+  --color-neutral-olive-200: var(--neutral-olive-200);
+  --color-neutral-olive-300: var(--neutral-olive-300);
+  --color-neutral-olive-400: var(--neutral-olive-400);
+  --color-neutral-olive-500: var(--neutral-olive-500);
+  --color-neutral-olive-600: var(--neutral-olive-600);
+  --color-neutral-olive-700: var(--neutral-olive-700);
+  --color-neutral-olive-800: var(--neutral-olive-800);
+  --color-neutral-olive-900: var(--neutral-olive-900);
+  --color-neutral-olive-950: var(--neutral-olive-950);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -518,4 +544,22 @@
     gap: 1rem;
   }
 
+}
+
+/* Make borders match background for cards and modals */
+@layer base {
+  /* Cards: border matches card background */
+  .bg-card.border {
+    border-color: var(--card);
+  }
+  
+  /* Dialogs/Modals: border matches background */
+  [data-slot="dialog-content"].border {
+    border-color: var(--background);
+  }
+  
+  /* Popovers: border matches popover background */
+  .bg-popover.border {
+    border-color: var(--popover);
+  }
 }

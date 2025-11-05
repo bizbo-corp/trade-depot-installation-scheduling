@@ -20,14 +20,23 @@ export interface Testimonial {
 }
 
 export interface TestimonialsSectionProps {
-  testimonials: Testimonial[]
+  testimonials?: Testimonial[]
   heading?: string
   subheading?: string
   showStars?: boolean
 }
 
 export const TestimonialsSection = ({
-  testimonials,
+  testimonials = [
+    {
+      quote: "Michael ran a Design Thinking Workshop with us after we approached him with some ideas on how we could better lean into AI tools to improve our processes and outputs. He drive the process extremely effectively, ensuring we gathered information from our clients to lay the groundwork, before running an in-person workshop. He was organised, creative, thoughtful and insightful. We are grateful for the talents, knowledge and skills he brought to the table and would recommend him to any future client.",
+      author: "Irene Chapple",
+      role: "Founder",
+      company: "Better Aotearoa",
+      avatar: "https://github.com/shadcn.png",
+      initials: "IC"
+    }
+  ],
   heading = "Customer love",
   subheading = "Testimonial section",
   showStars = true

@@ -12,7 +12,7 @@ export interface BentoCardProps {
 
 export const BentoCard = ({ title, number, subtitle, description, imageUrl, className }: BentoCardProps) => {
   return (
-    <div className={cn("flex flex-col overflow-hidden rounded-xl border bg-muted", className)}>
+    <div className={cn("flex flex-col overflow-hidden rounded-xl border-0 bg-muted", className)}>
       <Image
         src={imageUrl}
         alt={title}
