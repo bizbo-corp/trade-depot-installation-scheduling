@@ -125,11 +125,13 @@ export async function createCalendarEvent(params: CreateEventParams): Promise<st
   const [hours, minutes] = timeSlot.split(':').map(Number);
   const dateObj = parse(date, 'yyyy-MM-dd', new Date());
   
-  // Create date-time string in NZT format (YYYY-MM-DDTHH:mm:ss)
+  // Create RFC3339 date-time strings (ISO 8601 format)
+  // When timeZone is provided separately, dateTime should be in YYYY-MM-DDTHH:mm:ss format
+  // The timeZone field will handle the timezone conversion
   const dateStr = format(dateObj, 'yyyy-MM-dd');
   const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
   
-  // Format as RFC3339 in NZT timezone
+  // Format as RFC3339 without timezone offset (timeZone field handles it)
   const startDateTimeStr = `${dateStr}T${timeStr}`;
   
   // Calculate end time (30 minutes later)
