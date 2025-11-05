@@ -2,13 +2,16 @@
 
 import { format, parse } from "date-fns"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, Calendar, Clock } from "lucide-react"
+import { CheckCircle2, Calendar, Clock, Download } from "lucide-react"
+import { generateICSFile, downloadICSFile } from "@/lib/calendar-ics"
 
 interface BookingSuccessProps {
   date: string
   timeSlot: "10:30" | "11:00" | "11:30"
   firstName: string
   lastName: string
+  email: string
+  mobile?: string
   onClose: () => void
   onBookAnother?: () => void
 }
@@ -18,6 +21,8 @@ export function BookingSuccess({
   timeSlot,
   firstName,
   lastName,
+  email,
+  mobile,
   onClose,
   onBookAnother,
 }: BookingSuccessProps) {
@@ -34,10 +39,28 @@ export function BookingSuccess({
     return `${slot} NZT`
   }
 
+  const handleAddToCalendar = () => {
+    try {
+      const icsContent = generateICSFile({
+        date,
+        timeSlot,
+        firstName,
+        lastName,
+        email,
+        mobile,
+      })
+      
+      const filename = `discovery-call-${date}-${timeSlot.replace(":", "")}.ics`
+      downloadICSFile(icsContent, filename)
+    } catch (error) {
+      console.error("Error generating calendar file:", error)
+    }
+  }
+
   return (
-    <div className="flex flex-col items-center text-center space-y-6 py-4">
-      <div className="flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/20">
-        <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
+    <div className="flex flex-col items-center text-center space-y-6 py-4 h-full">
+      <div className="flex items-center justify-center w-16 h-16 rounded-full bg-olive-200 dark:bg-olive-900/80">
+        <CheckCircle2 className="h-8 w-8 text-olive-600 dark:text-olive-400" />
       </div>
 
       <div className="space-y-2">
@@ -67,21 +90,18 @@ export function BookingSuccess({
 
       <div className="space-y-2 pt-2">
         <p className="text-sm text-muted-foreground">
-          A calendar invitation has been sent to your email address. We look forward to
-          speaking with you, {firstName}!
+          We look forward to speaking with you, {firstName}! Click the button below to add this appointment to your calendar.
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 w-full">
-        {onBookAnother && (
-          <Button variant="outline" onClick={onBookAnother} className="flex-1">
-            Book Another
-          </Button>
-        )}
-        <Button onClick={onClose} className="flex-1">
-          Close
-        </Button>
-      </div>
+      <Button
+        onClick={handleAddToCalendar}
+        className="w-full mt-auto"
+        size="lg"
+      >
+        <Download className="mr-2 h-5 w-5" />
+        Download Calendar Invite
+      </Button>
     </div>
   )
 }

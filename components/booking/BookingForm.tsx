@@ -4,19 +4,23 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { format, parse, getDay } from "date-fns"
+import { format, getDay } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Calendar, Clock, Loader2 } from "lucide-react"
+import { Calendar as CalendarIcon, Clock, Loader2 } from "lucide-react"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
 const bookingFormSchema = z.object({
   date: z.string().min(1, "Please select a date"),
-  timeSlot: z.enum(["10:30", "11:00", "11:30"], {
-    required_error: "Please select a time slot",
-  }),
+  timeSlot: z.enum(["10:30", "11:00", "11:30"]),
   firstName: z.string().min(1, "First name is required").max(100),
   lastName: z.string().min(1, "Last name is required").max(100),
   email: z.string().email("Invalid email address"),
@@ -31,8 +35,9 @@ interface BookingFormProps {
 }
 
 export function BookingForm({ onSubmit, isSubmitting = false }: BookingFormProps) {
-  const [selectedDate, setSelectedDate] = useState<string>("")
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<"10:30" | "11:00" | "11:30">("11:00")
+  const [datePickerOpen, setDatePickerOpen] = useState(false)
 
   const form = useForm<BookingFormData>({
     resolver: zodResolver(bookingFormSchema),
@@ -46,30 +51,44 @@ export function BookingForm({ onSubmit, isSubmitting = false }: BookingFormProps
     },
   })
 
-  // Get minimum date (today)
-  const getMinDate = () => {
-    const today = new Date()
-    return format(today, "yyyy-MM-dd")
-  }
-
   // Check if a date is a weekday
-  const isWeekday = (dateString: string) => {
-    try {
-      const date = parse(dateString, "yyyy-MM-dd", new Date())
+  const isWeekday = (date: Date) => {
       const day = getDay(date)
       return day >= 1 && day <= 5 // Monday = 1, Friday = 5
-    } catch {
-      return false
+  }
+
+  // Disable weekends and past dates
+  const isDateDisabled = (date: Date) => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const checkDate = new Date(date)
+    checkDate.setHours(0, 0, 0, 0)
+    
+    // Disable past dates
+    if (checkDate < today) {
+      return true
     }
+    
+    // Disable weekends
+    return !isWeekday(date)
   }
 
   // Handle date selection
-  const handleDateChange = (dateString: string) => {
-    setSelectedDate(dateString)
-    if (isWeekday(dateString)) {
+  const handleDateSelect = (date: Date | undefined) => {
+    if (!date) {
+      setSelectedDate(undefined)
+      form.setValue("date", "")
+      setDatePickerOpen(false)
+      return
+    }
+
+    if (isWeekday(date)) {
+      setSelectedDate(date)
+      const dateString = format(date, "yyyy-MM-dd")
       form.setValue("date", dateString, { shouldValidate: true })
       form.clearErrors("date")
-    } else if (dateString) {
+      setDatePickerOpen(false)
+    } else {
       form.setError("date", {
         type: "manual",
         message: "Please select a weekday (Monday-Friday)",
@@ -81,17 +100,6 @@ export function BookingForm({ onSubmit, isSubmitting = false }: BookingFormProps
   const handleTimeSlotChange = (slot: "10:30" | "11:00" | "11:30") => {
     setSelectedTimeSlot(slot)
     form.setValue("timeSlot", slot, { shouldValidate: true })
-  }
-
-  // Format date for display
-  const formatDateDisplay = (dateString: string) => {
-    if (!dateString) return ""
-    try {
-      const date = parse(dateString, "yyyy-MM-dd", new Date())
-      return format(date, "EEEE, MMMM d, yyyy")
-    } catch {
-      return dateString
-    }
   }
 
   const handleSubmit = async (data: BookingFormData) => {
@@ -107,28 +115,40 @@ export function BookingForm({ onSubmit, isSubmitting = false }: BookingFormProps
           name="date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Select Date
-              </FormLabel>
               <FormControl>
-                <Input
-                  type="date"
-                  min={getMinDate()}
-                  value={selectedDate || field.value || ""}
-                  onChange={(e) => {
-                    handleDateChange(e.target.value)
-                    field.onChange(e.target.value)
-                  }}
-                  onBlur={field.onBlur}
-                  className="w-full"
-                />
+                <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      data-empty={!selectedDate}
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !selectedDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {selectedDate ? (
+                        format(selectedDate, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto min-w-[320px] p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={handleDateSelect}
+                      disabled={isDateDisabled}
+                      initialFocus
+                      className="[--cell-size:3rem]"
+                      classNames={{
+                        root: "min-w-[280px]",
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
               </FormControl>
-              {selectedDate && isWeekday(selectedDate) && (
-                <p className="text-sm text-muted-foreground">
-                  Selected: {formatDateDisplay(selectedDate)}
-                </p>
-              )}
               <FormMessage />
             </FormItem>
           )}

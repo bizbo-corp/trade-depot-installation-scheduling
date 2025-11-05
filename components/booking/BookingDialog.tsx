@@ -99,14 +99,19 @@ export function BookingDialog({ children, open, onOpenChange }: BookingDialogPro
               <BookingForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
             </>
           ) : bookingData ? (
-            <BookingSuccess
-              date={bookingData.date}
-              timeSlot={bookingData.timeSlot}
-              firstName={bookingData.firstName}
-              lastName={bookingData.lastName}
-              onClose={handleClose}
-              onBookAnother={handleBookAnother}
-            />
+            <>
+              <DialogTitle className="sr-only">Booking Confirmed</DialogTitle>
+              <BookingSuccess
+                date={bookingData.date}
+                timeSlot={bookingData.timeSlot}
+                firstName={bookingData.firstName}
+                lastName={bookingData.lastName}
+                email={bookingData.email}
+                mobile={bookingData.mobile}
+                onClose={handleClose}
+                onBookAnother={handleBookAnother}
+              />
+            </>
           ) : null}
         </DialogContent>
       </Dialog>
