@@ -188,8 +188,6 @@ export async function createCalendarEvent(params: CreateEventParams): Promise<st
     // Extract more details from Google API errors
     if (error?.response?.data?.error) {
       const apiError = error.response.data.error;
-      console.error('Google API Error:', JSON.stringify(apiError, null, 2));
-      
       const errorMessage = apiError.message || JSON.stringify(apiError);
       
       // Provide specific guidance for common permission errors
@@ -219,7 +217,6 @@ export async function createCalendarEvent(params: CreateEventParams): Promise<st
     }
 
     if (error?.code) {
-      console.error('Error code:', error.code);
       throw new Error(`Failed to create calendar event: ${error.code} - ${error.message || 'Unknown error'}`);
     }
 

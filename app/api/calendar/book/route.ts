@@ -75,15 +75,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    // Always log full error details for debugging
-    const errorDetails = {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : undefined,
-    };
-    
     console.error('Error processing booking request:', error);
-    console.error('Error details:', JSON.stringify(errorDetails, null, 2));
 
     // Handle specific error cases
     if (error instanceof Error) {
@@ -95,7 +87,6 @@ export async function POST(request: NextRequest) {
         error.message.includes('GOOGLE_PRIVATE_KEY') ||
         error.message.includes('GOOGLE_CALENDAR_ID')
       ) {
-        console.error('Configuration error detected - missing environment variables');
         return NextResponse.json(
           {
             error: 'Server configuration error',
@@ -108,7 +99,6 @@ export async function POST(request: NextRequest) {
 
       // Permission errors from Google Calendar API
       if (error.message.includes('writer access') || error.message.includes('permission')) {
-        console.error('Calendar permission error:', error.message);
         return NextResponse.json(
           {
             error: 'Calendar permission error',
@@ -121,7 +111,6 @@ export async function POST(request: NextRequest) {
 
       // Google API errors
       if (error.message.includes('Google Calendar API') || error.message.includes('Google API')) {
-        console.error('Google Calendar API error:', error.message);
         return NextResponse.json(
           {
             error: 'Calendar API error',
@@ -157,7 +146,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Generic error for production
-    console.error('Unhandled error type:', typeof error);
     return NextResponse.json(
       {
         error: 'Internal server error',
