@@ -75,26 +75,64 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error processing booking request:', error);
-    console.error('Error details:', {
+    // Always log full error details for debugging
+    const errorDetails = {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
       name: error instanceof Error ? error.name : undefined,
-    });
+    };
+    
+    console.error('Error processing booking request:', error);
+    console.error('Error details:', JSON.stringify(errorDetails, null, 2));
 
     // Handle specific error cases
     if (error instanceof Error) {
-      if (error.message.includes('credentials') || error.message.includes('not configured')) {
+      // Configuration errors - check for missing environment variables
+      if (
+        error.message.includes('credentials') || 
+        error.message.includes('not configured') ||
+        error.message.includes('GOOGLE_SERVICE_ACCOUNT_EMAIL') ||
+        error.message.includes('GOOGLE_PRIVATE_KEY') ||
+        error.message.includes('GOOGLE_CALENDAR_ID')
+      ) {
+        console.error('Configuration error detected - missing environment variables');
         return NextResponse.json(
           {
             error: 'Server configuration error',
-            message: 'Calendar service is not properly configured',
+            message: 'Calendar service is not properly configured. Please check server logs.',
+            details: process.env.NODE_ENV === 'development' ? error.message : 'Missing required environment variables',
+          },
+          { status: 500 }
+        );
+      }
+
+      // Permission errors from Google Calendar API
+      if (error.message.includes('writer access') || error.message.includes('permission')) {
+        console.error('Calendar permission error:', error.message);
+        return NextResponse.json(
+          {
+            error: 'Calendar permission error',
+            message: 'The calendar service account does not have write access. Please check server logs.',
             details: process.env.NODE_ENV === 'development' ? error.message : undefined,
           },
           { status: 500 }
         );
       }
 
+      // Google API errors
+      if (error.message.includes('Google Calendar API') || error.message.includes('Google API')) {
+        console.error('Google Calendar API error:', error.message);
+        return NextResponse.json(
+          {
+            error: 'Calendar API error',
+            message: 'An error occurred while creating the calendar event. Please try again later.',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+          },
+          { status: 500 }
+        );
+      }
+
+      // Weekday validation errors
       if (error.message.includes('weekday')) {
         return NextResponse.json(
           {
@@ -118,6 +156,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Generic error for production
+    console.error('Unhandled error type:', typeof error);
     return NextResponse.json(
       {
         error: 'Internal server error',
