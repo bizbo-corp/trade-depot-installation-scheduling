@@ -6,6 +6,10 @@
   --primary: hsl(88 15% 20%);
   --accent: hsl(60 8% 92%);
   --background: hsl(60 8% 92%);
+  --background-2: #d6d7d2;
+  --background-3: #bfc1ba;
+  --background-4: #a8aaa3;
+  --background-5: #91948b;
   --border: hsl(72 6% 83%);
   --card: hsl(60 8% 97%);
   --card-foreground: hsl(88 19% 16%);
@@ -19,6 +23,7 @@
   --popover-foreground: hsl(88 19% 16%);
   --primary-foreground: hsl(60 8% 97%);
   --ring: hsl(77 4% 65%);
+  --ring-offset: hsl(60 8% 92%);
   --secondary: hsl(72 6% 83%);
   --secondary-foreground: hsl(88 15% 20%);
   --muted-foreground: hsl(80 4% 56%);
@@ -159,6 +164,11 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-background-2: var(--background-2);
+  --color-background-3: var(--background-3);
+  --color-background-4: var(--background-4);
+  --color-background-5: var(--background-5);
+  --color-ring-offset: var(--ring-offset);
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
@@ -280,6 +290,10 @@
   --primary: hsl(72 6% 83%);
   --accent-foreground: hsl(72 6% 83%);
   --background: hsl(88 9% 29%);
+  --background-2: #343b2c;
+  --background-3: #293021;
+  --background-4: #293021;
+  --background-5: #4b5144;
   --border: hsl(0 0% 100% / 0.1);
   --card: hsl(88 15% 20%);
   --accent: hsl(87 6% 38%);
@@ -293,6 +307,7 @@
   --popover-foreground: hsl(60 8% 97%);
   --primary-foreground: hsl(88 15% 20%);
   --ring: hsl(80 4% 56%);
+  --ring-offset: hsl(88 9% 29%);
   --secondary: hsl(88 9% 29%);
   --secondary-foreground: hsl(60 8% 97%);
   --muted-foreground: hsl(77 4% 65%);
@@ -312,25 +327,102 @@
   --sidebar-ring: hsl(87 5% 47%);
 }
 .olive {
-  --primary: #f9f9f8;
-  --accent: #ededea;
-  --accent-foreground: #62675c;
-  --background: #797e73;
+  --primary: #8b9679;
+  --accent: #637051;
+  --accent-foreground: #e8eae2;
+  --background: #8b9679;
+  --background-2: #768364;
+  --background-3: #637051;
+  --background-4: #343b2c;
+  --background-5: #505d3d;
+  --border: #8a8e84;
   --card: #62675c;
   --card-foreground: #f9f9f8;
+  --destructive: #dc2626;
+  --destructive-foreground: #f9f9f8;
   --foreground: #f9f9f8;
   --input: #8a8e84;
+  --muted: #637051;
+  --muted-foreground: #f9fbf6;
+  --popover: #343b2c;
+  --popover-foreground: #f9f9f8;
+  --primary-foreground: #f9f9f8;
+  --ring: #8b9679;
+  --ring-offset: #8b9679;
+  --secondary: #62675c;
+  --secondary-foreground: #f9f9f8;
+  --sidebar: #797e73;
+  --sidebar-foreground: #f9f9f8;
+  --sidebar-primary: #f9f9f8;
+  --sidebar-primary-foreground: #797e73;
+  --sidebar-accent: #62675c;
+  --sidebar-accent-foreground: #f9f9f8;
+  --sidebar-border: #8a8e84;
+  --sidebar-ring: #8a8e84;
+}
+
+/* Olive-light theme */
+.olive-light {
+  --primary: hsl(88 15% 20%);
+  --accent: #e8eae2;
+  --accent-foreground: hsl(87 6% 38%);
+  --background: #e8eae2;
+  --background-2: #d6d7d2;
+  --background-3: #bfc1ba;
+  --background-4: #a8aaa3;
+  --background-5: #91948b;
+  --border: hsl(72 6% 83%);
+  --card: hsl(60 8% 97%);
+  --card-foreground: hsl(88 19% 16%);
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(0 86% 97%);
+  --foreground: hsl(88 19% 16%);
+  --input: hsl(72 6% 83%);
+  --muted: hsl(60 8% 92%);
+  --muted-foreground: hsl(80 4% 56%);
+  --popover: hsl(60 8% 97%);
+  --popover-foreground: hsl(88 19% 16%);
+  --primary-foreground: hsl(60 8% 97%);
+  --ring: hsl(77 4% 65%);
+  --ring-offset: #e8eae2;
+  --secondary: hsl(72 6% 83%);
+  --secondary-foreground: hsl(88 15% 20%);
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(88 19% 16%);
+  --sidebar-primary: hsl(88 15% 20%);
+  --sidebar-primary-foreground: hsl(60 8% 97%);
+  --sidebar-accent: hsl(0 0% 96%);
+  --sidebar-accent-foreground: hsl(88 15% 20%);
+  --sidebar-border: hsl(72 6% 83%);
+  --sidebar-ring: hsl(77 4% 65%);
+}
+
+/* Neutral-olive theme */
+.neutral-olive {
+  --primary: hsl(72 6% 83%);
+  --accent: #62675c;
+  --accent-foreground: hsl(72 6% 83%);
+  --background: #797e73;
+  --background-2: #62675c;
+  --background-3: #4b5144;
+  --background-4: #505d3d;
+  --background-5: #343b2c;
   --border: #8a8e84;
+  --card: #62675c;
+  --card-foreground: #f9f9f8;
+  --destructive: #dc2626;
+  --destructive-foreground: #f9f9f8;
+  --foreground: #f9f9f8;
+  --input: #8a8e84;
   --muted: #62675c;
+  --muted-foreground: #ededea;
   --popover: #62675c;
   --popover-foreground: #f9f9f8;
   --primary-foreground: #797e73;
   --ring: #8a8e84;
+  --ring-offset: #797e73;
   --secondary: #62675c;
   --secondary-foreground: #f9f9f8;
-  --muted-foreground: #ededea;
-  --destructive: #dc2626;
-  --destructive-foreground: #f9f9f8;
   --sidebar: #797e73;
   --sidebar-foreground: #f9f9f8;
   --sidebar-primary: #f9f9f8;
@@ -343,44 +435,74 @@
 
 /* Ensure olive colors cascade to all descendants */
 .olive,
-.olive * {
+.olive *,
+.neutral-olive,
+.neutral-olive * {
   color-scheme: dark;
 }
 
-/* Ensure text elements in olive sections use foreground color */
+.olive-light,
+.olive-light * {
+  color-scheme: light;
+}
+
+/* Ensure text elements in theme sections use foreground color */
 .olive h1,
 .olive h2,
 .olive h3,
 .olive h4,
 .olive h5,
 .olive h6,
-.olive p {
+.olive p,
+.olive-light h1,
+.olive-light h2,
+.olive-light h3,
+.olive-light h4,
+.olive-light h5,
+.olive-light h6,
+.olive-light p,
+.neutral-olive h1,
+.neutral-olive h2,
+.neutral-olive h3,
+.neutral-olive h4,
+.neutral-olive h5,
+.neutral-olive h6,
+.neutral-olive p {
   color: var(--foreground);
 }
 
 /* Ensure olive CSS variables take precedence when combined with dark mode */
 /* CSS variable cascade ensures .olive variables override .dark variables */
 
-/* Override dark mode utility classes within olive sections using CSS specificity */
-/* When both .olive and .dark are present, ensure olive colors are used */
+/* Override dark mode utility classes within theme sections using CSS specificity */
 @layer utilities {
-  .olive.dark [class*="bg-input"] {
+  .olive.dark [class*="bg-input"],
+  .olive-light.dark [class*="bg-input"],
+  .neutral-olive.dark [class*="bg-input"] {
     background-color: var(--input);
   }
   
-  .olive.dark [class*="border-input"] {
+  .olive.dark [class*="border-input"],
+  .olive-light.dark [class*="border-input"],
+  .neutral-olive.dark [class*="border-input"] {
     border-color: var(--input);
   }
   
-  .olive.dark [class*="bg-accent"] {
+  .olive.dark [class*="bg-accent"],
+  .olive-light.dark [class*="bg-accent"],
+  .neutral-olive.dark [class*="bg-accent"] {
     background-color: var(--accent);
   }
   
-  .olive.dark [class*="bg-destructive"] {
+  .olive.dark [class*="bg-destructive"],
+  .olive-light.dark [class*="bg-destructive"],
+  .neutral-olive.dark [class*="bg-destructive"] {
     background-color: var(--destructive, #dc2626);
   }
   
-  .olive.dark [class*="ring-destructive"] {
+  .olive.dark [class*="ring-destructive"],
+  .olive-light.dark [class*="ring-destructive"],
+  .neutral-olive.dark [class*="ring-destructive"] {
     --tw-ring-color: var(--destructive, #dc2626);
   }
 }
@@ -561,5 +683,115 @@
   /* Popovers: border matches popover background */
   .bg-popover.border {
     border-color: var(--popover);
+  }
+}
+
+/* Glassmorphism container styles */
+@layer base {
+  .glass-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  }
+  
+  .dark .glass-container,
+  .olive .glass-container,
+  .neutral-olive .glass-container {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .olive-light .glass-container {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+}
+
+/* Font Awesome duotone icon styling */
+@layer base {
+  /* Ensure Font Awesome icons use foreground color */
+  /* Don't set custom properties here - let component inline styles handle them */
+  /* This allows custom colors to work properly */
+  .fa-duotone:not(.fa-duotone-custom-colors),
+  i.fa-duotone:not(.fa-duotone-custom-colors) {
+    color: var(--foreground);
+    --fa-primary-color: var(--foreground);
+    --fa-secondary-color: var(--foreground); /* Secondary uses same color but with opacity */
+    --fa-primary-opacity: 1.0;
+    --fa-secondary-opacity: 0.4;
+  }
+  
+  /* Icons with custom colors - don't set defaults, let inline styles handle it */
+  .fa-duotone-custom-colors,
+  i.fa-duotone-custom-colors {
+    color: var(--foreground);
+    /* Custom properties are set via inline styles in the component */
+  }
+  
+  /* Apply custom colors to duotone pseudo-elements */
+  .fa-duotone-custom-colors::before,
+  i.fa-duotone-custom-colors::before {
+    color: var(--fa-primary-color, var(--foreground));
+  }
+  
+  .fa-duotone-custom-colors::after,
+  i.fa-duotone-custom-colors::after {
+    color: var(--fa-secondary-color, var(--foreground));
+  }
+  
+  /* Ensure duotone pseudo-elements respect opacity */
+  /* Font Awesome applies opacity via CSS custom properties on the paths */
+  /* We ensure the custom properties are set and let FA handle the rendering */
+  /* Override for icons with explicit foreground color class */
+  .fa-duotone.text-foreground,
+  i.fa-duotone.text-foreground {
+    color: var(--foreground);
+    --fa-primary-color: var(--foreground);
+    --fa-secondary-color: var(--muted-foreground);
+  }
+  
+  /* Fix duotone icon stacking - ensure ::before and ::after overlap */
+  .fa-duotone-stacked,
+  i.fa-duotone-stacked {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+    width: 1em;
+    height: 1em;
+    font-size: inherit;
+  }
+  
+  .fa-duotone-stacked::before,
+  .fa-duotone-stacked::after,
+  i.fa-duotone-stacked::before,
+  i.fa-duotone-stacked::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    display: block;
+    line-height: 1;
+    pointer-events: none;
+  }
+  
+  .fa-duotone-stacked::before,
+  i.fa-duotone-stacked::before {
+    color: var(--fa-primary-color, currentColor);
+    opacity: var(--fa-primary-opacity, 1.0);
+  }
+  
+  .fa-duotone-stacked::after,
+  i.fa-duotone-stacked::after {
+    color: var(--fa-secondary-color, currentColor);
+    opacity: var(--fa-secondary-opacity, 0.4);
+    font-feature-settings: "ss01";
   }
 }

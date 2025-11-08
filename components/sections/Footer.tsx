@@ -14,11 +14,13 @@ export interface FooterProps {
 
 export const Footer = ({ 
   links = [
-    { name: "Home", href: "#" },
+    { name: "Home", href: "/" },
     { name: "Consultancy workshops", href: "#" },
     { name: "UX Design", href: "#" },
     { name: "Development", href: "#" },
     { name: "Shopify", href: "#" },
+    { name: "Purpose Framework", href: "/purpose-framework" },
+    { name: "Icon Showcase", href: "/icon-showcase" },
   ],
   copyright = "Copyright © bizbo.co.nz",
   privacyPolicyHref = "#"

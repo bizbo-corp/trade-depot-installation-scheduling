@@ -89,3 +89,6 @@ If Option 2 doesn't work:
 - Check that the OAuth scopes are exactly as shown above
 - Ensure the service account has "Enable Google Workspace Domain-wide Delegation" checked
 
+
+
+
