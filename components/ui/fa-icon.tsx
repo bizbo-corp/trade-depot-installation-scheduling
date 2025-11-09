@@ -1,9 +1,17 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { getIconDefinitionForReact, SHORT_PREFIXES, ICON_PREFIXES, BASE_STYLE_PREFIXES } from "@/lib/fontawesome";
+import { getIconDefinitionForReact, ICON_PREFIXES, BASE_STYLE_PREFIXES } from "@/lib/fontawesome";
 import { cn } from "@/lib/utils";
 import type { IconProp, SizeProp } from "@fortawesome/fontawesome-svg-core";
+import type { CSSProperties } from "react";
+
+type DuotoneCSSVariables = CSSProperties & {
+  ["--fa-primary-color"]?: string;
+  ["--fa-secondary-color"]?: string;
+  ["--fa-primary-opacity"]?: number;
+  ["--fa-secondary-opacity"]?: number;
+};
 
 export type FaIconStyle = keyof typeof ICON_PREFIXES;
 export type FaIconSize = 1 | 1.5 | 2 | 3 | 4 | 8;
@@ -190,7 +198,7 @@ export function FaIcon({
     if (iconDef) {
       // Build style object for CSS custom properties
       // Always set opacities: primary to 1.0, secondary to 0.4 by default
-      const duotoneStyle: React.CSSProperties = {
+      const duotoneStyle: DuotoneCSSVariables = {
         ...(primaryColor && { "--fa-primary-color": primaryColor }),
         ...(secondaryColor && { "--fa-secondary-color": secondaryColor }),
         "--fa-primary-opacity": primaryOpacity !== undefined ? primaryOpacity : 1.0,
@@ -245,7 +253,7 @@ export function FaIcon({
     
     // Build inline styles for duotone custom properties
     // Always set opacities: primary to 1.0, secondary to 0.4 by default
-    const duotoneStyle: React.CSSProperties = {
+    const duotoneStyle: DuotoneCSSVariables = {
       position: "relative", // Required for pseudo-element stacking
       ...(primaryColor && { "--fa-primary-color": primaryColor }),
       ...(secondaryColor && { "--fa-secondary-color": secondaryColor }),

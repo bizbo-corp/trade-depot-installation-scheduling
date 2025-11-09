@@ -1,6 +1,6 @@
 import { config, findIconDefinition } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import type { IconDefinition, IconLookup } from '@fortawesome/fontawesome-svg-core';
+import type { IconDefinition, IconLookup, IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core';
 
 // Tell Font Awesome to skip adding the CSS automatically since it's already imported above
 config.autoAddCss = false;
@@ -41,10 +41,12 @@ export function getIconDefinition(
   iconName: string,
   style: keyof typeof ICON_PREFIXES = 'light'
 ): IconDefinition | null {
-  const prefix = ICON_PREFIXES[style];
+  const prefix = SHORT_PREFIXES[style] as IconPrefix;
+  const cleanIconName = iconName.replace(/^fa-/, '') as IconName;
+
   return findIconDefinition({
-    prefix: prefix.replace('fa-', '') as any, // Convert to short prefix
-    iconName: iconName.replace(/^fa-/, ''), // Remove fa- prefix if present
+    prefix,
+    iconName: cleanIconName,
   });
 }
 
@@ -56,11 +58,11 @@ export function getIconDefinitionForReact(
   iconName: string,
   style: 'light' | 'solid' | 'duotone' | 'brand' = 'light'
 ): IconDefinition | null {
-  const shortPrefix = SHORT_PREFIXES[style];
-  const cleanIconName = iconName.replace(/^fa-/, '');
-  
+  const shortPrefix = SHORT_PREFIXES[style] as IconPrefix;
+  const cleanIconName = iconName.replace(/^fa-/, '') as IconName;
+
   return findIconDefinition({
-    prefix: shortPrefix as any,
+    prefix: shortPrefix,
     iconName: cleanIconName,
   });
 }
