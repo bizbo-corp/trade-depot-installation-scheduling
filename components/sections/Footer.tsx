@@ -18,6 +18,7 @@ export const Footer = ({
     { name: "Consultancy workshops", href: "#" },
     { name: "UX Design", href: "#" },
     { name: "Development", href: "#" },
+    { name: "Colour modes", href: "/color-modes" },
     { name: "Shopify", href: "#" },
     { name: "Purpose Framework", href: "/purpose-framework" },
     { name: "Icon Showcase", href: "/icon-showcase" },
