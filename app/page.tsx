@@ -14,7 +14,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main>
-        <HeroSection sectionTheme="neutral-olive" />
+        <HeroSection sectionTheme="light" />
         <ValuePropositionSection sectionTheme="default" />
         <TestimonialsSection />
         <LogoSection />

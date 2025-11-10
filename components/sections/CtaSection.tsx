@@ -164,7 +164,6 @@ export const CtaSection = ({
                 </div>
               )}
             </div>
-
             <CtaGlobeAnimation className="hidden md:flex" src={resolvedAnimationSrc} />
           </div>
 
@@ -192,17 +191,22 @@ const CtaGlobeAnimation = ({ className, variant = "desktop", src }: CtaGlobeAnim
   }
 
   return (
-    <div className={cn("relative isolate w-full", className)} aria-hidden="true">
-        <div className="relative h-full w-full bg-red-400">
+    <div
+      className={cn("relative isolate flex h-full w-full items-end justify-end", className)}
+      aria-hidden="true"
+    >
+      <AspectRatio ratio={ratio} className="w-full">
+        <div className="relative h-full w-full overflow-hidden">
           <dotlottie-player
             src={animationPath}
             autoplay
             loop
             mode="normal"
-            className="h-full w-full"
+            className="h-full w-full object-cover"
           />
-          <div className="pointer-events-none absolute inset-0 " />
+          <div className="pointer-events-none absolute inset-0" />
         </div>
+      </AspectRatio>
     </div>
   )
 }

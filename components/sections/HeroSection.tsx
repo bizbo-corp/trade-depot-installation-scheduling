@@ -70,7 +70,7 @@ export const HeroSection = ({
           {/* Text Content Column */}
           <div className="flex flex-col gap-8 w-full md:max-w-2xl relative z-20 order-2 md:order-1">
             <div className="flex flex-col gap-6">
-              <h1 className="text-3xl md:text-4xl lg:text-6xl font-extrabold text-primary tracking-tight leading-[1.1]">
+              <h1 className="text-3xl md:text-4xl lg:text-6xl font-extrabold text-foreground tracking-tight leading-[1.1]">
                 <span className="mb-2 block">From idea to app.</span>
                 <span className="text-accent-foreground dark:text-accent-foreground">
                   We build it.
@@ -84,7 +84,7 @@ export const HeroSection = ({
               <ul className="flex flex-col gap-4">
                 {features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 md:h-6 md:w-6 shrink-0 text-primary mt-0.5" />
+                    <Check className="h-5 w-5 md:h-6 md:w-6 shrink-0 text-foreground mt-0.5" />
                     <span className="text-lg md:text-xl text-accent-foreground">{feature.text}</span>
                   </li>
                 ))}
@@ -92,7 +92,6 @@ export const HeroSection = ({
             )}
             {(primaryCta || secondaryCta) && (
               <div className="flex flex-col gap-6">
-                <div className="bg-background/50 backdrop-blur-sm rounded-lg p-6">
                   <div className="flex flex-col gap-4 sm:flex-row">
                     {primaryCta &&
                       (primaryCta.href ? (
@@ -150,7 +149,6 @@ export const HeroSection = ({
                           )}
                         </Button>
                       ))}
-                  </div>
                 </div>
               </div>
             )}
