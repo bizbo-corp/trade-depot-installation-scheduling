@@ -369,7 +369,7 @@
   --background-4: #a8aaa3;
   --background-5: #91948b; */
 
-  --background: var(--olive-100);
+  --background: var(--olive-00);
   --background-2: var(--olive-200);
   --background-3: var(--olive-300);
   --background-4: var(--olive-400);
@@ -686,6 +686,93 @@
   /* Popovers: border matches popover background */
   .bg-popover.border {
     border-color: var(--popover);
+  }
+}
+
+/* Font Awesome duotone icon styling */
+@layer base {
+  /* Ensure Font Awesome icons use foreground colour */
+  /* Do not set custom properties here - let component inline styles handle them */
+  /* This allows custom colours to work properly */
+  .fa-duotone:not(.fa-duotone-custom-colours),
+  i.fa-duotone:not(.fa-duotone-custom-colours) {
+    color: var(--foreground);
+    --fa-primary-color: var(--foreground);
+    --fa-secondary-color: var(--foreground); /* Secondary uses same colour but with opacity */
+    --fa-primary-opacity: 1.0;
+    --fa-secondary-opacity: 0.4;
+  }
+  
+  /* Icons with custom colours - do not set defaults, let inline styles handle it */
+  .fa-duotone-custom-colours,
+  i.fa-duotone-custom-colours {
+    color: var(--foreground);
+    /* Custom properties are set via inline styles in the component */
+  }
+  
+  /* Apply custom colours to duotone pseudo-elements */
+  .fa-duotone-custom-colours::before,
+  i.fa-duotone-custom-colours::before {
+    color: var(--fa-primary-color, var(--foreground));
+  }
+  
+  .fa-duotone-custom-colours::after,
+  i.fa-duotone-custom-colours::after {
+    color: var(--fa-secondary-color, var(--foreground));
+  }
+  
+  /* Ensure duotone pseudo-elements respect opacity */
+  /* Font Awesome applies opacity via CSS custom properties on the paths */
+  /* We ensure the custom properties are set and let FA handle the rendering */
+  /* Override for icons with explicit foreground colour class */
+  .fa-duotone.text-foreground,
+  i.fa-duotone.text-foreground {
+    color: var(--foreground);
+    --fa-primary-color: var(--foreground);
+    --fa-secondary-color: var(--muted-foreground);
+  }
+  
+  /* Fix duotone icon stacking - ensure ::before and ::after overlap */
+  .fa-duotone-stacked,
+  i.fa-duotone-stacked {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+    width: 1em;
+    height: 1em;
+    font-size: inherit;
+  }
+  
+  .fa-duotone-stacked::before,
+  .fa-duotone-stacked::after,
+  i.fa-duotone-stacked::before,
+  i.fa-duotone-stacked::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    display: block;
+    line-height: 1;
+    pointer-events: none;
+  }
+  
+  .fa-duotone-stacked::before,
+  i.fa-duotone-stacked::before {
+    color: var(--fa-primary-color, currentColor);
+    opacity: var(--fa-primary-opacity, 1.0);
+  }
+  
+  .fa-duotone-stacked::after,
+  i.fa-duotone-stacked::after {
+    color: var(--fa-secondary-color, currentColor);
+    opacity: var(--fa-secondary-opacity, 0.4);
+    font-feature-settings: "ss01";
   }
 }
 
