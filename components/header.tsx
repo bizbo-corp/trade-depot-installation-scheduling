@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logotype } from "@/components/site-parts/logotype";
+import { NavThemeSwitcher } from "@/components/nav-theme-switcher";
 
 export const Header = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -137,6 +138,7 @@ export const Header = () => {
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
+          <NavThemeSwitcher />
           <ThemeToggle />
           <Button variant="ghost" size="icon">
             <UserRound className="h-4 w-4" />
@@ -232,7 +234,8 @@ export const Header = () => {
                     Contact
                   </a>
                 </Button>
-                <div className="flex items-center justify-between pt-4 border-t">
+                <div className="flex items-center justify-between gap-3 border-t pt-4">
+                  <NavThemeSwitcher className="w-full justify-between" />
                   <ThemeToggle />
                   <Button variant="ghost" size="icon">
                     <UserRound className="h-4 w-4" />

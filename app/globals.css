@@ -3,7 +3,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --primary: #343b2c;
+  --primary: #bef264;
   --accent: #ededea;
   --background: #ededea;
   --background-2: #d6d7d2;
@@ -21,7 +21,7 @@
   --muted: #ededea;
   --popover: #f9f9f8;
   --popover-foreground: #293021;
-  --primary-foreground: #f9f9f8;
+  --primary-foreground: #343b2c;
   --ring: #a8aaa3;
   --secondary: #d6d7d2;
   --secondary-foreground: #343b2c;
@@ -285,10 +285,10 @@
 }
 
 .dark {
-  --primary: #d6d7d2;
+  --primary: #bef264;
   --accent: #62675c;
   --accent-foreground: #d6d7d2;
-  --background: #4b5144;
+  --background: var(--neutral-olive-950);
   --background-2: var(--neutral-olive-600);
   --background-3: var(--neutral-olive-700);
   --background-4: var(--neutral-olive-900);
@@ -324,7 +324,7 @@
 }
 
 .olive {
-  --primary: #8b9679;
+  --primary: #bef264;
   --accent: #637051;
   --accent-foreground: #e8eae2;
   --background: #8b9679;
@@ -343,7 +343,7 @@
   --muted-foreground: #f9fbf6;
   --popover: #343b2c;
   --popover-foreground: #f9f9f8;
-  --primary-foreground: #f9f9f8;
+  --primary-foreground: #343b2c;
   --ring: #8b9679;
   --ring-offset: #8b9679;
   --secondary: #62675c;
@@ -360,7 +360,7 @@
 
 /* Olive-light theme */
 .olive-light {
-  --primary: hsl(88 15% 20%);
+  --primary: #bef264;
   --accent: #e8eae2;
   --accent-foreground: hsl(87 6% 38%);
   /* --background: #e8eae2;
@@ -385,7 +385,7 @@
   --muted-foreground: hsl(80 4% 56%);
   --popover: hsl(60 8% 97%);
   --popover-foreground: hsl(88 19% 16%);
-  --primary-foreground: hsl(60 8% 97%);
+  --primary-foreground: #343b2c;
   --ring: hsl(77 4% 65%);
   --ring-offset: #e8eae2;
   --secondary: hsl(72 6% 83%);
@@ -402,7 +402,7 @@
 
 /* Neutral-olive theme */
 .neutral-olive {
-  --primary: hsl(72 6% 83%);
+  --primary: #bef264;
   --accent: #62675c;
   --accent-foreground: hsl(72 6% 83%);
   --background: var(--neutral-olive-600);
@@ -421,7 +421,7 @@
   --muted-foreground: #ededea;
   --popover: #62675c;
   --popover-foreground: #f9f9f8;
-  --primary-foreground: #797e73;
+  --primary-foreground: #343b2c;
   --ring: #8a8e84;
   --ring-offset: #797e73;
   --secondary: #62675c;

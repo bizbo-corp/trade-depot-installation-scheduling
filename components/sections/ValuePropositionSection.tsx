@@ -1,19 +1,19 @@
-import { BentoCard, BentoCardProps } from "@/components/sections/cards/BentoCard"
-import { ImageCard, ImageCardProps } from "@/components/sections/cards/ImageCard"
-import { Button } from "@/components/ui/button"
-import { svgGraphics, bitmapImages } from "@/lib/images"
+import { BentoCard, BentoCardProps } from "@/components/sections/cards/BentoCard";
+import { ImageCard, ImageCardProps } from "@/components/sections/cards/ImageCard";
+import { svgGraphics, bitmapImages } from "@/lib/images";
+import { cn } from "@/lib/utils";
 
 export interface ValuePropositionStep extends Omit<BentoCardProps, "className"> {
-  className?: string
+  className?: string;
 }
 
 export interface ValuePropositionSectionProps {
-  heading?: string
-  subheading?: string
-  description?: string
-  steps?: ValuePropositionStep[]
-  imageCards?: Array<Pick<ImageCardProps, "imageUrl" | "alt">>
-  mode?: "default" | "olive"
+  heading?: string;
+  subheading?: string;
+  description?: string;
+  steps?: ValuePropositionStep[];
+  imageCards?: Array<Pick<ImageCardProps, "imageUrl" | "alt">>;
+  sectionTheme?: "light" | "light-olive" | "olive-light" | "olive" | "neutral-olive" | "dark";
 }
 
 export const ValuePropositionSection = ({
@@ -60,10 +60,13 @@ export const ValuePropositionSection = ({
       alt: svgGraphics.buildStrategyPartner.alt
     }
   ],
-  mode = "olive"
+  sectionTheme = "olive",
 }: ValuePropositionSectionProps) => {
+  const themeClass =
+    sectionTheme === "light-olive" ? "olive-light" : sectionTheme === "olive-light" ? "olive-light" : sectionTheme;
+
   return (
-    <section className={`py-12 md:py-24 bg-background ${mode === "olive" ? "olive" : ""}`}>
+    <section className={cn("py-12 md:py-24 bg-background", themeClass)}>
       <div className="container mx-auto flex flex-col items-center gap-12 px-4 md:px-6">
         <div className="flex max-w-xl flex-col items-center gap-4 text-center">
           {subheading && <p className="text-sm text-muted-foreground">{subheading}</p>}
@@ -88,6 +91,6 @@ export const ValuePropositionSection = ({
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 

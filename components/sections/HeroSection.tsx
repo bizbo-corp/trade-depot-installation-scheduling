@@ -8,6 +8,7 @@ import { ReactNode } from "react";
 import { LottieAnimation } from "@/components/LottieAnimation";
 import { BookingDialog } from "@/components/booking/BookingDialog";
 import { animations } from "@/lib/images";
+import { cn } from "@/lib/utils";
 
 export interface HeroFeature {
   text: string;
@@ -32,6 +33,7 @@ export interface HeroSectionProps {
   };
   imageOrder?: "first" | "last";
   lottieSrc?: string;
+  sectionTheme?: "light" | "olive-light" | "olive" | "neutral-olive" | "dark";
 }
 
 export const HeroSection = ({
@@ -54,9 +56,15 @@ export const HeroSection = ({
   image,
   imageOrder = "last",
   lottieSrc = animations.hero.path,
+  sectionTheme,
 }: HeroSectionProps) => {
   return (
-    <section className="bg-background pt-16 md:pt-24 pb-16 md:pb-32 md:min-h-screen relative overflow-hidden flex flex-col">
+    <section
+      className={cn(
+        "bg-background pt-16 md:pt-24 pb-16 md:pb-32 md:min-h-screen relative overflow-hidden flex flex-col",
+        sectionTheme
+      )}
+    >
       <div className="container mx-auto px-4 md:px-6 relative z-10 w-full flex-1 flex flex-col md:justify-center">
         <div className="grid items-center md:items-start gap-8 md:grid-cols-[40%_60%] md:gap-16">
           {/* Text Content Column */}
@@ -64,7 +72,7 @@ export const HeroSection = ({
             <div className="flex flex-col gap-6">
               <h1 className="text-3xl md:text-4xl lg:text-6xl font-extrabold text-primary tracking-tight leading-[1.1]">
                 <span className="mb-2 block">From idea to app.</span>
-                <span className="text-olive-500 dark:text-olive-600">
+                <span className="text-accent-foreground dark:text-accent-foreground">
                   We build it.
                 </span>
               </h1>

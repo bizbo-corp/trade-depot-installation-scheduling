@@ -84,6 +84,10 @@ export const animations = {
     path: "/animations/hero-animation.json",
     description: "Hero section animation",
   },
+  ctaGlobe: {
+    path: "/animations/globe-animation.lottie",
+    description: "CTA globe animation",
+  },
 } as const;
 
 /**

@@ -14,12 +14,12 @@ export default function Home() {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main>
-        <HeroSection />
-        <ValuePropositionSection />
+        <HeroSection sectionTheme="neutral-olive" />
+        <ValuePropositionSection sectionTheme="default" />
         <TestimonialsSection />
         <LogoSection />
         <AboutSection />
-        <CtaSection />
+        <CtaSection sectionTheme="dark" />
       </main>
       <Footer />
     </div>
