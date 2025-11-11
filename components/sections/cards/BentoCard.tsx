@@ -29,7 +29,7 @@ export const BentoCard = ({
   className,
 }: BentoCardProps) => {
   return (
-    <div className={cn("flex flex-col overflow-hidden rounded-xl bg-muted shadow-sm", className)}>
+    <div className={cn("flex flex-col overflow-hidden rounded-xl bg-muted/50 shadow-xs", className)}>
       <div className="relative h-[200px] w-full">
         <Image
           src={imageUrl}

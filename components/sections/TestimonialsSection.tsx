@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Star } from "lucide-react"
 import {
   Carousel,
@@ -7,8 +8,10 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  CarouselApi,
 } from "@/components/ui/carousel"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { peoplePortraits } from "@/lib/images"
 
 export interface Testimonial {
   quote: string
@@ -33,16 +36,43 @@ export const TestimonialsSection = ({
       author: "Irene Chapple",
       role: "Founder",
       company: "Better Aotearoa",
-      avatar: "https://github.com/shadcn.png",
+      avatar: peoplePortraits.ireneChapple.path,
       initials: "IC"
+    },
+    {
+      quote: "Michael guided through a process to 'productise' our service business. The idea is to take what we do organically to be more deliberate and predictive. It was excellent. He listens and interprets. He has a suite of design tools that extract the essence of what we imagined and suggest a path forward. And all good fun along the way. Great guy. Good process. Thanks!",
+      author: "Vincent Heeringa",
+      role: "Founder",
+      company: "Better Aotearoa",
+      avatar: peoplePortraits.vincentHeeringa.path,
+      initials: "VH"
     }
   ],
-  heading = "Customer love",
-  subheading = "Testimonial section",
+  heading = "What they say",
+  subheading = "Customer love",
   showStars = true
 }: TestimonialsSectionProps) => {
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null)
+  const [isHovered, setIsHovered] = useState(false)
+
+  useEffect(() => {
+    if (!carouselApi || testimonials.length < 2 || isHovered) return
+
+    const autoplay = setInterval(() => {
+      if (!carouselApi) return
+
+      if (carouselApi.canScrollNext()) {
+        carouselApi.scrollNext()
+      } else {
+        carouselApi.scrollTo(0)
+      }
+    }, 8000)
+
+    return () => clearInterval(autoplay)
+  }, [carouselApi, testimonials.length, isHovered])
+
   return (
-    <section className="bg-muted py-12 md:py-24">
+    <section className="bg-background/80 py-12 md:py-24">
       <div className="container mx-auto flex flex-col items-center gap-6 px-4 md:px-6">
         <div className="flex flex-col items-center gap-4 text-center">
           <p className="text-sm text-muted-foreground">{subheading}</p>
@@ -55,7 +85,13 @@ export const TestimonialsSection = ({
             ))}
           </div>
         )}
-        <Carousel className="w-full max-w-4xl">
+        <Carousel
+          className="w-full max-w-4xl"
+          opts={{ loop: testimonials.length > 1 }}
+          setApi={setCarouselApi}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <CarouselContent>
             {testimonials.map((testimonial, index) => (
               <CarouselItem key={index}>
@@ -64,11 +100,15 @@ export const TestimonialsSection = ({
                     "{testimonial.quote}"
                   </blockquote>
                   <div className="flex flex-col items-center gap-4 md:flex-row">
-                    <Avatar>
+                    <Avatar className="h-16 w-16">
                       {testimonial.avatar && (
-                        <AvatarImage src={testimonial.avatar} alt={testimonial.author} />
+                        <AvatarImage
+                          src={testimonial.avatar}
+                          alt={testimonial.author}
+                          className="h-full w-full object-cover"
+                        />
                       )}
-                      <AvatarFallback>
+                      <AvatarFallback className="text-lg md:text-xl">
                         {testimonial.initials || testimonial.author.split(' ').map(n => n[0]).join('')}
                       </AvatarFallback>
                     </Avatar>

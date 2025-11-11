@@ -5,6 +5,7 @@ import { Linkedin, Mail, Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { BookingDialog } from "@/components/booking/BookingDialog"
+import { peoplePortraits } from "@/lib/images"
 
 export interface ContactInfo {
   email?: string
@@ -37,14 +38,17 @@ export const AboutSection = ({
     linkedin: "linkedin.com/in/mchristie79/"
   },
   image = {
-    src: "https://ui.shadcn.com/placeholder.svg",
-    alt: "About Michael"
+    src: peoplePortraits.michaelChristie.path,
+    alt: peoplePortraits.michaelChristie.alt
   },
   ctaButton = {
     text: "Schedule a Call"
   },
   imageOrder = "last"
 }: AboutSectionProps) => {
+  const imageSource = image?.src?.trim()
+  const imageAlt = image?.alt?.trim() || title
+
   return (
     <section className="bg-background py-12 md:py-24">
       <div className="container mx-auto px-4 md:px-6">
@@ -52,25 +56,25 @@ export const AboutSection = ({
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-4">
               <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
-              {description && <p className="text-muted-foreground">{description}</p>}
+              {description && <p className="text-muted-foreground leading-relaxed">{description}</p>}
             </div>
             {contactInfo && (
             <div className="flex flex-col gap-3">
               {contactInfo.email && (
                 <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                  <Mail className="h-5 w-5 shrink-0 text-muted-foreground" />
                   <span className="font-medium">{contactInfo.email}</span>
                 </div>
               )}
               {contactInfo.phone && (
                 <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                  <Phone className="h-5 w-5 shrink-0 text-muted-foreground" />
                   <span className="font-medium">{contactInfo.phone}</span>
                 </div>
               )}
               {contactInfo.linkedin && (
                 <div className="flex items-center gap-3">
-                  <Linkedin className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                  <Linkedin className="h-5 w-5 shrink-0 text-muted-foreground" />
                   <span className="font-medium">{contactInfo.linkedin}</span>
                 </div>
               )}
@@ -79,25 +83,25 @@ export const AboutSection = ({
             {ctaButton && (
               <div className="mt-4">
                 {ctaButton.href ? (
-                  <Button asChild>
+                  <Button variant="outline" asChild>
                     <a href={ctaButton.href}>{ctaButton.text}</a>
                   </Button>
                 ) : ctaButton.onClick ? (
-                  <Button onClick={ctaButton.onClick}>{ctaButton.text}</Button>
+                  <Button variant="outline" onClick={ctaButton.onClick}>{ctaButton.text}</Button>
                 ) : (
                   <BookingDialog>
-                    <Button>{ctaButton.text}</Button>
+                    <Button variant="outline">{ctaButton.text}</Button>
                   </BookingDialog>
                 )}
               </div>
             )}
           </div>
-          {image && (
+          {imageSource && (
           <div className={imageOrder === "first" ? "order-first lg:order-first" : "order-first lg:order-last"}>
             <AspectRatio ratio={1 / 1}>
               <Image
-                src={image.src}
-                alt={image.alt}
+                src={imageSource}
+                alt={imageAlt}
                 fill
                 className="rounded-xl object-cover"
               />

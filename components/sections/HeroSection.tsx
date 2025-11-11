@@ -77,7 +77,7 @@ export const HeroSection = ({
                 </span>
               </h1>
 
-              <p className="text-lg md:text-xl text-accent-foreground leading-relaxed max-w-xl">{description}</p>
+              <p className="text-lg md:text-xl font-medium text-foreground leading-relaxed max-w-xl">{description}</p>
             </div>
 
             {features.length > 0 && (
@@ -85,7 +85,7 @@ export const HeroSection = ({
                 {features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <Check className="h-5 w-5 md:h-6 md:w-6 shrink-0 text-foreground mt-0.5" />
-                    <span className="text-lg md:text-xl text-accent-foreground">{feature.text}</span>
+                    <span className="text-lg md:text-xl text-foreground/60">{feature.text}</span>
                   </li>
                 ))}
               </ul>

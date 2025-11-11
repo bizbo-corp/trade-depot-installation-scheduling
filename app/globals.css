@@ -5,7 +5,7 @@
 :root {
   --primary: #bef264;
   --accent: var(--neutral-olive-100);
-  --background: var(--neutral-olive-200);
+  --background: var(--neutral-olive-100);
   --background-2: #d6d7d2;
   --background-3: #bfc1ba;
   --background-4: #a8aaa3;
@@ -18,7 +18,7 @@
   --accent-foreground: var(--neutral-olive-500);
   --foreground: var(--neutral-olive-800);
   --input: #d6d7d2;
-  --muted: var(--neutral-olive-100);
+  --muted: var(--neutral-olive-50);
   --popover: #f9f9f8;
   --popover-foreground: #293021;
   --primary-foreground: #343b2c;

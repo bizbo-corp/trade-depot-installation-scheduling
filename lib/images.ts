@@ -59,6 +59,33 @@ export const svgGraphics = {
   },
 } as const;
 
+export const bizLogos = {
+  nzaa: {
+    path: "/svg/biz-logos/NZAA.svg",
+    alt: "NZAA logo",
+  },
+  betterAotearoa: {
+    path: "/svg/biz-logos/Better-Aotearoa.svg",
+    alt: "Better Aotearoa logo",
+  },
+  aaInsurance: {
+    path: "/svg/biz-logos/aa-insurance.svg",
+    alt: "AA Insurance logo",
+  },
+  iHateIroning: {
+    path: "/svg/biz-logos/i-hate-ironing.svg",
+    alt: "I Hate Ironing logo",
+  },
+  tradeDepot: {
+    path: "/svg/biz-logos/trade-depot.svg",
+    alt: "Trade Depot logo",
+  },
+  woolworths: {
+    path: "/svg/biz-logos/woolworths.svg",
+    alt: "Woolworths logo",
+  },
+} as const;
+
 // Bitmap Images
 export const bitmapImages = {
   mobilePrototype: {
@@ -75,6 +102,25 @@ export const bitmapImages = {
     path: "/bitmap/workshop-session.png",
     alt: "Workshop session photograph",
     description: "Collaborative workshop session in progress",
+  },
+} as const;
+
+// People Portraits
+export const peoplePortraits = {
+  michaelChristie: {
+    path: "/bitmap/people/michael-christie.jpg",
+    alt: "Portrait of Michael Christie",
+    description: "Michael Christie, founder of Bizbo",
+  },
+  ireneChapple: {
+    path: "/bitmap/people/irene-chapple.jpg",
+    alt: "Portrait of Irene Chapple",
+    description: "Irene Chapple, Bizbo collaborator",
+  },
+  vincentHeeringa: {
+    path: "/bitmap/people/vincent-heeringa.jpg",
+    alt: "Portrait of Vincent Heeringa",
+    description: "Vincent Heeringa, Bizbo collaborator",
   },
 } as const;
 
@@ -96,7 +142,9 @@ export const animations = {
 export type ImageCategory = {
   svgIcons: typeof svgIcons;
   svgGraphics: typeof svgGraphics;
+  bizLogos: typeof bizLogos;
   bitmapImages: typeof bitmapImages;
+  peoplePortraits: typeof peoplePortraits;
   animations: typeof animations;
 };
 
@@ -112,14 +160,24 @@ export function getImage(
   key: keyof typeof svgGraphics,
 ): ImageAsset;
 export function getImage(
+  category: "bizLogos",
+  key: keyof typeof bizLogos,
+): ImageAsset;
+export function getImage(
   category: "bitmapImages",
   key: keyof typeof bitmapImages,
+): ImageAsset;
+export function getImage(
+  category: "peoplePortraits",
+  key: keyof typeof peoplePortraits,
 ): ImageAsset;
 export function getImage(category: string, key: string): ImageAsset | null {
   const categories = {
     svgIcons,
     svgGraphics,
+    bizLogos,
     bitmapImages,
+    peoplePortraits,
   } as const;
 
   const categoryData = categories[category as keyof typeof categories];
@@ -143,5 +201,7 @@ export function getAnimation(
 export const imagePaths = {
   ...svgIcons,
   ...svgGraphics,
+  ...bizLogos,
   ...bitmapImages,
+  ...peoplePortraits,
 } as const;
