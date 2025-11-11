@@ -64,7 +64,7 @@ export interface FaIconProps {
    * Only applies when style="duotone"
    * @default "solid"
    */
-  duotoneBaseStyle?: "light" | "solid";
+  duotoneBaseStyle?: "light" | "solid" | "thin";
   
   /**
    * Duotone-specific: Swap the opacity of primary and secondary layers

@@ -30,7 +30,9 @@ export const Header = () => {
   return (
     <header className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
+        <Link href="/" className="block hover:bg-foreground/10 rounded-4xl p-2">
         <Logotype />
+        </Link>
         <nav className="hidden items-center gap-1 md:flex">
           <NavigationMenu>
             <NavigationMenuList>
@@ -41,11 +43,11 @@ export const Header = () => {
                     <li>
                       <NavigationMenuLink asChild>
                         <Link
-                          href="#"
+                          href="/design-thinker-workshops"
                           className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                         >
                           <div className="text-sm font-medium leading-none">
-                            Consultancy Workshops
+                            Design Workshops
                           </div>
                         </Link>
                       </NavigationMenuLink>
@@ -53,7 +55,7 @@ export const Header = () => {
                     <li>
                       <NavigationMenuLink asChild>
                         <Link
-                          href="#"
+                          href="/ux-design"
                           className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                         >
                           <div className="text-sm font-medium leading-none">
@@ -65,11 +67,23 @@ export const Header = () => {
                     <li>
                       <NavigationMenuLink asChild>
                         <Link
-                          href="#"
+                          href="/development"
                           className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                         >
                           <div className="text-sm font-medium leading-none">
                             Development
+                          </div>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          href="/automation"
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                        >
+                          <div className="text-sm font-medium leading-none">
+                            Automation
                           </div>
                         </Link>
                       </NavigationMenuLink>

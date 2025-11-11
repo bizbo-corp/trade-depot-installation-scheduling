@@ -13,6 +13,7 @@ config.familyPrefix = 'fa';
 export const SHORT_PREFIXES = {
   light: 'fal', // Classic Light
   solid: 'fas', // Classic Solid
+  thin: 'fat', // Thin
   duotone: 'fad', // Duotone
   brand: 'fab', // Brands
 } as const;
@@ -21,6 +22,7 @@ export const SHORT_PREFIXES = {
 export const BASE_STYLE_PREFIXES = {
   light: 'fa-light', // Classic Light (default)
   solid: 'fa-solid', // Classic Solid (selected state)
+  thin: 'fa-thin', // Thin
   brand: 'fa-brands', // Brands (special logos)
 } as const;
 
@@ -29,6 +31,7 @@ export const BASE_STYLE_PREFIXES = {
 export const ICON_PREFIXES = {
   light: 'fa-light', // Classic Light (default)
   solid: 'fa-solid', // Classic Solid (selected state)
+  thin: 'fa-thin', // Thin
   duotone: 'fa-duotone', // Duotone modifier (must be combined with base style)
   brand: 'fa-brands', // Brands (special logos)
 } as const;
@@ -56,7 +59,7 @@ export function getIconDefinition(
  */
 export function getIconDefinitionForReact(
   iconName: string,
-  style: 'light' | 'solid' | 'duotone' | 'brand' = 'light'
+  style: keyof typeof SHORT_PREFIXES = 'light'
 ): IconDefinition | null {
   const shortPrefix = SHORT_PREFIXES[style] as IconPrefix;
   const cleanIconName = iconName.replace(/^fa-/, '') as IconName;
