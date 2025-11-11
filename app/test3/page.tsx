@@ -1,45 +1,47 @@
 "use client";
 
 import { Header } from "@/components/header";
-import { FeatureSection } from "@/components/sections/FeatureSection";
+// import { HeroCircleScrollSection } from "@/components/sections/HeroCircleScrollSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { Footer } from "@/components/sections/Footer";
 import { LogoSection } from "@/components/sections/LogoSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { TempCTA } from "@/components/sections/tempCTA";
 import Image from "next/image";
+import { ensureGsap } from "@/lib/gsap";
+
+const CIRCLE_ART = "/svg/circles.svg";
 
 export default function TestPage() {
   return (
     <div className="flex min-h-screen flex-col ">
       <Header />
       <main className="flex-1">
-        <section className="relative z-10 box-border flex w-full flex-1 flex-col bg-background">
-          <div className="grid min-h-[calc(100vh)] gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-center md:gap-16">
-            <div className="hidden md:block" aria-hidden />
-            <div className="aspect-square rounded-3xl">
-              <div className="relative flex h-full w-full items-end justify-center overflow-hidden rounded-2xl border border-dashed min-h-[calc(100vh)] border-neutral-400/40">
-                <Image
-                  src="/svg/circles.svg"
-                  alt="Abstract circular accent graphic"
-                  fill
-                  className="object-cover object-left translate-y-[20%] md:translate-y-[200px]"
-                  priority
-                />
-                <span className="relative z-10 text-sm font-semibold uppercase tracking-widest text-neutral-500">
-                  Prototype Preview
-                </span>
-              </div>
+        {/* <HeroCircleScrollSection /> */}
+
+        <div
+          id="hero-scroll-section"
+          className="min-h-[calc(100vh)] bg-amber-500/20 pt-16"
+        >
+          hero-scroll-section
+            <div
+              id="hero-scroll-container"
+              className="container mx-auto min-h-[calc(100vh-100px)] flex flex-col items-stretch lg:flex-row lg:items-stretch lg:h-[calc(100vh-100px)] justify-center px-4 md:px-6 bg-green-500/20"
+            >
+            <div
+              id="hero-left-col"
+              className="bg-lime-500/20 w-full grow h-full lg:min-w-1/2 lg:self-stretch"
+            >
+              Left
+            </div>
+            <div
+              id="hero-right-col"
+              className="bg-pink-500/20 w-full grow h-full lg:min-w-1/2 lg:self-stretch"
+            >
+              Right
             </div>
           </div>
-          <div className="absolute left-1/2 top-1/2 z-20 w-full -translate-x-1/2 -translate-y-1/2">
-            <div className="container mx-auto flex justify-center px-4 md:px-6">
-              <div className="w-full">
-                <TempCTA />
-              </div>
-            </div>
-          </div>
-        </section>
+        </div>
 
         <LogoSection />
         <CtaSection variant="analysis" sectionTheme="dark" />
