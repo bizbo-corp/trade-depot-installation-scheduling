@@ -8,6 +8,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Button } from "@/components/ui/button"
 import { animations } from "@/lib/images"
 import { cn } from "@/lib/utils"
+import { DotLottiePlayer } from "@/components/ui/DotLottiePlayer"
 
 type SectionTheme = "light" | "light-olive" | "olive-light" | "olive" | "neutral-olive" | "dark"
 
@@ -197,7 +198,7 @@ const CtaGlobeAnimation = ({ className, variant = "desktop", src }: CtaGlobeAnim
     >
       <AspectRatio ratio={ratio} className="w-full">
         <div className="relative h-full w-full overflow-hidden">
-          <dotlottie-player
+          <DotLottiePlayer
             src={animationPath}
             autoplay
             loop

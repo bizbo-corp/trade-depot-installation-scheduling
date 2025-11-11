@@ -15,7 +15,7 @@ export default function Home() {
       <Header />
       <main>
         <HeroSection sectionTheme="light" />
-        <ValuePropositionSection sectionTheme="default" />
+        <ValuePropositionSection sectionTheme="light" />
         <TestimonialsSection />
         <LogoSection />
         <AboutSection />
