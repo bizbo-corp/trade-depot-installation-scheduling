@@ -15,17 +15,35 @@ const CIRCLE_ART = "/svg/circles.svg";
 
 export default function TestPage() {
   useEffect(() => {
-    const { gsap } = ensureGsap();
+    const { gsap, ScrollTrigger } = ensureGsap();
+    gsap.registerPlugin(ScrollTrigger);
     const context = gsap.context(() => {
-      // This is a Tween
-      gsap.to(".box", { rotation: 360, x: 200, duration: 1, repeat: 20, yoyo: true });
-
-      // And this is a Timeline, containing three sequenced tweens
-      const tl = gsap.timeline();
-
-      tl.to("#green", { duration: 1, x: 786, ease: "power2.inOut" })
-        .to("#blue", { duration: 2, x: 786, ease: "power2.inOut" })
-        .to("#orange", { duration: 1, x: 786, ease: "power2.inOut" });
+      gsap
+        .timeline({
+          defaults: { ease: "power1.inOut", duration: 3 },
+          scrollTrigger: {
+            trigger: "#hero-scroll-section",
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        })
+        .fromTo(
+          "#hero-accent",
+          {
+            transformOrigin: "bottom right",
+            height: "20vh",
+            width: "50vw",
+            scaleY: 0.4,
+            right: "0",
+          },
+          {
+            transformOrigin: "top center",
+            height: "100vh",
+            width: "100vw",
+            scaleY: 2,
+          }
+        );
     });
 
     return () => {
@@ -37,62 +55,40 @@ export default function TestPage() {
     <div className="flex min-h-screen flex-col ">
       <Header />
 
-        <div
-          id="hero-scroll-section"
-          className="min-h-[calc(100vh)] bg-amber-500/10 pt-16"
-        >
-          hero-scroll-section
-          <div className="bg-red-500/10 p-12 top-10 right-10 left-10 bottom-10 w-full min-h-[calc(100vh-100px)]">
+      <div
+        id="hero-scroll-section"
+        className="min-h-[calc(100vh)] bg-amber-500/10 pt-16"
+      >
+        hero-scroll-section
+        <div className="bg-red-500/10 p-12 top-10 right-10 left-10 bottom-10 w-full min-h-[calc(100vh-100px)]">
+          <div
+            id="hero-scroll-container"
+            className="container mx-auto min-h-[calc(100vh-100px)] flex flex-col items-stretch lg:flex-row lg:items-stretch lg:h-[calc(100vh-100px)] justify-center px-4 md:px-6 bg-green-500/10"
+          >
             <div
-              id="hero-scroll-container"
-              className="container mx-auto min-h-[calc(100vh-100px)] flex flex-col items-stretch lg:flex-row lg:items-stretch lg:h-[calc(100vh-100px)] justify-center px-4 md:px-6 bg-green-500/10"
+              id="hero-left-col"
+              className="bg-lime-500/20 w-full grow h-full lg:min-w-1/2 lg:self-stretch"
             >
-              <div
-                id="hero-left-col"
-                className="bg-lime-500/10 w-full grow h-full lg:min-w-1/2 lg:self-stretch"
-              >
-                Left
-              </div>
-              <div
-                id="hero-right-col"
-                className="bg-pink-500/10 w-full grow h-full lg:min-w-1/2 lg:self-stretch"
-              >
-                Right
-              </div>
+              Left
             </div>
-            <div className="absolute bottom-0 w-full h-1/2 right-0 lg:w-1/2 lg:h-full bg-blue-500/10">
-              <div className="relative h-full w-full overflow-hidden">
-                <div className="box w-16 h-16 mt-24 bg-amber-400/80 flex items-center justify-center text-lg font-semibold text-white">
-                  aa
-                </div>
-                <div className="mt-8 flex flex-col gap-4">
-                  <div
-                    id="green"
-                    className="h-12 w-12 rounded-full bg-green-500"
-                  ></div>
-                  <div
-                    id="blue"
-                    className="h-12 w-12 rounded-full bg-blue-500"
-                  ></div>
-                  <div
-                    id="orange"
-                    className="h-12 w-12 rounded-full bg-orange-500"
-                  ></div>
-                </div>
-                <Image
-                  src="/svg/circles.svg"
-                  alt="Abstract circular accent graphic"
-                  fill
-                  className="object-cover object-top lg:object-left"
-                  priority
-                />
-              </div>
+            <div
+              id="hero-right-col"
+              className="bg-pink-500/05 w-full grow h-full lg:min-w-1/2 lg:self-stretch"
+            >
+              Right
             </div>
           </div>
+          <div
+            id="hero-accent"
+            className="absolute -z-10 bottom-0 right-0 bg-blue-500/80 border border-red-500"
+          >
+            id="hero-accent
+          </div>
         </div>
-
-        <LogoSection />
-        <CtaSection variant="analysis" sectionTheme="dark" />
+      </div>
+      <div className="bg-blue-500/10 min-h-screen">sss</div>
+      <LogoSection />
+      <CtaSection variant="analysis" sectionTheme="dark" />
       <Footer />
     </div>
   );
