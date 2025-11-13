@@ -92,7 +92,7 @@ export const ValuePropositionSection = ({
     sectionTheme === "light-olive" ? "olive-light" : sectionTheme === "olive-light" ? "olive-light" : sectionTheme;
 
   return (
-    <section className={cn("py-12 md:py-24 bg-background", themeClass)}>
+    <section className={cn("py-12 md:py-24 ", themeClass)}>
       <div className="container mx-auto flex flex-col items-center gap-12 px-4 md:px-6">
         <div className="flex max-w-xl flex-col items-center gap-4 text-center">
           {subheading && <p className="text-sm font-medium text-muted-foreground">{subheading}</p>}

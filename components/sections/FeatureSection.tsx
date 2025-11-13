@@ -32,7 +32,7 @@ export function FeatureSection({
   tagline,
 }: FeatureSectionProps) {
   return (
-    <section className={cn("bg-background py-16 md:py-24", sectionTheme, className)}>
+    <section className={cn("py-16 md:py-24", sectionTheme, className)}>
       <div className="container mx-auto flex flex-col gap-12 px-4 md:px-6">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl space-y-4">
