@@ -9,7 +9,7 @@ import { LogoSection } from "@/components/sections/LogoSection";
 import { AboutSection } from "@/components/sections/AboutSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { Footer } from "@/components/sections/Footer";
-import { TempCTA } from "@/components/sections/tempCTA";
+import { CTAhome } from "@/components/sections/CTAhome";
 import { FeatureSection } from "@/components/sections/FeatureSection";
 import { useHeroScrollAnimation } from "@/hooks/useHeroScrollAnimation";
 import { bitmapImages } from "@/lib/images";
@@ -58,17 +58,17 @@ export default function Home() {
           ></div>
           <div
             id="hero-accent1"
-            className="absolute w-[800px] h-[400px] bg-olive-600/25 rounded-full z-30"
+            className="absolute w-[1200px] h-[400px] bg-olive-600/25 rounded-full z-30"
           ></div>
           {/* Middle circle (w-4) - Olive-400 */}
           <div
             id="hero-accent2"
-            className="absolute w-[1200px] h-[800px] bg-olive-600/25 rounded-full z-20"
+            className="absolute w-[1600px] h-[800px] bg-olive-600/25 rounded-full z-20"
           ></div>
           {/* Bottom circle - largest (w-5) - Olive-300 */}
           <div
             id="hero-accent3"
-            className="absolute w-[1600px] h-[1200px] bg-olive-600/25 rounded-full z-10"
+            className="absolute w-[2000px] h-[1200px] bg-olive-600/25 rounded-full z-10"
           ></div>
 
           <div
@@ -79,7 +79,7 @@ export default function Home() {
               id="hero-left-col"
               className="bg-lime-500/00 w-full grow h-full lg:min-w-1/2 lg:self-stretch md:flex md:flex-col md:justify-center"
             >
-              <TempCTA />
+              <CTAhome />
             </div>
             <div
               id="hero-right-col"
@@ -89,7 +89,7 @@ export default function Home() {
           <div className="relative">
             <div
               id="value-prop-section"
-              className="fixed z-[1001] opacity-0 w-full bg-blue-500/00"
+              className="relative z-1 opacity-100 w-full bg-blue-500/00"
             >
               <ValuePropositionSection sectionTheme="dark" />
             </div>

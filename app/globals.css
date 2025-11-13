@@ -3,7 +3,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --primary: #bef264;
+  --primary: var(--neutral-olive-800);
   --accent: var(--neutral-olive-100);
   --background: var(--neutral-olive-100);
   --background-2: #d6d7d2;
@@ -21,7 +21,7 @@
   --muted: var(--neutral-olive-50);
   --popover: #f9f9f8;
   --popover-foreground: #293021;
-  --primary-foreground: #343b2c;
+  --primary-foreground: var(--neutral-olive-100);
   --ring: #a8aaa3;
   --secondary: #d6d7d2;
   --secondary-foreground: #343b2c;
@@ -285,7 +285,7 @@
 }
 
 .dark {
-  --primary: #bef264;
+  --primary: var(--neutral-olive-100);
   --accent: #62675c;
   --accent-foreground: var(--neutral-olive-400);
   --background: var(--neutral-olive-950);
@@ -304,7 +304,7 @@
   --muted-foreground: #a8aaa3;
   --popover: #4b5144;
   --popover-foreground: #f9f9f8;
-  --primary-foreground: #343b2c;
+  --primary-foreground: var(--neutral-olive-800);
   --ring: #91948b;
   --secondary: #4b5144;
   --secondary-foreground: #f9f9f8;
@@ -402,7 +402,7 @@
 
 /* Neutral-olive theme */
 .neutral-olive {
-  --primary: #bef264;
+  --primary: var(--neutral-olive-800);
   --accent: #62675c;
   --accent-foreground: hsl(72 6% 83%);
   --background: var(--neutral-olive-600);
@@ -421,7 +421,7 @@
   --muted-foreground: #ededea;
   --popover: #62675c;
   --popover-foreground: #f9f9f8;
-  --primary-foreground: #343b2c;
+  --primary-foreground: var(--neutral-olive-100);
   --ring: #8a8e84;
   --ring-offset: #797e73;
   --secondary: #62675c;

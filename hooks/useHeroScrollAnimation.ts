@@ -137,7 +137,7 @@ export function useHeroScrollAnimation() {
       });
 
       // Animate hero-accent0 with a staggered delay after the other circles start
-      const scaleFactor0 = scaleFactor * 4; // 4x the scale factor of other circles
+      const scaleFactor0 = scaleFactor * 8; // 4x the scale factor of other circles
       const finalSize0 = heroAccent0Element.size * scaleFactor0;
       const finalPos0 = calculateFinalTransform(finalSize0);
       const staggerDelay = 0.02; // Delay in timeline (20% of scroll distance)
@@ -266,7 +266,7 @@ export function useHeroScrollAnimation() {
             ease: "power2.out",
             duration: 0.1, // 10% of timeline duration
           },
-          0.3 // Start fade-in at 30% of timeline
+          0.15 // Start fade-in at 30% of timeline
         );
 
         // Hold at full opacity (pause) from 40% to 70% of timeline
