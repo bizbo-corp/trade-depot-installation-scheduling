@@ -39,14 +39,6 @@ export default function TestPage() {
       const heroScrollSectionRect = heroScrollSection.getBoundingClientRect();
       const containerRect = container.getBoundingClientRect();
       
-      // Calculate center position relative to bottom-right corner
-      const calculateCenterTransform = (finalSize: number) => {
-        return {
-          x: -(containerRect.width / 2 - finalSize / 2),
-          y: -(containerRect.height / 2 - finalSize / 2),
-        };
-      };
-
       // Get actual starting sizes from computed dimensions
       const actualSizes = {
         top: heroAccent1Rect.width,    // hero-accent1
@@ -61,6 +53,14 @@ export default function TestPage() {
       const heroScrollSection50Percent = heroScrollSectionRect.top + heroScrollSectionRect.height / 2;
       // Convert 50% of hero-scroll-section to position relative to container top
       const yPositionFromTop = heroScrollSection50Percent - containerRect.top;
+
+      // Calculate final position: center horizontally (50% X), same Y position (50% down hero-scroll-section)
+      const calculateFinalTransform = (finalSize: number) => {
+        return {
+          x: containerRect.width / 2 - finalSize / 2, // Center horizontally
+          y: yPositionFromTop - finalSize / 2, // Same Y position as start (50% down hero-scroll-section)
+        };
+      };
 
       // Set initial positions immediately, overriding CSS bottom-0 right-0
       const elements = [
@@ -92,20 +92,20 @@ export default function TestPage() {
       });
 
       // Stagger delay between each animation (in seconds)
-      const staggerDelay = 0.4;
+      const staggerDelay = 0.0;
 
       // Animate all three circles with stagger
       elements.forEach(({ element, size }, index) => {
         const finalSize = size * scaleFactor;
-        const centerPos = calculateCenterTransform(finalSize);
+        const finalPos = calculateFinalTransform(finalSize);
         const startTime = index * staggerDelay; // Stagger each animation
         
         timeline.to(
           element,
           {
-            // End: center of screen, scaled proportionally
-            x: centerPos.x,
-            y: centerPos.y,
+            // End: center horizontally (50% X), same Y position (50% down hero-scroll-section), scaled proportionally
+            x: finalPos.x,
+            y: finalPos.y,
             width: `${finalSize}px`,
             height: `${finalSize}px`,
             ease: "power2.out",
@@ -133,17 +133,17 @@ export default function TestPage() {
             {/* Top circle - smallest (w-3) - Olive-500 */}
             <div
               id="hero-accent1"
-              className="absolute w-[200px] h-[200px] bg-olive-500/10 rounded-full z-30"
+              className="absolute w-[600px] h-[400px] bg-olive-500/10 rounded-full z-30"
             ></div>
             {/* Middle circle (w-4) - Olive-400 */}
             <div
               id="hero-accent2"
-              className="absolute w-[300px] h-[300px] bg-olive-400/10 rounded-full z-20"
+              className="absolute w-[1200px] h-[800px] bg-olive-400/10 rounded-full z-20"
             ></div>
             {/* Bottom circle - largest (w-5) - Olive-300 */}
             <div
               id="hero-accent3"
-              className="absolute w-[400px] h-[400px] bg-olive-300/10 rounded-full z-10"
+              className="absolute w-[1600px] h-[1200px] bg-olive-300/10 rounded-full z-10"
             ></div>
           </div>
         </div>
