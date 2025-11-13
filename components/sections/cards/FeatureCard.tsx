@@ -1,4 +1,6 @@
-import type { PropsWithChildren } from "react"
+"use client"
+
+import { useState, useRef, type PropsWithChildren } from "react"
 
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -58,8 +60,40 @@ export function FeatureCard({
   descriptionClassName,
   children,
 }: FeatureCardProps) {
+  const [tilt, setTilt] = useState({ x: 0, y: 0 })
+  const cardRef = useRef<HTMLElement>(null)
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (!cardRef.current) return
+
+    const rect = cardRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+
+    const rotateX = ((y - centerY) / centerY) * -10
+    const rotateY = ((x - centerX) / centerX) * 10
+
+    setTilt({ x: rotateX, y: rotateY })
+  }
+
+  const handleMouseLeave = () => {
+    setTilt({ x: 0, y: 0 })
+  }
+
   return (
-    <article className={cn("group flex w-full flex-col gap-2 items-start rounded-3xl", className)}>
+    <article
+      ref={cardRef}
+      className={cn("group flex w-full flex-col gap-2 items-start rounded-3xl transition-all duration-200 ease-out cursor-pointer", className)}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+        transformStyle: "preserve-3d",
+      }}
+    >
       <div className={cn(featureCardVariants({ device }))}>
         <div className="flex w-full flex-col gap-2 px-6">
           <div className="flex w-full items-start">

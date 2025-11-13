@@ -22,7 +22,6 @@ export const ValuePropositionSection = ({
     {
       number: "1",
       title: "DesignThinker workshop",
-      icon: "lightbulb-on",
       subtitle: "Get clarity on your idea, fast",
       imageUrl: bitmapImages.workshopSession.path,
       imageAlt: bitmapImages.workshopSession.alt,
@@ -45,7 +44,6 @@ export const ValuePropositionSection = ({
     {
       number: "2",
       title: "Prototype & roadmap",
-      icon: "arrow-pointer",
       subtitle: "Validate your idea & get buy-in",
       imageUrl: bitmapImages.mobilePrototype.path,
       imageAlt: bitmapImages.mobilePrototype.alt,
@@ -68,7 +66,6 @@ export const ValuePropositionSection = ({
     {
       number: "3",
       title: "Consult and build",
-      icon: "mobile-alt",
       subtitle: "Get expert consultancy and build right",
       imageUrl: bitmapImages.techStrategy.path,
       imageAlt: bitmapImages.techStrategy.alt,
@@ -89,13 +86,13 @@ export const ValuePropositionSection = ({
       className: "md:col-span-1"
     }
   ],
-  sectionTheme = "",
+  sectionTheme = "olive",
 }: ValuePropositionSectionProps) => {
   const themeClass =
     sectionTheme === "light-olive" ? "olive-light" : sectionTheme === "olive-light" ? "olive-light" : sectionTheme;
 
   return (
-    <section className="py-12 mt-24 md:py-24 ">
+    <section className={cn("py-12 md:py-24 ", themeClass)}>
       <div className="container mx-auto flex flex-col items-center gap-12 px-4 md:px-6">
         <div className="flex max-w-xl flex-col items-center gap-4 text-center">
           {subheading && <p className="text-sm font-medium text-muted-foreground">{subheading}</p>}
