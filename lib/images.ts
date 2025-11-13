@@ -103,6 +103,16 @@ export const bitmapImages = {
     alt: "Workshop session photograph",
     description: "Collaborative workshop session in progress",
   },
+  desktopApp: {
+    path: "/bitmap/desktop-app.png",
+    alt: "Desktop application dashboard",
+    description: "Desktop application interface showing orders dashboard and analytics",
+  },
+  mobileApp: {
+    path: "/bitmap/mobile-app.png",
+    alt: "Mobile application dashboard",
+    description: "Mobile application interface showing orders dashboard and analytics",
+  },
 } as const;
 
 // People Portraits

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Header } from "@/components/header";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { ValuePropositionSection } from "@/components/sections/ValuePropositionSection";
@@ -11,23 +12,7 @@ import { Footer } from "@/components/sections/Footer";
 import { TempCTA } from "@/components/sections/tempCTA";
 import { FeatureSection } from "@/components/sections/FeatureSection";
 import { useHeroScrollAnimation } from "@/hooks/useHeroScrollAnimation";
-
-// export default function Home() {
-//   return (
-//     <div className="flex min-h-screen flex-col">
-//       <Header />
-//       <main>
-//         <HeroSection sectionTheme="light" />
-//         <ValuePropositionSection sectionTheme="light" />
-//         <TestimonialsSection />
-//         <LogoSection />
-//         <AboutSection />
-//         <CtaSection sectionTheme="dark" />
-//       </main>
-//       <Footer />
-//     </div>
-//   )
-// }
+import { bitmapImages } from "@/lib/images";
 
 export default function Home() {
   useHeroScrollAnimation();
@@ -40,6 +25,30 @@ export default function Home() {
         id="hero-scroll-section"
         className="min-h-[calc(100vh)] bg-amber-500/00 z-10 pt-16"
       >
+        <div className="absolute right-0 bottom-0 w-[540px] h-[756px] rounded-b-none rounded-lg z-1002 overflow-hidden">
+          <Image
+            src={bitmapImages.desktopApp.path}
+            alt={bitmapImages.desktopApp.alt}
+            width={992}
+            height={512}
+            className="object-contain object-bottom w-full h-full"
+            quality={100}
+            priority
+            
+          />
+        </div>
+
+        <div className="absolute right-146 bottom-0 h-108 rounded-b-none rounded-lg z-1003 overflow-hidden border-0 border-red-500/100">
+          <Image
+            src={bitmapImages.mobileApp.path}
+            alt={bitmapImages.mobileApp.alt}
+            width={800}
+            height={512}
+            className="object-contain w-full h-full"
+            quality={100}
+            priority
+          />
+        </div>
         <div className="relative overflow-hidden bg-red-500/00 p-0 w-full min-h-[calc(200vh-100px)]">
           {/* Animated circles background */}
           {/* Top circle - smallest (w-3) - Olive-500 */}
