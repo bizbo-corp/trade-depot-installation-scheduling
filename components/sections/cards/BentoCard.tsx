@@ -75,7 +75,7 @@ export const BentoCard = ({
         <div
           ref={cardRef}
           className={cn(
-            "group relative flex flex-col overflow-hidden rounded-xl hover:bg-muted/50 hover:shadow-2xl transition-all duration-200 ease-out group-hover:bg-background-2 cursor-pointer",
+            "group relative flex flex-col overflow-hidden rounded-xl bg-muted/20 hover:bg-muted/50 hover:shadow-2xl transition-all duration-200 ease-out group-hover:bg-background-2 cursor-pointer",
             className
           )}
           onMouseMove={handleMouseMove}

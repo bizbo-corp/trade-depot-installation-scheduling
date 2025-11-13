@@ -25,7 +25,7 @@ export default function Home() {
         id="hero-scroll-section"
         className="min-h-[calc(100vh)] bg-amber-500/00 z-10 pt-16"
       >
-        <div className="absolute right-0 bottom-0 w-[540px] h-[756px] rounded-b-none rounded-lg z-1002 overflow-hidden">
+        <div id="desktop-app-image" className="fixed right-0 bottom-0 w-[480px] h-[756px] rounded-b-none rounded-lg z-1002 overflow-hidden">
           <Image
             src={bitmapImages.desktopApp.path}
             alt={bitmapImages.desktopApp.alt}
@@ -38,7 +38,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="absolute right-146 bottom-0 h-108 rounded-b-none rounded-lg z-1003 overflow-hidden border-0 border-red-500/100">
+        <div id="mobile-app-image" className="fixed right-108 bottom-0 w-[208px] rounded-b-none rounded-lg z-1003 overflow-hidden border-0 border-red-500/100">
           <Image
             src={bitmapImages.mobileApp.path}
             alt={bitmapImages.mobileApp.alt}
@@ -49,7 +49,7 @@ export default function Home() {
             priority
           />
         </div>
-        <div className="relative overflow-hidden bg-red-500/00 p-0 w-full min-h-[calc(200vh-100px)]">
+        <div className="relative overflow-hidden bg-red-500/00 p-0 w-full min-h-[calc(200vh-100px)] ">
           {/* Animated circles background */}
           {/* Top circle - smallest (w-3) - Olive-500 */}
           <div

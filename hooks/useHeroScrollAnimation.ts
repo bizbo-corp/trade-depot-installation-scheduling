@@ -189,6 +189,61 @@ export function useHeroScrollAnimation() {
         );
       });
 
+      // Animate desktop and mobile app images off screen
+      // Create a separate ScrollTrigger that starts earlier and keeps them pinned to bottom
+      const desktopAppImage = document.getElementById("desktop-app-image");
+      const mobileAppImage = document.getElementById("mobile-app-image");
+
+      if (desktopAppImage && mobileAppImage) {
+        // Ensure they're fixed to bottom of viewport
+        gsap.set([desktopAppImage, mobileAppImage], {
+          position: "fixed",
+          bottom: 0,
+          x: 0,
+          opacity: 1,
+        });
+
+        // Get the bounding rects to calculate how far to move them off screen
+        const desktopRect = desktopAppImage.getBoundingClientRect();
+        const mobileRect = mobileAppImage.getBoundingClientRect();
+        
+        // Calculate the distance needed to move them completely off screen to the right
+        const desktopOffScreenDistance = desktopRect.width + 100; // Extra padding to ensure it's off screen
+        const mobileOffScreenDistance = mobileRect.width + 100;
+
+        // Create a separate timeline with earlier start point
+        const imageTimeline = gsap.timeline({
+          defaults: { ease: "power2.in" },
+          scrollTrigger: {
+            trigger: heroScrollSection,
+            start: "top top", // Start immediately when hero section enters viewport (earlier than main timeline)
+            end: `+=${heroScrollSectionRect.height * 0.2}`, // End after 40% of hero section height
+            scrub: true, // Tie animation progress to scroll position
+          },
+        });
+
+        // Animate both images to slide off screen to the right while staying pinned to bottom
+        imageTimeline.to(
+          desktopAppImage,
+          {
+            x: desktopOffScreenDistance, // Move to the right off screen
+            opacity: 0, // Fade out as they move
+            ease: "power2.in",
+          },
+          0
+        );
+
+        imageTimeline.to(
+          mobileAppImage,
+          {
+            x: mobileOffScreenDistance, // Move to the right off screen
+            opacity: 0, // Fade out as they move
+            ease: "power2.in",
+          },
+          0 // Start at same time as desktop
+        );
+      }
+
       // Animate ValuePropositionSection fade-in, pause, and fade-out
       const valuePropSection = document.getElementById("value-prop-section");
       if (valuePropSection) {
