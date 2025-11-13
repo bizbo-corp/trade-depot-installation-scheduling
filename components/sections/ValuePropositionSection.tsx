@@ -89,7 +89,7 @@ export const ValuePropositionSection = ({
       className: "md:col-span-1"
     }
   ],
-  sectionTheme = "",
+  sectionTheme,
 }: ValuePropositionSectionProps) => {
   const themeClass =
     sectionTheme === "light-olive" ? "olive-light" : sectionTheme === "olive-light" ? "olive-light" : sectionTheme;

@@ -26,7 +26,7 @@ export function HeroCircleScrollSection() {
     const { gsap, ScrollTrigger } = ensureGsap();
     const mm = gsap.matchMedia();
 
-    const cleanupMatchMedia = mm.add('(min-width: 1024px)', () => {
+    mm.add('(min-width: 1024px)', () => {
       const timelineRef = { current: undefined as gsap.core.Timeline | undefined };
 
       const setInitialTransform = () => {
@@ -161,7 +161,6 @@ export function HeroCircleScrollSection() {
     });
 
     return () => {
-      cleanupMatchMedia?.();
       mm.revert();
     };
   }, []);
