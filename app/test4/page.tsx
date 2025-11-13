@@ -50,7 +50,7 @@ const FEATURE_ITEMS = [
     description:
       "We build streamlined custom applications and agent setups that automate tedious workflows, connect siloed systems, and allow staff to focus on high-value tasks.",
   },
-]
+];
 
 const CIRCLE_ART = "/svg/circles.svg";
 
@@ -59,34 +59,112 @@ export default function TestPage() {
     const { gsap, ScrollTrigger } = ensureGsap();
     gsap.registerPlugin(ScrollTrigger);
     const context = gsap.context(() => {
-      gsap
-        .timeline({
-          defaults: { ease: "power1.inOut", duration: 3 },
-          scrollTrigger: {
-            trigger: "#hero-scroll-section",
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        })
-        .fromTo(
-          "#hero-accent",
+      const heroAccent1 = document.getElementById("hero-accent1");
+      const heroAccent2 = document.getElementById("hero-accent2");
+      const heroAccent3 = document.getElementById("hero-accent3");
+
+      if (!heroAccent1 || !heroAccent2 || !heroAccent3) return;
+
+      const heroScrollSection = document.getElementById("hero-scroll-section");
+      if (!heroScrollSection) return;
+
+      const container = heroAccent1.parentElement;
+      if (!container) return;
+
+      // Get actual computed sizes from elements
+      const heroAccent1Rect = heroAccent1.getBoundingClientRect();
+      const heroAccent2Rect = heroAccent2.getBoundingClientRect();
+      const heroAccent3Rect = heroAccent3.getBoundingClientRect();
+
+      const heroScrollSectionRect = heroScrollSection.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+
+      // Get actual starting sizes from computed dimensions
+      const actualSizes = {
+        top: heroAccent1Rect.width, // hero-accent1
+        middle: heroAccent2Rect.width, // hero-accent2
+        bottom: heroAccent3Rect.width, // hero-accent3
+      };
+
+      // Scale factor for final size (proportional to starting size)
+      const scaleFactor = 4.4;
+
+      // Calculate starting position: center at 50% down hero-scroll-section, 0% from right
+      const heroScrollSection50Percent =
+        heroScrollSectionRect.top + heroScrollSectionRect.height / 2;
+      // Convert 50% of hero-scroll-section to position relative to container top
+      const yPositionFromTop = heroScrollSection50Percent - containerRect.top;
+
+      // Calculate final position: center horizontally (50% X), same Y position (50% down hero-scroll-section)
+      const calculateFinalTransform = (finalSize: number) => {
+        return {
+          x: containerRect.width / 2 - finalSize / 2, // Center horizontally
+          y: yPositionFromTop - finalSize / 2, // Same Y position as start (50% down hero-scroll-section)
+        };
+      };
+
+      // Set initial positions immediately, overriding CSS bottom-0 right-0
+      const elements = [
+        { element: heroAccent1, size: actualSizes.top },
+        { element: heroAccent2, size: actualSizes.middle },
+        { element: heroAccent3, size: actualSizes.bottom },
+      ];
+
+      elements.forEach(({ element, size }) => {
+        // Override CSS positioning and set initial position
+        // Position center at right edge (x = container width - half circle size)
+        // Position center at 50% height of hero-scroll-section (y = yPositionFromTop - half circle size)
+        gsap.set(element, {
+          bottom: "auto",
+          right: "auto",
+          left: "auto",
+          top: "auto",
+          x: containerRect.width - size / 2, // Center at right edge
+          y: yPositionFromTop - size / 2, // Center at 50% of hero-scroll-section height
+          width: `${size}px`,
+          height: `${size}px`,
+        });
+      });
+
+      // Calculate scroll end point: 50% of hero-scroll-section height
+      const scrollEndDistance = heroScrollSectionRect.height * 0.5;
+
+      // Create timeline with ScrollTrigger
+      const timeline = gsap.timeline({
+        defaults: { ease: "power2.out" },
+        scrollTrigger: {
+          trigger: heroScrollSection,
+          start: "top+=250 top", // When top of hero-scroll-section hits top of viewport + 150px delay
+          end: `+=${scrollEndDistance}`, // End after scrolling 50% of hero-scroll-section height
+          scrub: true, // Tie animation progress to scroll position
+        },
+      });
+
+      // Animate all three circles (no stagger, all animate together)
+      elements.forEach(({ element, size }) => {
+        const finalSize = size * scaleFactor;
+        const finalPos = calculateFinalTransform(finalSize);
+
+        timeline.fromTo(
+          element,
           {
-            transformOrigin: "left center",
-            height: "40vh",
-            width: "50vw",
-            scaleX: 0.2,
-            scaleY: 0.2,
-            backgroundPosition: "bottom -500px, right -500px",
+            // Start: right edge, 50% down hero-scroll-section (already set with gsap.set)
+            x: containerRect.width - size / 2,
+            y: yPositionFromTop - size / 2,
+            width: `${size}px`,
+            height: `${size}px`,
           },
           {
-            transformOrigin: "center center",
-            height: "100vh",
-            width: "100vw",
-            scaleX: 4,
-            scaleY: 4,
-          }
+            // End: center horizontally (50% X), same Y position (50% down hero-scroll-section), scaled proportionally
+            x: finalPos.x,
+            y: finalPos.y,
+            width: `${finalSize}px`,
+            height: `${finalSize}px`,
+            ease: "power2.out",
+          },
+          0 // All animations start at the same time
         );
+      });
     });
 
     return () => {
@@ -102,62 +180,58 @@ export default function TestPage() {
         id="hero-scroll-section"
         className="min-h-[calc(100vh)] bg-amber-500/00 z-10 pt-16"
       >
-        hero-scroll-section
-        <div className="bg-red-500/00 p-12 top-10 right-10 left-10 bottom-10 w-full min-h-[calc(100vh-100px)]">
+        <div className="relative overflow-hidden bg-red-500/00 p-0 w-full min-h-[calc(200vh-100px)]">
+          {/* Animated circles background */}
+          {/* Top circle - smallest (w-3) - Olive-500 */}
+          <div
+            id="hero-accent1"
+            className="absolute w-[800px] h-[400px] bg-olive-600/25 rounded-full z-30"
+          ></div>
+          {/* Middle circle (w-4) - Olive-400 */}
+          <div
+            id="hero-accent2"
+            className="absolute w-[1200px] h-[800px] bg-olive-600/25 rounded-full z-20"
+          ></div>
+          {/* Bottom circle - largest (w-5) - Olive-300 */}
+          <div
+            id="hero-accent3"
+            className="absolute w-[1600px] h-[1200px] bg-olive-600/25 rounded-full z-10"
+          ></div>
+
           <div
             id="hero-scroll-container"
-            className="container mx-auto min-h-[calc(100vh-100px)] flex flex-col items-stretch lg:flex-row lg:items-stretch lg:h-[calc(100vh-100px)] justify-center px-4 md:px-6 bg-green-500/00"
+            className="container mx-auto min-h-[calc(100vh-100px)] flex flex-col items-stretch lg:flex-row lg:items-stretch lg:h-[calc(100vh-100px)] justify-center px-4 md:px-6 bg-green-500/00 relative z-40"
           >
             <div
               id="hero-left-col"
-              className="bg-lime-500/0 w-full grow h-full lg:min-w-1/2 lg:self-stretch"
+              className="bg-lime-500/00 w-full grow h-full lg:min-w-1/2 lg:self-stretch md:flex md:flex-col md:justify-center"
             >
               <TempCTA />
             </div>
             <div
               id="hero-right-col"
               className="bg-pink-500/00 w-full grow h-full lg:min-w-1/2 lg:self-stretch"
-            >
-              Right
-            </div>
+            ></div>
           </div>
-          <div
-            id="hero-accent"
-            className="absolute -z-10 bottom-0 right-0"
-          >
-          {/* Manually import the SVG */}
-          {/*
-            eslint-disable-next-line @next/next/no-img-element
-          */}
-          <img
-            src="/svg/circles.svg"
-            alt="Circle Manual Import"
-            style={{
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "fill  ",
-              aspectRatio: "1/1",
-              zIndex: -1,
-              pointerEvents: "none"
-            }}
-            draggable={false}
-          />
+          <div className="relative">
+            <div className="absolute z-30 w-full bg-blue-500/00">
+              <ValuePropositionSection sectionTheme="dark" />
+            </div>
           </div>
         </div>
       </div>
-      <div className="bg-tra min-h-screen z-20">
+      <div
+        id="hero-scroll-section-two"
+        className="bg-transparent min-h-screen z-20"
+      >
         <div className="container">
-
-        <ValuePropositionSection sectionTheme="dark" />
-<FeatureSection
-          title="User-centric design"
-          description="At Bizbo, we believe that user-centric design is the cornerstone of successful digital experiences. By prioritising the needs of your users, we create intuitive interfaces that not only engage but also convert."
-          features={FEATURE_ITEMS}
-          className=""
-        />
+          <FeatureSection
+            title="User-centric design"
+            description="At Bizbo, we believe that user-centric design is the cornerstone of successful digital experiences. By prioritising the needs of your users, we create intuitive interfaces that not only engage but also convert."
+            features={FEATURE_ITEMS}
+            className=""
+          />
         </div>
-
       </div>
       <LogoSection />
       <CtaSection variant="analysis" sectionTheme="dark" />

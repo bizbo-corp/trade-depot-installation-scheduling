@@ -17,7 +17,8 @@ const CIRCLE_ART = "/svg/circles.svg";
 
 export default function TestPage() {
   useEffect(() => {
-    const { gsap } = ensureGsap();
+    const { gsap, ScrollTrigger } = ensureGsap();
+    gsap.registerPlugin(ScrollTrigger);
     const context = gsap.context(() => {
       const heroAccent1 = document.getElementById("hero-accent1");
       const heroAccent2 = document.getElementById("hero-accent2");
@@ -47,7 +48,7 @@ export default function TestPage() {
       };
 
       // Scale factor for final size (proportional to starting size)
-      const scaleFactor = 12.4;
+      const scaleFactor = 8.4;
 
       // Calculate starting position: center at 50% down hero-scroll-section, 0% from right
       const heroScrollSection50Percent = heroScrollSectionRect.top + heroScrollSectionRect.height / 2;
@@ -85,23 +86,34 @@ export default function TestPage() {
         });
       });
 
-      // Create timeline with 2 second delay before animation starts
+      // Calculate scroll end point: 50% of hero-scroll-section height
+      const scrollEndDistance = heroScrollSectionRect.height * 0.5;
+
+      // Create timeline with ScrollTrigger
       const timeline = gsap.timeline({
-        defaults: { ease: "power2.out", duration: 3 },
-        delay: 2, // 2 second delay before any animation starts
+        defaults: { ease: "power2.out" },
+        scrollTrigger: {
+          trigger: heroScrollSection,
+          start: "top top", // When top of hero-scroll-section hits top of viewport
+          end: `+=${scrollEndDistance}`, // End after scrolling 50% of hero-scroll-section height
+          scrub: true, // Tie animation progress to scroll position
+        },
       });
 
-      // Stagger delay between each animation (in seconds)
-      const staggerDelay = 0.0;
-
-      // Animate all three circles with stagger
-      elements.forEach(({ element, size }, index) => {
+      // Animate all three circles (no stagger, all animate together)
+      elements.forEach(({ element, size }) => {
         const finalSize = size * scaleFactor;
         const finalPos = calculateFinalTransform(finalSize);
-        const startTime = index * staggerDelay; // Stagger each animation
         
-        timeline.to(
+        timeline.fromTo(
           element,
+          {
+            // Start: right edge, 50% down hero-scroll-section (already set with gsap.set)
+            x: containerRect.width - size / 2,
+            y: yPositionFromTop - size / 2,
+            width: `${size}px`,
+            height: `${size}px`,
+          },
           {
             // End: center horizontally (50% X), same Y position (50% down hero-scroll-section), scaled proportionally
             x: finalPos.x,
@@ -110,7 +122,7 @@ export default function TestPage() {
             height: `${finalSize}px`,
             ease: "power2.out",
           },
-          startTime // Stagger the start time
+          0 // All animations start at the same time
         );
       });
     });
@@ -126,9 +138,8 @@ export default function TestPage() {
 
       <div
         id="hero-scroll-section"
-        className="min-h-[calc(100vh)] bg-amber-500/00 z-10 pt-16 border-2 border-red-500"
+        className="min-h-[calc(100vh)] bg-amber-500/00 z-10 pt-16"
       >
-        hero-scroll-section
           <div className="relative overflow-hidden min-h-[calc(200vh-100px)] bg-amber-300/00">
             {/* Top circle - smallest (w-3) - Olive-500 */}
             <div
@@ -147,7 +158,7 @@ export default function TestPage() {
             ></div>
           </div>
         </div>
-      <div className="bg-transparent min-h-screen z-20"></div>
+      <div id="hero-scroll-section-two" className="bg-transparent min-h-screen z-20"></div>
       <LogoSection />
       <CtaSection variant="analysis" sectionTheme="dark" />
       <Footer />

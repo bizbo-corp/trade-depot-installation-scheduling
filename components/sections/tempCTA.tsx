@@ -29,9 +29,15 @@ export function TempCTA() {
           </li>
         ))}
       </ul>
-      <Button variant="default" size="lg" className="w-full px-8 sm:w-auto">
+      <div className="flex flex-row gap-4 w-full">
+
+      <Button variant="default" size="lg" className="px-8 sm:w-auto">
         Start your build
       </Button>
+      <Button variant="ghost" size="lg" className="px-8 sm:w-auto">
+        Schedule a call
+      </Button>
+      </div>
     </div>
   )
 }
