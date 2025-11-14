@@ -323,7 +323,7 @@
   --sidebar-ring: #797e73;
 }
 
-.olive {
+/* .olive {
   --primary: #bef264;
   --accent: #637051;
   --accent-foreground: #e8eae2;
@@ -356,19 +356,13 @@
   --sidebar-accent-foreground: #f9f9f8;
   --sidebar-border: #8a8e84;
   --sidebar-ring: #8a8e84;
-}
+} */
 
 /* Olive-light theme */
-.olive-light {
+/* .olive-light {
   --primary: #bef264;
   --accent: #e8eae2;
   --accent-foreground: hsl(87 6% 38%);
-  /* --background: #e8eae2;
-  --background-2: #d6d7d2;
-  --background-3: #bfc1ba;
-  --background-4: #a8aaa3;
-  --background-5: #91948b; */
-
   --background: var(--olive-100);
   --background-2: var(--olive-200);
   --background-3: var(--olive-300);
@@ -398,7 +392,7 @@
   --sidebar-accent-foreground: hsl(88 15% 20%);
   --sidebar-border: hsl(72 6% 83%);
   --sidebar-ring: hsl(77 4% 65%);
-}
+} */
 
 /* Neutral-olive theme */
 .neutral-olive {

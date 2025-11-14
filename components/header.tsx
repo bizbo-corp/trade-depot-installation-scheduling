@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logotype } from "@/components/site-parts/logotype";
-import { NavThemeSwitcher } from "@/components/nav-theme-switcher";
 
 export const Header = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -87,19 +86,7 @@ export const Header = () => {
                           </div>
                         </Link>
                       </NavigationMenuLink>
-                    </li>
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          href="/test"
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        >
-                          <div className="text-sm font-medium leading-none">
-                            Test
-                          </div>
-                        </Link>
-                      </NavigationMenuLink>
-                    </li>                    
+                    </li>                
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -164,7 +151,6 @@ export const Header = () => {
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
-          <NavThemeSwitcher />
           <ThemeToggle />
           <Button variant="ghost" size="icon">
             <UserRound className="h-4 w-4" />
@@ -256,12 +242,11 @@ export const Header = () => {
                   asChild
                   className="justify-start"
                 >
-                  <a href="#" onClick={() => setIsOpen(false)}>
+                  <a href="/contact1" onClick={() => setIsOpen(false)}>
                     Contact
                   </a>
                 </Button>
                 <div className="flex items-center justify-between gap-3 border-t pt-4">
-                  <NavThemeSwitcher className="w-full justify-between" />
                   <ThemeToggle />
                   <Button variant="ghost" size="icon">
                     <UserRound className="h-4 w-4" />

@@ -148,7 +148,7 @@ export const CtaSection = ({
               {resolvedButtonText && (
                 <div className="flex flex-col gap-4 sm:flex-row">
                   {resolvedButtonHref ? (
-                    <Button variant={resolvedButtonVariant} size="lg" asChild>
+                    <Button variant="primary" size="lg" asChild>
                       <a href={resolvedButtonHref}>
                         {resolvedButtonText}
                         {resolvedShowArrow && <ArrowRight className="ml-2 h-4 w-4" />}
@@ -156,7 +156,7 @@ export const CtaSection = ({
                     </Button>
                   ) : (
                     <BookingDialog>
-                      <Button variant={resolvedButtonVariant} size="lg">
+                      <Button variant="primary" size="lg">
                         {resolvedButtonText}
                         {resolvedShowArrow && <ArrowRight className="ml-2 h-4 w-4" />}
                       </Button>

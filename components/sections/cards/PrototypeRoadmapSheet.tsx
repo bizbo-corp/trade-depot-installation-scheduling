@@ -29,7 +29,7 @@ export const PrototypeRoadmapSheet = ({
   hasNext = true,
 }: PrototypeRoadmapSheetProps) => {
   return (
-    <SheetContent side="right" className="w-full sm:max-w-lg flex flex-col">
+    <SheetContent side="right" className="w-full sm:max-w-lg flex flex-col neutral-olive">
       <div className="flex-1 overflow-y-auto">
         <AspectRatio ratio={6 / 4} className="w-full">
           <Image src={bitmapImages.mobilePrototype.path} alt="Prototype & roadmap" fill className="object-cover" />

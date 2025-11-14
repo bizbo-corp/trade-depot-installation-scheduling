@@ -151,6 +151,12 @@ export function FaIcon({
   secondaryOpacity,
   ...props
 }: FaIconProps) {
+  // Guard against missing icon prop
+  if (!icon) {
+    console.warn("FaIcon: icon prop is required but was not provided");
+    return null;
+  }
+  
   // Determine the actual style to use
   // If selected is true, override to solid regardless of style prop
   const actualStyle: FaIconStyle = selected ? "solid" : style;
