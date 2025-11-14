@@ -253,6 +253,7 @@ export function useHeroScrollAnimation() {
           position: "fixed",
           top: 0,
           left: 0,
+          zIndex: 1,
         });
 
         // Fade in from 30% to 40% of timeline (10% scroll distance)
@@ -269,18 +270,45 @@ export function useHeroScrollAnimation() {
           0.15 // Start fade-in at 30% of timeline
         );
 
-        // Hold at full opacity (pause) from 40% to 70% of timeline
+        // Hold at full opacity (pause) from 25% to 85% of timeline
         // This happens automatically as there's no animation between fade-in and fade-out
 
-        // Fade out from 70% to 90% of timeline (20% scroll distance)
+        // Fade out from 85% to 95% of timeline (10% scroll distance)
         timeline.to(
           valuePropSection,
           {
             opacity: 0,
             ease: "power2.in",
-            duration: 0.2, // 20% of timeline duration
+            duration: 0.1, // 10% of timeline duration
           },
-          0.6 // Start fade-out at 70% of timeline
+          0.75 // Start fade-out at 85% of timeline
+        );
+
+        // Animate z-index from 1 at 5% to 2010 at 25% of timeline
+        timeline.fromTo(
+          valuePropSection,
+          {
+            zIndex: 1,
+          },
+          {
+            zIndex: 2010,
+            ease: "linear",
+            duration: 0.2, // Duration of 20% (from 5% to 25%)
+            visibility: "show",
+          },
+          0.05 // Start at 5% of the timeline
+        );
+
+        // Return z-index back to -1 when fade-out starts (at 85% of timeline)
+        timeline.to(
+          valuePropSection,
+          {
+            zIndex: -1,
+            ease: "linear",
+            duration: 0.1, // Same duration as fade-out
+            visibility: "hidden",
+          },
+          0.85 // Start when fade-out begins
         );
       }
     });

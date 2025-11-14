@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sheet"
 
 import { cn } from "@/lib/utils"
+import { ReactNode } from "react"
 
 export interface BentoCardPoint {
   highlight: string
@@ -32,6 +33,9 @@ export interface BentoCardProps {
   className?: string
   icon?: string
   iconStyle?: "light" | "solid" | "duotone" | "brand"
+  sheetContent?: ReactNode
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 export const BentoCard = ({
@@ -45,6 +49,9 @@ export const BentoCard = ({
   className,
   icon,
   iconStyle = "duotone",
+  sheetContent,
+  open,
+  onOpenChange,
 }: BentoCardProps) => {
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
   const cardRef = useRef<HTMLDivElement>(null)
@@ -70,7 +77,7 @@ export const BentoCard = ({
   }
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
         <div
           ref={cardRef}
@@ -86,16 +93,16 @@ export const BentoCard = ({
           }}
         >
           <Button
-            variant="ghost"
+            variant="primary"
             size="icon-sm"
-            className="absolute bottom-3 right-3 z-10 rounded-full bg-background/20 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 hover:bg-background"
+            className="absolute top-3 right-3 z-10 rounded-full  backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
             onClick={(e) => e.stopPropagation()}
             onPointerDown={(e) => e.stopPropagation()}
           >
             <Plus className="size-4" />
             <span className="sr-only">View more details</span>
           </Button>
-          <div className="relative h-[200px] w-full flex p-24">
+          <div className="relative h-[200px] w-full flex items-center justify-center p-24 bg-foreground/10">
           {icon ? (
             <FaIcon
               icon={icon}
@@ -134,59 +141,72 @@ export const BentoCard = ({
         </div>
         </div>
       </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:max-w-lg">
-        <SheetHeader>
-          <SheetTitle>{title}</SheetTitle>
-          <SheetDescription>{subtitle}</SheetDescription>
-        </SheetHeader>
-        <div className="mt-6 space-y-4">
-          {description && (
-            <div>
-              <h4 className="font-semibold mb-2">Overview</h4>
-              <p className="text-sm text-muted-foreground">{description}</p>
-            </div>
-          )}
-          {points?.length ? (
-            <div>
-              <h4 className="font-semibold mb-3">Key Points</h4>
-              <div className="space-y-3">
-                {points.map((point, index) => (
-                  <div key={index} className="flex gap-3">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary shrink-0 mt-0.5">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground">{point.highlight.trim()}</p>
-                      <p className="text-sm text-muted-foreground">{point.description}</p>
-                    </div>
-                  </div>
-                ))}
+      {sheetContent ? (
+        sheetContent
+      ) : (
+        <SheetContent side="right" className="w-full sm:max-w-lg">
+          <SheetHeader>
+            <SheetTitle className="text-2xl font-bold">{title}</SheetTitle>
+            <SheetDescription>{subtitle}</SheetDescription>
+          </SheetHeader>
+          <div className="mt-6 space-y-4">
+            {description && (
+              <div>
+                <h4 className="font-semibold mb-2">Overview</h4>
+                <p className="text-lg text-muted-foreground">{description}</p>
               </div>
-            </div>
-          ) : (
-            <div>
-              <h4 className="font-semibold mb-2">Details</h4>
-              <p className="text-sm text-muted-foreground">
-                This is additional information about {title}. Here you can find more detailed
-                explanations, use cases, and implementation details that complement the main
-                overview provided on the card.
-              </p>
-              <div className="mt-4 space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  <strong className="text-foreground">Feature highlights:</strong> This section
-                  provides comprehensive details about the key aspects and benefits of this
-                  offering.
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  <strong className="text-foreground">Implementation:</strong> Learn more about
-                  how this can be integrated into your workflow and the steps required to get
-                  started.
-                </p>
+            )}
+            {points?.length ? (
+              <div className="flex flex-col gap-6 p-12">
+                <div className="flex items-center gap-2 ">
+                  <FaIcon
+                    icon={icon}
+                    style="duotone"
+                    duotoneBaseStyle="thin"
+                    size={8}
+                    className="text-current transition-colors duration-200 ease-out group-hover:text-foreground"
+                  />
+                </div>
+                <h4 className="font-semibold mb-3">Key Points</h4>
+                <div className="space-y-3">
+                  {points.map((point, index) => (
+                    <div key={index} className="flex gap-3">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary shrink-0 mt-0.5">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">{point.highlight.trim()}</p>
+                        <p className="text-sm text-muted-foreground">{point.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      </SheetContent>
+            ) : (
+              <div>
+                <h4 className="font-semibold mb-2">Details</h4>
+                <p className="text-sm text-muted-foreground">
+                  This is additional information about {title}. Here you can find more detailed
+                  explanations, use cases, and implementation details that complement the main
+                  overview provided on the card.
+                </p>
+                <div className="mt-4 space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    <strong className="text-foreground">Feature highlights:</strong> This section
+                    provides comprehensive details about the key aspects and benefits of this
+                    offering.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    <strong className="text-foreground">Implementation:</strong> Learn more about
+                    how this can be integrated into your workflow and the steps required to get
+                    started.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </SheetContent>
+      )}
     </Sheet>
   )
 }

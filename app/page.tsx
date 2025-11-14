@@ -89,7 +89,7 @@ export default function Home() {
           <div className="relative">
             <div
               id="value-prop-section"
-              className="relative z-1 opacity-100 w-full bg-blue-500/00"
+              className="relative w-full bg-blue-500/50"
             >
               <ValuePropositionSection sectionTheme="dark" />
             </div>

@@ -98,6 +98,11 @@ export const bitmapImages = {
     alt: "Technology strategy visual",
     description: "Strategic technology planning and roadmapping",
   },
+  techStack: {
+    path: "/bitmap/tech-stack.png",
+    alt: "Technology stack logos",
+    description: "Technology platform and tool logos including Webflow, Google, Apple, HubSpot, and others",
+  },
   workshopSession: {
     path: "/bitmap/workshop-session.png",
     alt: "Workshop session photograph",
