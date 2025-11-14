@@ -62,7 +62,7 @@ export const ConsultBuildSheet = ({
   const nextImage = images[nextImageIndex]
 
   return (
-    <SheetContent side="right" className="w-full sm:max-w-lg flex flex-col neutral-olive">
+    <SheetContent side="right" className="w-full sm:max-w-lg flex flex-col">
       <div className="flex-1 overflow-y-auto">
         <AspectRatio ratio={6 / 4} className="w-full relative">
           <Image 

@@ -133,7 +133,7 @@ export const BentoCard = ({
               <h3 className="text-xl font-extrabold text-foreground transition-colors duration-200 ease-out group-hover:text-card-foreground">
                 {title}
               </h3>
-              <p className="text-base font-light text-accent-foreground">{subtitle}</p>
+              <p className="text-base font-light text-foreground">{subtitle}</p>
               {description && <p className="text-sm text-muted-foreground">{description}</p>}
 
             </div>

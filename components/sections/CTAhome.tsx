@@ -12,10 +12,10 @@ export function CTAhome() {
   return (
     <div className="flex flex-col gap-8 md:max-w-2xl">
       <div className="flex flex-col gap-6 ">
-        <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-foreground md:text-4xl lg:text-6xl">
-          <span className="mb-2 block">From idea to app.</span>
+        <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-4xl lg:text-6xl">
+          <span className="mb-2 block">Your app idea.</span>
           <span className="text-accent-foreground dark:text-accent-foreground">
-            We build it.
+            Bizbo clarity.
           </span>
         </h1>
         <p className="max-w-xl text-lg font-medium leading-relaxed text-foreground md:text-xl">
