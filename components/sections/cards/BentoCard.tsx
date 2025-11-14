@@ -158,15 +158,17 @@ export const BentoCard = ({
             )}
             {points?.length ? (
               <div className="flex flex-col gap-6 p-12">
-                <div className="flex items-center gap-2 ">
-                  <FaIcon
-                    icon={icon}
-                    style="duotone"
-                    duotoneBaseStyle="thin"
-                    size={8}
-                    className="text-current transition-colors duration-200 ease-out group-hover:text-foreground"
-                  />
-                </div>
+                {icon && (
+                  <div className="flex items-center gap-2 ">
+                    <FaIcon
+                      icon={icon}
+                      style="duotone"
+                      duotoneBaseStyle="thin"
+                      size={8}
+                      className="text-current transition-colors duration-200 ease-out group-hover:text-foreground"
+                    />
+                  </div>
+                )}
                 <h4 className="font-semibold mb-3">Key Points</h4>
                 <div className="space-y-3">
                   {points.map((point, index) => (
