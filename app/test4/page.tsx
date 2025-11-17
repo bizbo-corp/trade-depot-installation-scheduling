@@ -5,7 +5,6 @@ import { Header } from "@/components/header";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { Footer } from "@/components/sections/Footer";
 import { LogoSection } from "@/components/sections/LogoSection";
-import { TempCTA } from "@/components/sections/tempCTA";
 import { FeatureSection } from "@/components/sections/FeatureSection";
 import { ValuePropositionSection } from "@/components/sections/ValuePropositionSection";
 import { useHeroScrollAnimation } from "@/hooks/useHeroScrollAnimation";
@@ -90,7 +89,6 @@ export default function TestPage() {
               id="hero-left-col"
               className="bg-lime-500/00 w-full grow h-full lg:min-w-1/2 lg:self-stretch md:flex md:flex-col md:justify-center"
             >
-              <TempCTA />
             </div>
             <div
               id="hero-right-col"

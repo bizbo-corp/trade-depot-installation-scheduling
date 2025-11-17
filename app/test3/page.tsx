@@ -6,7 +6,6 @@ import { CtaSection } from "@/components/sections/CtaSection";
 import { Footer } from "@/components/sections/Footer";
 import { LogoSection } from "@/components/sections/LogoSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
-import { TempCTA } from "@/components/sections/tempCTA";
 import Image from "next/image";
 import { ensureGsap } from "@/lib/gsap";
 

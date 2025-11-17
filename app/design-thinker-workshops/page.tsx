@@ -189,7 +189,6 @@ export default function Home() {
       </div>
 
       <FeatureSection
-        sectionTheme="dark"
         title="Solve your toughest challenges with a design-led strategy"
         description="Dive deep to explore user challenges, empathise with their needs, and develop innovative solutions you can test and validate. These workshops are a great way to foster cohesive teams that build on each other's ideas and share their solutions."
         features={FEATURE_ITEMS}

@@ -6,7 +6,6 @@ import { CtaSection } from "@/components/sections/CtaSection";
 import { Footer } from "@/components/sections/Footer";
 import { LogoSection } from "@/components/sections/LogoSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
-import { TempCTA } from "@/components/sections/tempCTA";
 import Image from "next/image";
 
 export default function TestPage() {
@@ -20,7 +19,6 @@ export default function TestPage() {
               <div className="absolute top-1/2 -translate-y-1/2 right-0">
                 <div className="container flex h-full items-center justify-start px-6">
                   <div className="w-full max-w-fit">
-                    <TempCTA />
                   </div>
                 </div>
               </div>

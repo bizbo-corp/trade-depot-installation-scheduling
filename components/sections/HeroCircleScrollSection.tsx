@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import { useLayoutEffect, useRef } from 'react';
 import { ensureGsap } from '@/lib/gsap';
-import { TempCTA } from '@/components/sections/tempCTA';
 
 const CIRCLE_ART = '/svg/circles.svg';
 
@@ -174,7 +173,6 @@ export function HeroCircleScrollSection() {
       <div className="container relative mx-auto flex min-h-screen flex-col justify-center gap-16 px-4 py-24 md:px-6">
         <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,520px)_1fr]">
           <div className="relative z-20 max-w-xl lg:max-w-none">
-            <TempCTA />
           </div>
 
           <div className="relative hidden justify-end lg:flex">
