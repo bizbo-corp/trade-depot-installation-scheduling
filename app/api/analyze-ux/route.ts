@@ -196,6 +196,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       report: generatedText,
+      screenshot: screenshotBase64,
     });
   } catch (error) {
     console.error('Gemini API call failed:', error);

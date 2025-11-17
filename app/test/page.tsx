@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import ReactMarkdown from "react-markdown";
 import { Header } from "@/components/header";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { ValuePropositionSection } from "@/components/sections/ValuePropositionSection";
@@ -69,6 +70,7 @@ export default function Home() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState<string | null>(null);
+  const [screenshot, setScreenshot] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -83,6 +85,7 @@ export default function Home() {
     setLoading(true);
     setError(null);
     setReport(null);
+    setScreenshot(null);
 
     try {
       const response = await fetch("/api/analyze-ux", {
@@ -104,6 +107,7 @@ export default function Home() {
       } else {
         const successData = data as AnalyzeUXResponse;
         setReport(successData.report);
+        setScreenshot(successData.screenshot);
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to connect to the analysis service";
@@ -178,10 +182,19 @@ export default function Home() {
                     <CardHeader>
                       <CardTitle>Analysis Report</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <pre className="whitespace-pre-wrap text-sm font-mono bg-muted p-4 rounded-md overflow-auto max-h-[600px]">
-                        {report}
-                      </pre>
+                    <CardContent className="space-y-6">
+                      {screenshot && (
+                        <div className="w-full rounded-lg overflow-hidden border">
+                          <img
+                            src={screenshot}
+                            alt="Website screenshot"
+                            className="w-full h-auto"
+                          />
+                        </div>
+                      )}
+                      <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-ul:text-foreground prose-ol:text-foreground prose-li:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-h3:text-2xl prose-h3:font-bold prose-h3:mt-8 prose-h3:mb-4 prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-4">
+                        <ReactMarkdown>{report}</ReactMarkdown>
+                      </div>
                     </CardContent>
                   </Card>
                 )}

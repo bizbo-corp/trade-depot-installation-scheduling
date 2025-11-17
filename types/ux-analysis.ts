@@ -9,6 +9,7 @@ export interface AnalyzeUXRequest {
 export interface AnalyzeUXResponse {
   success: true;
   report: string;
+  screenshot: string; // Base64 data URL of the screenshot
 }
 
 export interface AnalyzeUXErrorResponse {
