@@ -1,4 +1,6 @@
 import { Client } from "@hubspot/api-client";
+import { FilterOperatorEnum } from "@hubspot/api-client/lib/codegen/crm/contacts/models/Filter";
+import { AssociationSpecAssociationCategoryEnum } from "@hubspot/api-client/lib/codegen/crm/objects/notes/models/AssociationSpec";
 
 const hubspotClient = new Client({
   accessToken: process.env.HUBSPOT_ACCESS_TOKEN,
@@ -25,7 +27,7 @@ export async function upsertContact(params: {
           filters: [
             {
               propertyName: "email",
-              operator: "EQ" as const,
+              operator: FilterOperatorEnum.Eq,
               value: email,
             },
           ],
@@ -152,7 +154,7 @@ export async function logAnalysisEngagement(params: {
           to: { id: contactId },
           types: [
             {
-              associationCategory: "HUBSPOT_DEFINED" as const,
+              associationCategory: AssociationSpecAssociationCategoryEnum.HubspotDefined,
               associationTypeId: 214, // Contact to Note association
             },
           ],
