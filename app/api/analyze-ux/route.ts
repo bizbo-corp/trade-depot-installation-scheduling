@@ -1,5 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import puppeteer from 'puppeteer';
+// Conditionally import based on environment
+let puppeteer: any;
+let chromium: any;
+
+// Detect if we're in a Vercel serverless environment
+const isServerless = !!process.env.VERCEL;
+
+if (isServerless) {
+  // Use puppeteer-core + chromium for serverless
+  puppeteer = require('puppeteer-core');
+  chromium = require('@sparticuz/chromium');
+} else {
+  // Use full puppeteer for local development
+  puppeteer = require('puppeteer');
+}
+
 import { CUSTOM_UX_PROMPT } from '@/lib/ux-prompt';
 import type { AnalyzeUXRequest, AnalyzeUXErrorResponse, GeminiResponse } from '@/types/ux-analysis';
 
@@ -68,10 +83,22 @@ export async function POST(request: NextRequest) {
 
   // --- Phase 1: Scraping Layer (Puppeteer) ---
   try {
-    browser = await puppeteer.launch({
-      headless: true, // Use new headless mode
-      args: ['--no-sandbox', '--disable-setuid-sandbox'], // Required for some environments
-    });
+    // Configure launch options based on environment
+    const launchOptions: any = {
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    };
+
+    // Add serverless-specific configuration for Vercel
+    if (isServerless && chromium) {
+      chromium.setGraphicsMode(false);
+      launchOptions.args = chromium.args;
+      launchOptions.defaultViewport = chromium.defaultViewport;
+      launchOptions.executablePath = await chromium.executablePath();
+      launchOptions.headless = chromium.headless;
+    }
+
+    browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();
 
     // Emulate a standard desktop screen size for consistency
