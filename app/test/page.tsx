@@ -29,6 +29,8 @@ export default function Home() {
     setLoading(true);
     setError(null);
     setAnalysisData(null);
+    // Open dialog immediately after URL submission
+    setDialogOpen(true);
 
     try {
       const response = await fetch("/api/analyze-ux", {
@@ -54,8 +56,6 @@ export default function Home() {
           report: successData.report,
           screenshot: successData.screenshot,
         });
-        // Open email collection dialog
-        setDialogOpen(true);
       }
     } catch (err) {
       const errorMessage =
@@ -188,6 +188,8 @@ export default function Home() {
         onOpenChange={setDialogOpen}
         onSubmit={handleEmailSubmit}
         isSubmitting={submitting}
+        screenshot={analysisData?.screenshot}
+        isAnalyzing={loading}
       />
 
       <CtaSection variant="analysis" sectionTheme="dark" />

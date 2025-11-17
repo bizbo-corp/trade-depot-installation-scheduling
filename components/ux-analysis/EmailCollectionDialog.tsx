@@ -36,6 +36,8 @@ interface EmailCollectionDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: EmailCollectionData) => Promise<void>;
   isSubmitting?: boolean;
+  screenshot?: string;
+  isAnalyzing?: boolean;
 }
 
 export function EmailCollectionDialog({
@@ -43,6 +45,8 @@ export function EmailCollectionDialog({
   onOpenChange,
   onSubmit,
   isSubmitting = false,
+  screenshot,
+  isAnalyzing = false,
 }: EmailCollectionDialogProps) {
   const form = useForm<EmailCollectionData>({
     resolver: zodResolver(emailCollectionSchema),
@@ -65,14 +69,38 @@ export function EmailCollectionDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Get Your Report</DialogTitle>
-          <DialogDescription>
-            Your report will be ready for you immediately. Please provide your details to receive it via email.
+          <DialogDescription className="text-primary">
+            Your UX analysis report is nearly ready. Enter your details below to receive it via email in the next few minutes.
           </DialogDescription>
         </DialogHeader>
 
-        {/* Image placeholder */}
-        <div className="w-full h-48 bg-muted rounded-lg flex items-center justify-center mb-4">
-          <p className="text-sm text-muted-foreground">Report Preview Placeholder</p>
+        {/* Screenshot display with loading state */}
+        <div className="w-full h-48 bg-muted rounded-lg flex items-center justify-center mb-4 relative overflow-hidden">
+          {screenshot ? (
+            <>
+              <img
+                src={screenshot}
+                alt="Website screenshot"
+                className="w-full h-full object-cover object-top"
+              />
+              {isAnalyzing && (
+                <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-muted-foreground">
+                {isAnalyzing ? "Analysing website..." : "Report Preview Placeholder"}
+              </p>
+              {isAnalyzing && (
+                <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         <Form {...form}>

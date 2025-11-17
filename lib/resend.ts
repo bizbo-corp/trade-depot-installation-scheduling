@@ -44,7 +44,7 @@ export async function sendVerificationEmail(params: {
               
               <div style="text-align: center; margin: 30px 0;">
                 <a href="${reportLink}" 
-                   style="display: inline-block; background-color: #0070f3; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 6px; font-size: 16px; font-weight: 600;">
+                   style="display: inline-block; background-color: #4ce846; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 6px; font-size: 16px; font-weight: 600;">
                   View My Report
                 </a>
               </div>
