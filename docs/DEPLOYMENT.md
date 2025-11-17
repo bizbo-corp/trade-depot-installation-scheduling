@@ -217,15 +217,27 @@ NEXT_PUBLIC_API_URL=https://api.bizbo.com
 **Via Vercel CLI (alternative method):**
 
 ```bash
-# Add environment variable
+# Sync all environment variables from .env.local to Vercel (recommended)
+npm run vercel:env:sync production    # For production
+npm run vercel:env:sync preview       # For preview environments
+npm run vercel:env:sync development   # For development
+
+# Or use the script directly
+node scripts/sync-env-to-vercel.js production
+
+# Add a single environment variable manually
 vercel env add VARIABLE_NAME production
 
 # List all environment variables
-vercel env ls
+npm run vercel:env:ls
+# Or: vercel env ls
 
-# Pull environment variables to local .env.local
-vercel env pull .env.local
+# Pull environment variables from Vercel to local .env.local
+npm run vercel:env:pull
+# Or: vercel env pull .env.local
 ```
+
+**Note:** The sync script automatically skips variables that already exist on Vercel. For multiline values (like private keys), you may need to add them manually via the Vercel dashboard if the script encounters issues.
 
 #### Other Platforms
 

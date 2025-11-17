@@ -11,7 +11,10 @@
     "prisma:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "prisma:studio": "dotenv -e .env.local -- prisma studio",
     "prisma:push": "dotenv -e .env.local -- prisma db push",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "vercel:env:sync": "node scripts/sync-env-to-vercel.js",
+    "vercel:env:ls": "vercel env ls",
+    "vercel:env:pull": "vercel env pull .env.local"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
