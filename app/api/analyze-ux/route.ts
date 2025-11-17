@@ -91,7 +91,6 @@ export async function POST(request: NextRequest) {
 
     // Add serverless-specific configuration for Vercel
     if (isServerless && chromium) {
-      chromium.setGraphicsMode(false);
       launchOptions.args = chromium.args;
       launchOptions.defaultViewport = chromium.defaultViewport;
       launchOptions.executablePath = await chromium.executablePath();
