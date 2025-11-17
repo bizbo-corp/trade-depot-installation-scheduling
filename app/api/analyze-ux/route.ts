@@ -81,46 +81,140 @@ export async function POST(request: NextRequest) {
   let htmlContent = '';
   let screenshotBase64 = '';
 
+  // Realistic User-Agent string (Chrome on Windows)
+  const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
+
   // --- Phase 1: Scraping Layer (Puppeteer) ---
-  try {
-    // Configure launch options based on environment
-    const launchOptions: any = {
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    };
+  // Retry logic with fallback strategies
+  const maxCaptureRetries = 2;
+  let captureError: Error | null = null;
 
-    // Add serverless-specific configuration for Vercel
-    if (isServerless && chromium) {
-      launchOptions.args = chromium.args;
-      launchOptions.defaultViewport = chromium.defaultViewport;
-      launchOptions.executablePath = await chromium.executablePath();
-      launchOptions.headless = chromium.headless;
+  for (let attempt = 0; attempt <= maxCaptureRetries; attempt++) {
+    try {
+      // Configure launch options based on environment
+      const launchOptions: any = {
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-blink-features=AutomationControlled',
+        ],
+        ignoreDefaultArgs: ['--enable-automation'],
+      };
+
+      // Add serverless-specific configuration for Vercel
+      if (isServerless && chromium) {
+        launchOptions.args = [...chromium.args, '--disable-blink-features=AutomationControlled'];
+        launchOptions.defaultViewport = chromium.defaultViewport;
+        launchOptions.executablePath = await chromium.executablePath();
+        launchOptions.headless = chromium.headless;
+        launchOptions.ignoreDefaultArgs = ['--enable-automation'];
+      }
+
+      // Use puppeteer-extra for stealth capabilities (local only)
+      // For serverless, we apply stealth techniques manually via launch options
+      if (isServerless) {
+        // For serverless with puppeteer-core, launch directly
+        // Stealth techniques are applied via launch options (User-Agent, automation flags)
+        browser = await puppeteer.launch(launchOptions);
+      } else {
+        // For local development, use puppeteer-extra with stealth plugin
+        const puppeteerExtra = require('puppeteer-extra');
+        const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+        puppeteerExtra.use(StealthPlugin());
+        browser = await puppeteerExtra.launch(launchOptions);
+      }
+      const page = await browser.newPage();
+
+      // Set realistic User-Agent
+      await page.setUserAgent(userAgent);
+
+      // Emulate a standard desktop screen size for consistency
+      // Try different viewport sizes on retry
+      const viewports = [
+        { width: 1920, height: 1080 },
+        { width: 1280, height: 1024 },
+        { width: 1366, height: 768 },
+      ];
+      const viewport = viewports[attempt] || viewports[0];
+      await page.setViewport(viewport);
+
+      // Go to the URL with improved wait strategy
+      await page.goto(url, { 
+        waitUntil: 'networkidle2', 
+        timeout: 60000 
+      });
+
+      // Handle lazy loading by scrolling the page
+      await page.evaluate(async () => {
+        await new Promise<void>((resolve) => {
+          let totalHeight = 0;
+          const distance = 100;
+          const timer = setInterval(() => {
+            const scrollHeight = document.body.scrollHeight;
+            window.scrollBy(0, distance);
+            totalHeight += distance;
+
+            if (totalHeight >= scrollHeight) {
+              clearInterval(timer);
+              // Scroll back to top
+              window.scrollTo(0, 0);
+              resolve();
+            }
+          }, 100);
+        });
+      });
+
+      // Wait a bit after scrolling to allow lazy-loaded content to render
+      await page.waitForTimeout(1000);
+
+      // Capture full page screenshot
+      const screenshotBuffer = await page.screenshot({
+        fullPage: true,
+        type: 'jpeg',
+        quality: 80,
+      }) as Buffer;
+      screenshotBase64 = bufferToBase64(screenshotBuffer, 'image/jpeg');
+
+      // Capture the full rendered HTML content
+      htmlContent = await page.content();
+
+      console.log('Scraping and screenshot capture complete.');
+      captureError = null;
+      break; // Success, exit retry loop
+    } catch (error) {
+      captureError = error instanceof Error ? error : new Error('Unknown error during capture');
+      console.error(`Capture attempt ${attempt + 1} failed:`, captureError);
+      
+      // Clean up browser on error
+      if (browser) {
+        try {
+          await browser.close();
+        } catch (closeError) {
+          console.error('Error closing browser:', closeError);
+        }
+        browser = null;
+      }
+
+      // If this was the last attempt, throw the error
+      if (attempt === maxCaptureRetries) {
+        break;
+      }
+
+      // Wait before retry (exponential backoff)
+      await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+    } finally {
+      if (browser && captureError === null) {
+        // Only close if we succeeded
+        await browser.close();
+      }
     }
+  }
 
-    browser = await puppeteer.launch(launchOptions);
-    const page = await browser.newPage();
-
-    // Emulate a standard desktop screen size for consistency
-    await page.setViewport({ width: 1280, height: 1024 });
-
-    // Go to the URL and wait until all network connections are idle
-    await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
-
-    // Capture full page screenshot
-    const screenshotBuffer = await page.screenshot({
-      fullPage: true,
-      type: 'jpeg',
-      quality: 80,
-    }) as Buffer;
-    screenshotBase64 = bufferToBase64(screenshotBuffer, 'image/jpeg');
-
-    // Capture the full rendered HTML content
-    htmlContent = await page.content();
-
-    console.log('Scraping and screenshot capture complete.');
-  } catch (error) {
-    console.error('Scraping or screenshot failed:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+  // If all retries failed, return error
+  if (captureError) {
+    console.error('Scraping or screenshot failed after all retries:', captureError);
+    const errorMessage = captureError.message || 'Unknown error';
     return NextResponse.json<AnalyzeUXErrorResponse>(
       { 
         error: 'Failed to scrape the provided URL. It might be inaccessible or blocked.',
@@ -128,10 +222,6 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     );
-  } finally {
-    if (browser) {
-      await browser.close();
-    }
   }
 
   // --- Phase 2: Analysis Layer (Gemini API Call) ---
