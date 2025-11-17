@@ -15,13 +15,15 @@ export interface FooterProps {
 export const Footer = ({ 
   links = [
     { name: "Home", href: "/" },
-    { name: "Consultancy workshops", href: "#" },
-    { name: "UX Design", href: "#" },
-    { name: "Development", href: "#" },
-    { name: "Colour modes", href: "/color-modes" },
-    { name: "Shopify", href: "#" },
-    { name: "Purpose Framework", href: "/purpose-framework" },
-    { name: "Icon Showcase", href: "/icon-showcase" },
+    { name: "Consultancy workshops", href: "/design-thinker-workshops" },
+    { name: "UX Design", href: "/ux-design" },
+    { name: "Development", href: "/development" },
+    { name: "Automation", href: "/automation" },
+    { name: "Contact", href: "/contact" },
+    // { name: "Colour modes", href: "/color-modes" },
+    // { name: "Shopify", href: "#" },
+    // { name: "Purpose Framework", href: "/purpose-framework" },
+    // { name: "Icon Showcase", href: "/icon-showcase" },
   ],
   copyright = "Copyright © bizbo.co.nz",
   privacyPolicyHref = "#"
