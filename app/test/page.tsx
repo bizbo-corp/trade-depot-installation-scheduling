@@ -1,70 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Header } from "@/components/header";
-import { HeroSection } from "@/components/sections/HeroSection";
-import { ValuePropositionSection } from "@/components/sections/ValuePropositionSection";
-import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
-import { LogoSection } from "@/components/sections/LogoSection";
-import { AboutSection } from "@/components/sections/AboutSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { Footer } from "@/components/sections/Footer";
-import { CTAhome } from "@/components/sections/CTAhome";
-import { FeatureSection } from "@/components/sections/FeatureSection";
-import { useHeroScrollAnimation } from "@/hooks/useHeroScrollAnimation";
-import { bitmapImages } from "@/lib/images";
-import { FaIcon } from "@/components/ui/fa-icon";
-import { BookingDialog } from "@/components/booking/BookingDialog";
 import { Button } from "@/components/ui/button";
-import { LottieAnimation } from "@/components/LottieAnimation";
-import { animations } from "@/lib/images";
-import { UXIllustration } from "@/app/ux-design/UXIllustration";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { AnalyzeUXResponse, AnalyzeUXErrorResponse } from "@/types/ux-analysis";
 import { cn } from "@/lib/utils";
-
-const FEATURE_ITEMS = [
-  {
-    icon: "hand-scissors",
-    title: "Eliminate user journey friction points",
-    description:
-      "We identify and remove the frustrating roadblocks on your website, from clunky forms to confusing checkout flows, so your visitors can convert into paying customers with ease.",
-  },
-  {
-    icon: "rocket-launch",
-    title: "Speed up your site and reduce bounce",
-    description:
-      "We optimise for fast loading times and responsiveness, making a great first impression and keeping people from leaving.",
-  },
-  {
-    icon: "bullseye-pointer",
-    title: "Reach more people and improve your SEO",
-    description:
-      "Don't let your website turn away potential customers. Our accessible designs are compliant for every visitor, naturally boosting your visibility and organic search rankings.",
-  },
-  {
-    icon: "filter",
-    title: "Continuous optimisation",
-    description:
-      "Let us help you run a hypothesis-driven optimisation to refine your website so it becomes the best tool it can be for generating leads and engaged customers.",
-  },
-  {
-    icon: "heart-pulse",
-    title: "Grow your business with a healthy sales funnel",
-    description:
-      "We guide visitors toward your goals, turning your website into an effective engine for leads, sign-ups, and sales.",
-  },
-  {
-    icon: "vial",
-    title: "Discover how your customers behave",
-    description:
-      "Our A/B and usability testing helps you understand what works and what doesn't, so you can make data-driven decisions that improve user experience and boost your bottom line.",
-  },
-]
 
 const STORAGE_KEY = "ux-analysis-results";
 
@@ -152,8 +98,6 @@ function clearAnalysisResults(): void {
 }
 
 export default function Home() {
-  useHeroScrollAnimation();
-  
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState<string | null>(null);

@@ -35,12 +35,22 @@ Analyze the following 5 critical areas:
 * **Analysis:** Using the screenshot and the HTML content, is the content logically structured? Are H1/H2 tags used correctly to guide the reader through the page's narrative?
 * **Suggestion:** Propose a reordering or removal of one major section to improve flow.
 
-### 5. Mobile Responsiveness (Inference)
+### 5. Mobile Responsiveness
 * **Analysis:** Based on the desktop layout and structure (as observed in the screenshot/HTML), how well do you anticipate this site would adapt to mobile (e.g., is the navigation complex, are images too large)? Assume standard Tailwind/Bootstrap classes are used if no specific issues are apparent.
 * **Suggestion:** Identify one potential pain point for a mobile user (e.g., sticky navigation, input field size).
 
+
+
+Jargon
+Avoid using the following jargon:
+- CTA - Change to 'Call to Action button'
+- UI - Change to 'UI (User Interface)'
+- UX - Change to 'User Experience'
+
+
 IMPORTANT FORMATTING REQUIREMENTS:
 - Use structured markdown with headings, bullet points, and paragraphs
+- Use UK English spelling and grammar
 - DO NOT use tables or tabular formats
 - Use the following structure for each analysis area:
   ## [Area Name]
