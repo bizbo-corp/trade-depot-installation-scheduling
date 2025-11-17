@@ -123,77 +123,79 @@ export default async function ReportPage({ params }: ReportPageProps) {
             <CardTitle>UX Analysis Report</CardTitle>
             <p className="text-sm text-muted-foreground mt-2">URL Analyzed: {url}</p>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {screenshot && (
-              <div className="w-full rounded-lg overflow-hidden border">
-                <img
-                  src={screenshot}
-                  alt="Website screenshot"
-                  className="w-full h-auto"
-                />
-              </div>
-            )}
-            <div
-              className={cn(
-                "prose",
-                "prose-lg",
-                "max-w-none",
-                "dark:prose-invert",
-                "prose-headings:font-bold",
-                "prose-headings:text-foreground",
-                "prose-p:text-foreground",
-                "prose-p:mb-4",
-                "prose-p:mt-0",
-                "prose-strong:text-foreground",
-                "prose-strong:font-bold",
-                "prose-ul:text-foreground",
-                "prose-ul:my-4",
-                "prose-ol:text-foreground",
-                "prose-ol:my-4",
-                "prose-li:text-foreground",
-                "prose-li:my-2",
-                "prose-a:text-primary",
-                "prose-a:no-underline",
-                "hover:prose-a:underline",
-                "prose-h1:text-4xl",
-                "prose-h1:font-bold",
-                "prose-h1:mt-8",
-                "prose-h1:mb-4",
-                "prose-h2:text-3xl",
-                "prose-h2:font-bold",
-                "prose-h2:mt-8",
-                "prose-h2:mb-4",
-                "prose-h3:text-2xl",
-                "prose-h3:font-bold",
-                "prose-h3:mt-6",
-                "prose-h3:mb-3",
-                "prose-h4:text-xl",
-                "prose-h4:font-bold",
-                "prose-h4:mt-4",
-                "prose-h4:mb-2",
-                "prose-blockquote:border-l-4",
-                "prose-blockquote:border-primary",
-                "prose-blockquote:pl-4",
-                "prose-blockquote:italic",
-                "prose-blockquote:my-4",
-                "prose-hr:my-8",
-                "prose-hr:border-border",
-                "prose-table:w-full",
-                "prose-table:my-8",
-                "prose-th:border",
-                "prose-th:border-border",
-                "prose-th:bg-muted",
-                "prose-th:px-4",
-                "prose-th:py-3",
-                "prose-th:text-left",
-                "prose-th:font-semibold",
-                "prose-td:border",
-                "prose-td:border-border",
-                "prose-td:px-4",
-                "prose-td:py-3"
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {screenshot && (
+                <div className="w-full rounded-lg overflow-hidden border sticky top-6 h-fit">
+                  <img
+                    src={screenshot}
+                    alt="Website screenshot"
+                    className="w-full h-auto"
+                  />
+                </div>
               )}
-            >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{report}</ReactMarkdown>
+              <div
+                className={cn(
+                  "prose",
+                  "prose-lg",
+                  "max-w-none",
+                  "dark:prose-invert",
+                  "prose-headings:font-bold",
+                  "prose-headings:text-foreground",
+                  "prose-p:text-foreground",
+                  "prose-p:mb-4",
+                  "prose-p:mt-0",
+                  "prose-strong:text-foreground",
+                  "prose-strong:font-bold",
+                  "prose-ul:text-foreground",
+                  "prose-ul:my-4",
+                  "prose-ol:text-foreground",
+                  "prose-ol:my-4",
+                  "prose-li:text-foreground",
+                  "prose-li:my-2",
+                  "prose-a:text-primary",
+                  "prose-a:no-underline",
+                  "hover:prose-a:underline",
+                  "prose-h1:text-4xl",
+                  "prose-h1:font-bold",
+                  "prose-h1:mt-8",
+                  "prose-h1:mb-4",
+                  "prose-h2:text-3xl",
+                  "prose-h2:font-bold",
+                  "prose-h2:mt-8",
+                  "prose-h2:mb-4",
+                  "prose-h3:text-2xl",
+                  "prose-h3:font-bold",
+                  "prose-h3:mt-6",
+                  "prose-h3:mb-3",
+                  "prose-h4:text-xl",
+                  "prose-h4:font-bold",
+                  "prose-h4:mt-4",
+                  "prose-h4:mb-2",
+                  "prose-blockquote:border-l-4",
+                  "prose-blockquote:border-primary",
+                  "prose-blockquote:pl-4",
+                  "prose-blockquote:italic",
+                  "prose-blockquote:my-4",
+                  "prose-hr:my-8",
+                  "prose-hr:border-border",
+                  "prose-table:w-full",
+                  "prose-table:my-8",
+                  "prose-th:border",
+                  "prose-th:border-border",
+                  "prose-th:bg-muted",
+                  "prose-th:px-4",
+                  "prose-th:py-3",
+                  "prose-th:text-left",
+                  "prose-th:font-semibold",
+                  "prose-td:border",
+                  "prose-td:border-border",
+                  "prose-td:px-4",
+                  "prose-td:py-3"
+                )}
+              >
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{report}</ReactMarkdown>
+              </div>
             </div>
           </CardContent>
         </Card>
