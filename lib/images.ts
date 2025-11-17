@@ -118,6 +118,41 @@ export const bitmapImages = {
     alt: "Mobile application dashboard",
     description: "Mobile application interface showing orders dashboard and analytics",
   },
+  dotVoting: {
+    path: "/bitmap/dot-voting.png",
+    alt: "Dot voting workshop board",
+    description: "Facilitators reviewing dot-voted concepts during a workshop session",
+  },
+  doubleDiamond: {
+    path: "/bitmap/double-diamond.png",
+    alt: "Double Diamond framework slide",
+    description: "Team presenting the Discover, Define, Develop, Deliver double diamond model",
+  },
+  ideationSession: {
+    path: "/bitmap/ideation.jpg",
+    alt: "Ideation sketches on table",
+    description: "Sketches, notes, and storyboards from an ideation sprint",
+  },
+  workshopSessionPhoto: {
+    path: "/bitmap/workshop-session.jpg",
+    alt: "Workshop session photograph",
+    description: "Team aligning around storyboards and empathy maps",
+  },
+  workshopSessionWide: {
+    path: "/bitmap/workshop-session.png",
+    alt: "Workshop session panorama",
+    description: "Wide shot of a design thinking workshop with multiple boards",
+  },
+  workshopWall: {
+    path: "/bitmap/workshop.jpg",
+    alt: "Workshop inspiration wall",
+    description: "Sticky notes and sketches covering a wall of workshop insights",
+  },
+  onboardingJourney: {
+    path: "/bitmap/Onboarding-Journey.png",
+    alt: "Onboarding journey visualisation",
+    description: "User onboarding journey and flow diagram",
+  },
 } as const;
 
 // People Portraits

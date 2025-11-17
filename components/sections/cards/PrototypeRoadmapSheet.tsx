@@ -8,12 +8,12 @@ import {
   SheetClose,
   SheetFooter,
 } from "@/components/ui/sheet"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import { bitmapImages } from "@/lib/images"
-import Image from "next/image"
+import { FadeCarousel } from "@/components/ui/fade-carousel"
+import { FaIcon } from "@/components/ui/fa-icon"
 
 interface PrototypeRoadmapSheetProps {
   onPrevious?: () => void
@@ -31,12 +31,15 @@ export const PrototypeRoadmapSheet = ({
   return (
     <SheetContent side="right" className="w-full sm:max-w-lg flex flex-col">
       <div className="flex-1 overflow-y-auto">
-        <AspectRatio ratio={6 / 4} className="w-full">
-          <Image src={bitmapImages.mobilePrototype.path} alt="Prototype & roadmap" fill className="object-cover" />
-        </AspectRatio>
+        <FadeCarousel
+          images={[bitmapImages.mobilePrototype, bitmapImages.onboardingJourney]}
+          ariaLabel="Prototype and roadmap imagery"
+        />
         <SheetHeader className="border-b border-border">
-          <div className="flex items-center gap-2 p-4">
-
+          <div className="flex items-start gap-4 p-6">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-xl font-extrabold text-primary shrink-0">
+              2
+            </div>
             <div className="flex flex-1 flex-col gap-1">
               <SheetTitle className="text-xl font-extrabold text-foreground transition-colors duration-200 ease-out">
                 Prototype & roadmap
@@ -52,10 +55,10 @@ export const PrototypeRoadmapSheet = ({
             <div className="flex items-center gap-2">
 
             </div>
-            <div className="space-y-3">
+            <div className="space-y-12">
               <div className="flex gap-6">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary shrink-0 mt-0.5">
-                  1
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-md font-semibold text-primary shrink-0 mt-0.5">
+                  <FaIcon icon="arrow-pointer" />
                 </div>
                 <div>
                   <p className="font-semibold text-foreground">Prototype & secure buy-in</p>
@@ -65,8 +68,9 @@ export const PrototypeRoadmapSheet = ({
                 </div>
               </div>
               <div className="flex gap-6">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary shrink-0 mt-0.5">
-                  2
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-md font-semibold text-primary shrink-0 mt-0.5">
+                <FaIcon icon="vial" />
+
                 </div>
                 <div>
                   <p className="font-semibold text-foreground">Test affordably</p>
@@ -76,8 +80,8 @@ export const PrototypeRoadmapSheet = ({
                 </div>
               </div>
               <div className="flex gap-6">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary shrink-0 mt-0.5">
-                  3
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-md font-semibold text-primary shrink-0 mt-0.5">
+                <FaIcon icon="chart-line" />
                 </div>
                 <div>
                   <p className="font-semibold text-foreground">Maximise success</p>
