@@ -53,3 +53,52 @@ export interface GeminiResponse {
   };
 }
 
+/**
+ * Submit analysis request interface
+ */
+export interface SubmitAnalysisRequest {
+  url: string;
+  report: string;
+  screenshot: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  mobile?: string;
+  areaOfInterest?: string[]; // Defaults to ["UX optimisation"] for UX form
+}
+
+/**
+ * Submit analysis response interface
+ */
+export interface SubmitAnalysisResponse {
+  success: true;
+  message: string;
+}
+
+export interface SubmitAnalysisErrorResponse {
+  error: string;
+  details?: string;
+}
+
+/**
+ * Verify email request interface
+ */
+export interface VerifyEmailRequest {
+  token: string;
+}
+
+/**
+ * Verify email response interface
+ */
+export interface VerifyEmailResponse {
+  success: true;
+  report: string;
+  screenshot: string;
+  url: string;
+}
+
+export interface VerifyEmailErrorResponse {
+  error: string;
+  details?: string;
+}
+

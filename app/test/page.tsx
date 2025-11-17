@@ -1,133 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { useState } from "react";
 import { Header } from "@/components/header";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { Footer } from "@/components/sections/Footer";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { AnalyzeUXResponse, AnalyzeUXErrorResponse } from "@/types/ux-analysis";
-import { cn } from "@/lib/utils";
-
-const STORAGE_KEY = "ux-analysis-results";
-
-interface StoredAnalysisData {
-  report: string;
-  screenshot: string;
-  url: string;
-}
-
-/**
- * Helper function to check if localStorage is available (SSR safety)
- */
-function isLocalStorageAvailable(): boolean {
-  if (typeof window === "undefined") {
-    return false;
-  }
-  try {
-    const test = "__localStorage_test__";
-    localStorage.setItem(test, test);
-    localStorage.removeItem(test);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Save analysis results to localStorage
- */
-function saveAnalysisResults(data: StoredAnalysisData): void {
-  if (!isLocalStorageAvailable()) {
-    return;
-  }
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (error) {
-    console.error("Failed to save analysis results to localStorage:", error);
-  }
-}
-
-/**
- * Load analysis results from localStorage
- */
-function loadAnalysisResults(): StoredAnalysisData | null {
-  if (!isLocalStorageAvailable()) {
-    return null;
-  }
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-      return null;
-    }
-    const data = JSON.parse(stored) as StoredAnalysisData;
-    // Validate the data structure
-    if (data && typeof data.report === "string" && typeof data.screenshot === "string" && typeof data.url === "string") {
-      return data;
-    }
-    // If data is corrupted, remove it
-    localStorage.removeItem(STORAGE_KEY);
-    return null;
-  } catch (error) {
-    console.error("Failed to load analysis results from localStorage:", error);
-    // Remove corrupted data
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      // Ignore errors when removing
-    }
-    return null;
-  }
-}
-
-/**
- * Clear analysis results from localStorage
- */
-function clearAnalysisResults(): void {
-  if (!isLocalStorageAvailable()) {
-    return;
-  }
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch (error) {
-    console.error("Failed to clear analysis results from localStorage:", error);
-  }
-}
+import { UXAnalysisForm } from "@/components/ux-analysis/UXAnalysisForm";
+import { EmailCollectionDialog } from "@/components/ux-analysis/EmailCollectionDialog";
+import type {
+  AnalyzeUXResponse,
+  AnalyzeUXErrorResponse,
+  SubmitAnalysisErrorResponse,
+} from "@/types/ux-analysis";
+import type { EmailCollectionData } from "@/components/ux-analysis/EmailCollectionDialog";
 
 export default function Home() {
-  const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [report, setReport] = useState<string | null>(null);
-  const [screenshot, setScreenshot] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [analysisData, setAnalysisData] = useState<{
+    url: string;
+    report: string;
+    screenshot: string;
+  } | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  // Load persisted data on component mount
-  useEffect(() => {
-    const storedData = loadAnalysisResults();
-    if (storedData) {
-      setReport(storedData.report);
-      setScreenshot(storedData.screenshot);
-      setUrl(storedData.url);
-    }
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    if (!url.trim()) {
-      setError("Please enter a valid URL");
-      return;
-    }
-
-    // Clear localStorage and reset state at the start of new submission
-    clearAnalysisResults();
+  const handleUrlSubmit = async (url: string) => {
     setLoading(true);
     setError(null);
-    setReport(null);
-    setScreenshot(null);
+    setAnalysisData(null);
 
     try {
       const response = await fetch("/api/analyze-ux", {
@@ -135,7 +36,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ url: url.trim() }),
+        body: JSON.stringify({ url }),
       });
 
       const data = await response.json();
@@ -148,18 +49,19 @@ export default function Home() {
         }
       } else {
         const successData = data as AnalyzeUXResponse;
-        setReport(successData.report);
-        setScreenshot(successData.screenshot);
-        
-        // Save results to localStorage after successful analysis
-        saveAnalysisResults({
+        setAnalysisData({
+          url,
           report: successData.report,
           screenshot: successData.screenshot,
-          url: url.trim(),
         });
+        // Open email collection dialog
+        setDialogOpen(true);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to connect to the analysis service";
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to connect to the analysis service";
       setError(errorMessage);
       console.error("Analysis request failed:", err);
     } finally {
@@ -167,20 +69,75 @@ export default function Home() {
     }
   };
 
+  const handleEmailSubmit = async (data: EmailCollectionData) => {
+    if (!analysisData) {
+      setError("No analysis data available. Please try again.");
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/submit-analysis", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url: analysisData.url,
+          report: analysisData.report,
+          screenshot: analysisData.screenshot,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          mobile: data.mobile || undefined,
+          areaOfInterest: ["UX optimisation"], // Hidden field - automatically set for UX form
+        }),
+      });
+
+      // Check if response is JSON before parsing
+      const contentType = response.headers.get("content-type");
+      let responseData: SubmitAnalysisErrorResponse | { success: boolean; message: string };
+      
+      if (contentType && contentType.includes("application/json")) {
+        responseData = await response.json();
+      } else {
+        // If not JSON, read as text to see what we got
+        const text = await response.text();
+        console.error("Non-JSON response received:", text.substring(0, 200));
+        setError(`Server error: ${response.status} ${response.statusText}`);
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = responseData as SubmitAnalysisErrorResponse;
+        setError(errorData.error || "Failed to submit analysis");
+        if (errorData.details) {
+          console.error("Submit error details:", errorData.details);
+        }
+        return;
+      }
+
+      // Success - close dialog and show success message
+      setDialogOpen(false);
+      // Could show a toast/notification here if desired
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to submit analysis";
+      setError(errorMessage);
+      console.error("Submit request failed:", err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div className="flex bg-background flex-col ">
       <Header />
 
-      <div
-        id="hero-scroll-section"
-        className=" bg-amber-500/05 z-10 pt-16"
-      >
-
+      <div id="hero-scroll-section" className=" bg-amber-500/05 z-10 pt-16">
         <div className="relative overflow-hidden bg-red-500/00 p-0 w-full ">
-          {/* Animated circles background */}
-          {/* Top circle - smallest (w-3) - Olive-500 */}
-
-
           <div
             id="hero-scroll-container"
             className="container mx-auto flex flex-col justify-center px-4 md:px-6 bg-green-500/00 relative z-40"
@@ -190,30 +147,11 @@ export default function Home() {
               className="bg-lime-500/00 w-full grow h-full lg:self-stretch md:flex md:flex-col md:justify-center"
             >
               <div className="flex flex-col gap-8 w-full">
+                <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-4xl lg:text-6xl">
+                  Get a website analysis!
+                </h1>
 
-                <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-4xl lg:text-6xl">Get a website analysis!</h1>
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
-                  <label htmlFor="url" className="text-sm font-medium text-foreground">URL</label>
-                  <Input
-                    id="url"
-                    placeholder="Enter your URL"
-                    className="w-full h-12"
-                    type="url"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    disabled={loading}
-                    required
-                  />
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    size="lg"
-                    className="px-8 sm:w-auto"
-                    disabled={loading}
-                  >
-                    {loading ? "Analysing..." : "Get a website analysis!"}
-                  </Button>
-                </form>
+                <UXAnalysisForm onSubmit={handleUrlSubmit} loading={loading} />
 
                 {error && (
                   <Card className="border-destructive">
@@ -226,95 +164,31 @@ export default function Home() {
                   </Card>
                 )}
 
-                {report && (
-                  <Card className="mt-4">
+                {analysisData && !dialogOpen && (
+                  <Card>
                     <CardHeader>
-                      <CardTitle>Analysis Report</CardTitle>
+                      <CardTitle>Analysis Complete</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-6">
-                      {screenshot && (
-                        <div className="w-full rounded-lg overflow-hidden border">
-                          <img
-                            src={screenshot}
-                            alt="Website screenshot"
-                            className="w-full h-auto"
-                          />
-                        </div>
-                      )}
-                      <div
-                        className={cn(
-                          "prose",
-                          "prose-lg",
-                          "max-w-none",
-                          "dark:prose-invert",
-                          "prose-headings:font-bold",
-                          "prose-headings:text-foreground",
-                          "prose-p:text-foreground",
-                          "prose-p:mb-4",
-                          "prose-p:mt-0",
-                          "prose-strong:text-foreground",
-                          "prose-strong:font-bold",
-                          "prose-ul:text-foreground",
-                          "prose-ul:my-4",
-                          "prose-ol:text-foreground",
-                          "prose-ol:my-4",
-                          "prose-li:text-foreground",
-                          "prose-li:my-2",
-                          "prose-a:text-primary",
-                          "prose-a:no-underline",
-                          "hover:prose-a:underline",
-                          "prose-h1:text-4xl",
-                          "prose-h1:font-bold",
-                          "prose-h1:mt-8",
-                          "prose-h1:mb-4",
-                          "prose-h2:text-3xl",
-                          "prose-h2:!font-bold",
-                          "prose-h2:mt-8",
-                          "prose-h2:mb-4",
-                          "prose-h3:text-2xl",
-                          "prose-h3:font-bold",
-                          "prose-h3:mt-6",
-                          "prose-h3:mb-3",
-                          "prose-h4:text-xl",
-                          "prose-h4:font-bold",
-                          "prose-h4:mt-4",
-                          "prose-h4:mb-2",
-                          "prose-blockquote:border-l-4",
-                          "prose-blockquote:border-primary",
-                          "prose-blockquote:pl-4",
-                          "prose-blockquote:italic",
-                          "prose-blockquote:my-4",
-                          "prose-hr:my-8",
-                          "prose-hr:border-border",
-                          "prose-table:w-full",
-                          "prose-table:my-8",
-                          "prose-th:border",
-                          "prose-th:border-border",
-                          "prose-th:bg-muted",
-                          "prose-th:px-4",
-                          "prose-th:py-3",
-                          "prose-th:text-left",
-                          "prose-th:font-semibold",
-                          "prose-td:border",
-                          "prose-td:border-border",
-                          "prose-td:px-4",
-                          "prose-td:py-3"
-                        )}
-                      >
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{report}</ReactMarkdown>
-                      </div>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground">
+                        Your analysis is ready! Please check your email to verify
+                        and access your report.
+                      </p>
                     </CardContent>
                   </Card>
                 )}
               </div>
             </div>
-
           </div>
-
         </div>
       </div>
 
-
+      <EmailCollectionDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSubmit={handleEmailSubmit}
+        isSubmitting={submitting}
+      />
 
       <CtaSection variant="analysis" sectionTheme="dark" />
       <Footer />

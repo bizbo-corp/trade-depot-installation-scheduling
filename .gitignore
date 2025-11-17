@@ -54,3 +54,5 @@ next-env.d.ts
 # OS
 Thumbs.db
 .DS_Store
+
+/lib/generated/prisma

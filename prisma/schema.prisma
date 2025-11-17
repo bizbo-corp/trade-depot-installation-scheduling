@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model UXAnalysisReport {
+  id                String   @id @default(uuid())
+  url               String
+  firstName         String
+  lastName          String
+  email             String
+  mobile            String?
+  areaOfInterest    String[] @default(["UX optimisation"])
+  report            String   @db.Text
+  screenshot        String   @db.Text
+  verificationToken String   @unique
+  emailVerified     Boolean  @default(false)
+  tokenExpiresAt    DateTime
+  hubspotContactId  String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([email])
+  @@index([verificationToken])
+  @@map("ux_analysis_reports")
+}
