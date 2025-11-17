@@ -39,6 +39,21 @@ Analyze the following 5 critical areas:
 * **Analysis:** Based on the desktop layout and structure (as observed in the screenshot/HTML), how well do you anticipate this site would adapt to mobile (e.g., is the navigation complex, are images too large)? Assume standard Tailwind/Bootstrap classes are used if no specific issues are apparent.
 * **Suggestion:** Identify one potential pain point for a mobile user (e.g., sticky navigation, input field size).
 
+IMPORTANT FORMATTING REQUIREMENTS:
+- Use structured markdown with headings, bullet points, and paragraphs
+- DO NOT use tables or tabular formats
+- Use the following structure for each analysis area:
+  ## [Area Name]
+  
+  ### Analysis
+  [Your analysis text in paragraph or bullet point format]
+  
+  ### Suggestion
+  [Your suggestion text in paragraph or bullet point format]
+
+  - Use line breaks and a horizontal rule between each analysis area for better readability
+  - Ensure the report is formatted consistently with proper spacing and indentation
+
 End the report with a professional summary statement. Do not use conversational language (e.g., "I think," "I recommend"). Use direct, professional language (e.g., "The site exhibits," "Immediate action should focus on").
 `;
 

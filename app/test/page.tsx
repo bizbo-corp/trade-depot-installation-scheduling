@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Header } from "@/components/header";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { ValuePropositionSection } from "@/components/sections/ValuePropositionSection";
@@ -24,6 +25,7 @@ import { UXIllustration } from "@/app/ux-design/UXIllustration";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { AnalyzeUXResponse, AnalyzeUXErrorResponse } from "@/types/ux-analysis";
+import { cn } from "@/lib/utils";
 
 const FEATURE_ITEMS = [
   {
@@ -64,6 +66,91 @@ const FEATURE_ITEMS = [
   },
 ]
 
+const STORAGE_KEY = "ux-analysis-results";
+
+interface StoredAnalysisData {
+  report: string;
+  screenshot: string;
+  url: string;
+}
+
+/**
+ * Helper function to check if localStorage is available (SSR safety)
+ */
+function isLocalStorageAvailable(): boolean {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  try {
+    const test = "__localStorage_test__";
+    localStorage.setItem(test, test);
+    localStorage.removeItem(test);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Save analysis results to localStorage
+ */
+function saveAnalysisResults(data: StoredAnalysisData): void {
+  if (!isLocalStorageAvailable()) {
+    return;
+  }
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (error) {
+    console.error("Failed to save analysis results to localStorage:", error);
+  }
+}
+
+/**
+ * Load analysis results from localStorage
+ */
+function loadAnalysisResults(): StoredAnalysisData | null {
+  if (!isLocalStorageAvailable()) {
+    return null;
+  }
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) {
+      return null;
+    }
+    const data = JSON.parse(stored) as StoredAnalysisData;
+    // Validate the data structure
+    if (data && typeof data.report === "string" && typeof data.screenshot === "string" && typeof data.url === "string") {
+      return data;
+    }
+    // If data is corrupted, remove it
+    localStorage.removeItem(STORAGE_KEY);
+    return null;
+  } catch (error) {
+    console.error("Failed to load analysis results from localStorage:", error);
+    // Remove corrupted data
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Ignore errors when removing
+    }
+    return null;
+  }
+}
+
+/**
+ * Clear analysis results from localStorage
+ */
+function clearAnalysisResults(): void {
+  if (!isLocalStorageAvailable()) {
+    return;
+  }
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (error) {
+    console.error("Failed to clear analysis results from localStorage:", error);
+  }
+}
+
 export default function Home() {
   useHeroScrollAnimation();
   
@@ -73,6 +160,16 @@ export default function Home() {
   const [screenshot, setScreenshot] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Load persisted data on component mount
+  useEffect(() => {
+    const storedData = loadAnalysisResults();
+    if (storedData) {
+      setReport(storedData.report);
+      setScreenshot(storedData.screenshot);
+      setUrl(storedData.url);
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
@@ -81,7 +178,8 @@ export default function Home() {
       return;
     }
 
-    // Reset state
+    // Clear localStorage and reset state at the start of new submission
+    clearAnalysisResults();
     setLoading(true);
     setError(null);
     setReport(null);
@@ -108,6 +206,13 @@ export default function Home() {
         const successData = data as AnalyzeUXResponse;
         setReport(successData.report);
         setScreenshot(successData.screenshot);
+        
+        // Save results to localStorage after successful analysis
+        saveAnalysisResults({
+          report: successData.report,
+          screenshot: successData.screenshot,
+          url: url.trim(),
+        });
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to connect to the analysis service";
@@ -134,13 +239,13 @@ export default function Home() {
 
           <div
             id="hero-scroll-container"
-            className="container mx-auto min-h-[calc(100vh-100px)] flex flex-col items-stretch lg:flex-row lg:items-stretch lg:h-[calc(100vh-100px)] justify-center px-4 md:px-6 bg-green-500/00 relative z-40"
+            className="container mx-auto flex flex-col justify-center px-4 md:px-6 bg-green-500/00 relative z-40"
           >
             <div
               id="hero-left-col"
-              className="bg-lime-500/00 w-full grow h-full lg:min-w-1/2 lg:self-stretch md:flex md:flex-col md:justify-center"
+              className="bg-lime-500/00 w-full grow h-full lg:self-stretch md:flex md:flex-col md:justify-center"
             >
-              <div className="flex flex-col gap-8 md:max-w-2xl">
+              <div className="flex flex-col gap-8 w-full">
 
                 <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-4xl lg:text-6xl">Get a website analysis!</h1>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
@@ -192,23 +297,74 @@ export default function Home() {
                           />
                         </div>
                       )}
-                      <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-ul:text-foreground prose-ol:text-foreground prose-li:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-h3:text-2xl prose-h3:font-bold prose-h3:mt-8 prose-h3:mb-4 prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-4">
-                        <ReactMarkdown>{report}</ReactMarkdown>
+                      <div
+                        className={cn(
+                          "prose",
+                          "prose-lg",
+                          "max-w-none",
+                          "dark:prose-invert",
+                          "prose-headings:font-bold",
+                          "prose-headings:text-foreground",
+                          "prose-p:text-foreground",
+                          "prose-p:mb-4",
+                          "prose-p:mt-0",
+                          "prose-strong:text-foreground",
+                          "prose-strong:font-bold",
+                          "prose-ul:text-foreground",
+                          "prose-ul:my-4",
+                          "prose-ol:text-foreground",
+                          "prose-ol:my-4",
+                          "prose-li:text-foreground",
+                          "prose-li:my-2",
+                          "prose-a:text-primary",
+                          "prose-a:no-underline",
+                          "hover:prose-a:underline",
+                          "prose-h1:text-4xl",
+                          "prose-h1:font-bold",
+                          "prose-h1:mt-8",
+                          "prose-h1:mb-4",
+                          "prose-h2:text-3xl",
+                          "prose-h2:!font-bold",
+                          "prose-h2:mt-8",
+                          "prose-h2:mb-4",
+                          "prose-h3:text-2xl",
+                          "prose-h3:font-bold",
+                          "prose-h3:mt-6",
+                          "prose-h3:mb-3",
+                          "prose-h4:text-xl",
+                          "prose-h4:font-bold",
+                          "prose-h4:mt-4",
+                          "prose-h4:mb-2",
+                          "prose-blockquote:border-l-4",
+                          "prose-blockquote:border-primary",
+                          "prose-blockquote:pl-4",
+                          "prose-blockquote:italic",
+                          "prose-blockquote:my-4",
+                          "prose-hr:my-8",
+                          "prose-hr:border-border",
+                          "prose-table:w-full",
+                          "prose-table:my-8",
+                          "prose-th:border",
+                          "prose-th:border-border",
+                          "prose-th:bg-muted",
+                          "prose-th:px-4",
+                          "prose-th:py-3",
+                          "prose-th:text-left",
+                          "prose-th:font-semibold",
+                          "prose-td:border",
+                          "prose-td:border-border",
+                          "prose-td:px-4",
+                          "prose-td:py-3"
+                        )}
+                      >
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{report}</ReactMarkdown>
                       </div>
                     </CardContent>
                   </Card>
                 )}
               </div>
             </div>
-            <div
-              id="hero-right-col"
-              className="bg-pink-500/00 w-full grow h-full lg:min-w-1/2 lg:self-stretch"
-            >
-            <div className="flex items-center justify-center h-full w-full">
-              <UXIllustration className="w-full h-auto" />
-            </div>
 
-            </div>
           </div>
 
         </div>
