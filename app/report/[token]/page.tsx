@@ -429,8 +429,10 @@ function createMarkdownComponents(): Components {
       
       // If we found category with impact or difficulty, render them as a grouped block
       if (hasCategory && (impactText || difficultyText)) {
+        // Cast props to div props since we're rendering a div instead of ul
+        const divProps = props as React.HTMLAttributes<HTMLDivElement>;
         return (
-          <div {...props} className={cn("space-y-2", className)}>
+          <div {...divProps} className={cn("space-y-2", className)}>
             {/* Category label - render the original item but we'll override the styling */}
             <div className="flex items-center gap-2">
               {categoryIcon && <FaIcon icon={categoryIcon} className="w-4 h-4" />}
@@ -653,7 +655,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
               )}
 
 
-                <div className="space-y-6 bg-background-2/50 p-6 rounded-lg">
+                <div className="space-y-6 bg-background-2/50 shadow-xl p-6 rounded-lg">
 
                     <h2 className="text-2xl font-bold">Quick Wins</h2>
 
