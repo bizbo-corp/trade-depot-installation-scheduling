@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { updateVerificationStatus } from "@/lib/hubspot";
 import { X, Check, Circle } from "lucide-react";
 import type { Components } from "react-markdown";
+import { FaIcon } from "@/components/ui/fa-icon";
 
 interface ReportPageProps {
   params: Promise<{ token: string }>;
@@ -174,10 +175,20 @@ function createMarkdownComponents(): Components {
         return (
           <li {...props} className={cn("list-none flex items-start gap-2", className)}>
             {hasCheck && (
-              <Check className="inline-block w-5 h-5 text-lime-700-500 shrink-0 mt-0.5" />
+              <>
+                <Check className="inline-block w-5 h-5 text-lime-700 shrink-0 mt-0.5" />
+                <span className="inline-flex items-center justify-center rounded bg-olive-100 p-1">
+                  <FaIcon icon="check" className="inline-block w-5 h-5 text-olive-700 shrink-0" />
+                </span>
+              </>
             )}
             {hasCross && (
-              <X className="inline-block w-5 h-5 text-red-700 shrink-0 mt-0.5" />
+              <>
+                <X className="inline-block w-5 h-5 text-red-700 shrink-0 mt-0.5" />
+                <span className="inline-flex items-center justify-center rounded bg-olive-100 p-1">
+                  <FaIcon icon="times" className="inline-block w-5 h-5 text-olive-700 shrink-0" />
+                </span>
+              </>
             )}
             <span>{processedChildren}</span>
           </li>
