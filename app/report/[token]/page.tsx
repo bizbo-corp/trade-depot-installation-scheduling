@@ -14,8 +14,25 @@ interface ReportPageProps {
   params: Promise<{ token: string }>;
 }
 
+// Helper function to extract sentiment from Quick Win text
+function extractSentiment(text: string): "Bad" | "Good" | "Neutral" | null {
+  const sentimentMatch = text.match(/Sentiment:\s*(Bad|Good|Neutral)/i);
+  return sentimentMatch ? (sentimentMatch[1] as "Bad" | "Good" | "Neutral") : null;
+}
+
+// Helper function to remove sentiment text from markdown
+function removeSentimentText(text: string): string {
+  // Remove lines containing "Sentiment: Bad/Good/Neutral" (case insensitive)
+  // Handle both bold (**Sentiment: X**) and plain text (Sentiment: X) formats
+  return text
+    .replace(/^\s*\*\*Sentiment:\s*(Bad|Good|Neutral)\*\*\s*$/gim, "")
+    .replace(/^\s*Sentiment:\s*(Bad|Good|Neutral)\s*$/gim, "")
+    .replace(/\*\*\[Sentiment:\s*(Bad|Good|Neutral)\s*\/\s*(Bad|Good|Neutral)\s*\/\s*(Bad|Good|Neutral)\]\*\*/gim, "")
+    .replace(/\n\n\n+/g, "\n\n"); // Clean up multiple blank lines
+}
+
 // Helper function to split markdown into Quick Win sections
-function splitQuickWins(markdown: string): { quickWins: string[]; keyTakeaways: string } {
+function splitQuickWins(markdown: string): { quickWins: Array<{ content: string; sentiment: "Bad" | "Good" | "Neutral" | null }>; keyTakeaways: string } {
   // Split by Key Takeaways section
   const parts = markdown.split("## Key Takeaways");
   const quickWinsSection = parts[0] || "";
@@ -42,13 +59,24 @@ function splitQuickWins(markdown: string): { quickWins: string[]; keyTakeaways: 
           parts.push(section);
         }
       }
-      return { quickWins: parts, keyTakeaways };
+      return { 
+        quickWins: parts.map(p => ({ 
+          content: removeSentimentText(p), 
+          sentiment: extractSentiment(p) 
+        })), 
+        keyTakeaways 
+      };
     }
   }
 
   // Filter out empty sections and return
   return { 
-    quickWins: sections.filter((s) => s.trim() && !s.match(/^## Quick Wins\s*$/m)), 
+    quickWins: sections
+      .filter((s) => s.trim() && !s.match(/^## Quick Wins\s*$/m))
+      .map(s => ({ 
+        content: removeSentimentText(s), 
+        sentiment: extractSentiment(s) 
+      })), 
     keyTakeaways 
   };
 }
@@ -312,55 +340,73 @@ export default async function ReportPage({ params }: ReportPageProps) {
             <p className="text-sm text-muted-foreground mt-2">URL Analyzed: {url}</p>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {screenshot && (
-                <div className="w-full rounded-lg overflow-hidden border sticky top-6 h-fit">
-                  <img
-                    src={screenshot}
-                    alt="Website screenshot"
-                    className="w-full h-auto"
-                  />
-                </div>
+            <div className="space-y-6">
+              {/* Key Takeaways - displayed first in a card */}
+              {keyTakeaways && (
+                <Card className="w-full">
+                  <CardHeader>
+                    <CardTitle>Key Takeaways</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className={proseClasses}>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={markdownComponents}
+                      >
+                        {keyTakeaways.replace(/^## Key Takeaways\s*/m, "").trim()}
+                      </ReactMarkdown>
+                    </div>
+                  </CardContent>
+                </Card>
               )}
-              <div className="space-y-6">
-                {/* Quick Wins - each wrapped in a Card */}
-                {quickWins.length > 0 ? (
-                  quickWins.map((quickWin, index) => (
-                    <Card key={index} className="w-full">
-                      <CardContent className="pt-6">
-                        <div className={proseClasses}>
-                          <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            components={markdownComponents}
-                          >
-                            {quickWin}
-                          </ReactMarkdown>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
-                ) : (
-                  // Fallback: if no Quick Wins sections found, render the full report
-                  <div className={proseClasses}>
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={markdownComponents}
-                    >
-                      {report}
-                    </ReactMarkdown>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {screenshot && (
+                  <div className="w-full rounded-lg overflow-hidden border sticky top-6 h-fit">
+                    <img
+                      src={screenshot}
+                      alt="Website screenshot"
+                      className="w-full h-auto"
+                    />
                   </div>
                 )}
-                {/* Key Takeaways */}
-                {keyTakeaways && (
-                  <div className={proseClasses}>
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={markdownComponents}
-                    >
-                      {keyTakeaways}
-                    </ReactMarkdown>
-                  </div>
-                )}
+                <div className="space-y-6">
+                  {/* Quick Wins - each wrapped in a Card with sentiment-based background */}
+                  {quickWins.length > 0 ? (
+                    quickWins.map((quickWin, index) => {
+                      const bgColorClass = 
+                        quickWin.sentiment === "Bad" ? "bg-red-200" :
+                        quickWin.sentiment === "Good" ? "bg-green-200" :
+                        quickWin.sentiment === "Neutral" ? "bg-gray-200" :
+                        "";
+                      
+                      return (
+                        <Card key={index} className={cn("w-full", bgColorClass)}>
+                          <CardContent className="pt-6">
+                            <div className={proseClasses}>
+                              <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={markdownComponents}
+                              >
+                                {quickWin.content}
+                              </ReactMarkdown>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })
+                  ) : (
+                    // Fallback: if no Quick Wins sections found, render the full report
+                    <div className={proseClasses}>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={markdownComponents}
+                      >
+                        {report}
+                      </ReactMarkdown>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>
