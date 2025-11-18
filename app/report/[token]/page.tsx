@@ -53,23 +53,41 @@ function splitQuickWins(markdown: string): { quickWins: string[]; keyTakeaways: 
   };
 }
 
+// Helper function to extract text from children
+function extractText(children: React.ReactNode): string {
+  if (typeof children === "string") {
+    return children;
+  } else if (Array.isArray(children)) {
+    return children
+      .map((child) => (typeof child === "string" ? child : String(child)))
+      .join("")
+      .trim();
+  }
+  return String(children || "").trim();
+}
+
+// Helper function to render heading as h4 if it's "Analysis" or "Suggestion"
+function renderHeadingAsH4IfNeeded(
+  children: React.ReactNode,
+  props: React.HTMLAttributes<HTMLHeadingElement>
+) {
+  const text = extractText(children);
+  if (text === "Analysis" || text === "Suggestion") {
+    return (
+      <h4 {...props} className="text-xl font-bold mt-4 mb-2">
+        {children}
+      </h4>
+    );
+  }
+  return null;
+}
+
 // Custom ReactMarkdown components
 function createMarkdownComponents(): Components {
   return {
     // Replace sentiment text with icons (handle bold text)
     strong: ({ children, ...props }) => {
-      // Handle both string and array children
-      let text = "";
-      if (typeof children === "string") {
-        text = children;
-      } else if (Array.isArray(children)) {
-        text = children
-          .map((child) => (typeof child === "string" ? child : String(child)))
-          .join("");
-      } else {
-        text = String(children || "");
-      }
-
+      const text = extractText(children);
       const sentimentMatch = text.match(/\[Sentiment:\s*(Good|Bad|Neutral)\]/);
       if (sentimentMatch) {
         const sentiment = sentimentMatch[1];
@@ -94,29 +112,28 @@ function createMarkdownComponents(): Components {
       return <strong {...props}>{children}</strong>;
     },
     // Make "Analysis" and "Suggestion" headings render as h4
-    heading: ({ level, children, ...props }) => {
-      // Handle both string and array children
-      let text = "";
-      if (typeof children === "string") {
-        text = children;
-      } else if (Array.isArray(children)) {
-        text = children
-          .map((child) => (typeof child === "string" ? child : String(child)))
-          .join("")
-          .trim();
-      } else {
-        text = String(children || "").trim();
-      }
-
-      if ((text === "Analysis" || text === "Suggestion") && level !== 4) {
-        return (
-          <h4 {...props} className="text-xl font-bold mt-4 mb-2">
-            {children}
-          </h4>
-        );
-      }
-      const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements;
-      return <HeadingTag {...props}>{children}</HeadingTag>;
+    h1: ({ children, ...props }) => {
+      const h4Render = renderHeadingAsH4IfNeeded(children, props);
+      return h4Render || <h1 {...props}>{children}</h1>;
+    },
+    h2: ({ children, ...props }) => {
+      const h4Render = renderHeadingAsH4IfNeeded(children, props);
+      return h4Render || <h2 {...props}>{children}</h2>;
+    },
+    h3: ({ children, ...props }) => {
+      const h4Render = renderHeadingAsH4IfNeeded(children, props);
+      return h4Render || <h3 {...props}>{children}</h3>;
+    },
+    h4: ({ children, ...props }) => {
+      return <h4 {...props}>{children}</h4>;
+    },
+    h5: ({ children, ...props }) => {
+      const h4Render = renderHeadingAsH4IfNeeded(children, props);
+      return h4Render || <h5 {...props}>{children}</h5>;
+    },
+    h6: ({ children, ...props }) => {
+      const h4Render = renderHeadingAsH4IfNeeded(children, props);
+      return h4Render || <h6 {...props}>{children}</h6>;
     },
   };
 }
