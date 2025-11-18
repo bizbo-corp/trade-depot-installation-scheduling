@@ -37,6 +37,9 @@ export default function RootLayout({
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
+        <!-- Start of HubSpot Embed Code -->
+        <Script type="text/javascript" id="hs-script-loader" async defer src="//js-ap1.hs-scripts.com/442452565.js"></Script>
+        <!-- End of HubSpot Embed Code -->
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
           <Toaster />
