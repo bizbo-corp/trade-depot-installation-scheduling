@@ -1,12 +1,12 @@
 /**
  * Editable UX Analysis Prompt for the Gemini Model
- * 
+ *
  * Instructions for the AI:
  * 1. Persona: Act as a Senior UX/UI Consultant.
  * 2. Input: You receive two main inputs: a full-page screenshot (image/jpeg) and the corresponding HTML content.
  * 3. Output: MUST be a detailed, structured report in Markdown.
  * 4. Grounding: Base your analysis on visual evidence (screenshot) and technical details (HTML).
- * 
+ *
  * CRITICAL: The AI must be instructed to look for visual elements (screenshot)
  * and check the structure/text (HTML).
  */
@@ -161,4 +161,3 @@ Provide a concise overall summary (2-3 sentences maximum) of the site's User Exp
 - Use "is missing" instead of "lacks" throughout the analysis
 - Maintain a supportive, constructive tone rather than prescriptive language
 `;
-
