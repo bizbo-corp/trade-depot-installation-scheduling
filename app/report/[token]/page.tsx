@@ -172,10 +172,10 @@ function createMarkdownComponents(): Components {
         return (
           <li {...props} className={cn("list-none flex items-start gap-2", className)}>
             {hasCheck && (
-              <Check className="inline-block w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+              <Check className="inline-block w-5 h-5 text-lime-700-500 shrink-0 mt-0.5" />
             )}
             {hasCross && (
-              <X className="inline-block w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+              <X className="inline-block w-5 h-5 text-red-700 shrink-0 mt-0.5" />
             )}
             <span>{processedChildren}</span>
           </li>
@@ -336,61 +336,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
   const proseClasses = cn(
     "prose",
-    "prose-lg",
-    "max-w-none",
-    "dark:prose-invert",
-    "prose-headings:font-bold",
-    "prose-headings:text-foreground",
-    "prose-p:text-foreground",
-    "prose-p:mb-4",
-    "prose-p:mt-0",
-    "prose-strong:text-foreground",
-    "prose-strong:font-bold",
-    "prose-ul:text-foreground",
-    "prose-ul:my-4",
-    "prose-ol:text-foreground",
-    "prose-ol:my-4",
-    "prose-li:text-foreground",
-    "prose-li:my-2",
-    "prose-a:text-primary",
-    "prose-a:no-underline",
-    "hover:prose-a:underline",
-    "prose-h1:text-4xl",
-    "prose-h1:font-bold",
-    "prose-h1:mt-8",
-    "prose-h1:mb-4",
-    "prose-h2:text-3xl",
-    "prose-h2:font-bold",
-    "prose-h2:mt-8",
-    "prose-h2:mb-4",
-    "prose-h3:text-2xl",
-    "prose-h3:font-bold",
-    "prose-h3:mt-6",
-    "prose-h3:mb-3",
-    "prose-h4:text-xl",
-    "prose-h4:font-bold",
-    "prose-h4:mt-4",
-    "prose-h4:mb-2",
-    "prose-blockquote:border-l-4",
-    "prose-blockquote:border-primary",
-    "prose-blockquote:pl-4",
-    "prose-blockquote:italic",
-    "prose-blockquote:my-4",
-    "prose-hr:my-8",
-    "prose-hr:border-border",
-    "prose-table:w-full",
-    "prose-table:my-8",
-    "prose-th:border",
-    "prose-th:border-border",
-    "prose-th:bg-muted",
-    "prose-th:px-4",
-    "prose-th:py-3",
-    "prose-th:text-left",
-    "prose-th:font-semibold",
-    "prose-td:border",
-    "prose-td:border-border",
-    "prose-td:px-4",
-    "prose-td:py-3"
+    "prose-lg"
   );
 
   return (
@@ -400,15 +346,14 @@ export default async function ReportPage({ params }: ReportPageProps) {
       <div className="flex-1 container mx-auto px-4 md:px-6 py-16">
         <Card className="mt-4 bg-background border-0 p-0 m-0">
           <CardHeader>
-            <CardTitle>UX Analysis Report</CardTitle>
-            <p className="text-sm text-muted-foreground mt-2">URL Analyzed: {url}</p>
+            <CardTitle>UX Analysis Report: {url}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-6 bg-background">
 
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-6 md:col-span-2">
               {/* Key Takeaways - displayed first in a card */}
               {keyTakeaways && (
                 <Card className="w-full">
@@ -466,11 +411,11 @@ export default async function ReportPage({ params }: ReportPageProps) {
                   )}
                 </div>
                 {screenshot && (
-                  <div className="w-full rounded-lg overflow-hidden sticky top-6 h-fit shadow-2xl">
+                  <div className="w-full md:col-span-1 rounded-lg overflow-hidden sticky top-6 h-fit shadow-2xl">
                     <img
                       src={screenshot}
                       alt="Website screenshot"
-                      className="w-full h-auto"
+                      className="w-full h-auto object-cover object-top"
                     />
                   </div>
                 )}
