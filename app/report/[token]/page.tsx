@@ -81,17 +81,34 @@ function splitQuickWins(markdown: string): { quickWins: Array<{ content: string;
   };
 }
 
-// Helper function to extract text from children
+// Helper function to extract text from children (recursive)
 function extractText(children: React.ReactNode): string {
   if (typeof children === "string") {
     return children;
   } else if (Array.isArray(children)) {
     return children
-      .map((child) => (typeof child === "string" ? child : String(child)))
+      .map((child) => extractText(child))
       .join("")
       .trim();
+  } else if (React.isValidElement(children)) {
+    return extractText(children.props.children);
   }
   return String(children || "").trim();
+}
+
+// Helper function to recursively remove symbols from React children
+function removeSymbolsFromChildren(children: React.ReactNode): React.ReactNode {
+  if (typeof children === "string") {
+    return children.replace(/✓/g, "").replace(/✗/g, "");
+  } else if (Array.isArray(children)) {
+    return children.map((child) => removeSymbolsFromChildren(child));
+  } else if (React.isValidElement(children)) {
+    return React.cloneElement(children, {
+      ...children.props,
+      children: removeSymbolsFromChildren(children.props.children),
+    });
+  }
+  return children;
 }
 
 // Helper function to render heading as h4 if it's "Analysis" or "Suggestion"
@@ -138,6 +155,53 @@ function createMarkdownComponents(): Components {
         );
       }
       return <strong {...props}>{children}</strong>;
+    },
+    // Replace ✓ and ✗ with Lucide icons and hide bullets
+    li: ({ children, className, ...props }) => {
+      const text = extractText(children);
+      
+      // Check if this is a Key Takeaways list item (contains ✓ or ✗)
+      if (text.includes("✓") || text.includes("✗")) {
+        // Remove symbols from children
+        const processedChildren = removeSymbolsFromChildren(children);
+        
+        // Determine which icon to use
+        const hasCheck = text.includes("✓");
+        const hasCross = text.includes("✗");
+        
+        return (
+          <li {...props} className={cn("list-none flex items-start gap-2", className)}>
+            {hasCheck && (
+              <Check className="inline-block w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+            )}
+            {hasCross && (
+              <X className="inline-block w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+            )}
+            <span>{processedChildren}</span>
+          </li>
+        );
+      }
+      
+      return <li {...props} className={className}>{children}</li>;
+    },
+    // Remove list styling for ul elements containing Key Takeaways items
+    ul: ({ children, className, ...props }) => {
+      // Check if any child contains ✓ or ✗
+      const childrenArray = Array.isArray(children) ? children : [children];
+      const hasKeyTakeaways = childrenArray.some((child) => {
+        const text = extractText(child);
+        return text.includes("✓") || text.includes("✗");
+      });
+      
+      if (hasKeyTakeaways) {
+        return (
+          <ul {...props} className={cn("list-none pl-0 space-y-2", className)}>
+            {children}
+          </ul>
+        );
+      }
+      
+      return <ul {...props} className={className}>{children}</ul>;
     },
     // Make "Analysis" and "Suggestion" headings render as h4
     h1: ({ children, ...props }) => {
