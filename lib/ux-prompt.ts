@@ -121,7 +121,7 @@ Use these areas to guide your internal sentiment and scoring process.
 **[Use ONE of these exact labels+emoji based on your assesment score for the area:]**
 * **Action Needed:** Yes/No.
 * **Impact:** High ‼️ / Medium ⚠️ / Low ⬇ (potential improvement to user experience).
-* **Difficulty:** Quick ⚡️ / Moderate 🪲 / Complex 🏋️‍♂️ (implementation speed).
+* **Effort:** Quick ⚡️ / Moderate 🪲 / Complex 🏋️‍♂️ (implementation speed).
 
 **Quick Win Opportunity:** [Brief one-sentence comment about whether action is necessary, following the sentiment classification guidelines]
 

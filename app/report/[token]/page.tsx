@@ -136,6 +136,8 @@ function createMarkdownComponents(): Components {
     // Replace sentiment text with icons (handle bold text)
     strong: ({ children, ...props }) => {
       const text = extractText(children);
+      
+      // Check for sentiment pattern
       const sentimentMatch = text.match(/\[Sentiment:\s*(Good|Bad|Neutral)\]/);
       if (sentimentMatch) {
         const sentiment = sentimentMatch[1];
@@ -157,9 +159,88 @@ function createMarkdownComponents(): Components {
           </span>
         );
       }
+      
+      // Check for category labels: "Area of concern 🚩" or "Optimisation Opportunity ✅"
+      const areaOfConcernMatch = text.match(/^Area of concern\s*🚩?$/);
+      if (areaOfConcernMatch) {
+        return (
+          <span {...props} className="inline-flex items-center gap-2">
+            <FaIcon icon="flag" className="w-4 h-4" />
+            <span>Area of concern</span>
+          </span>
+        );
+      }
+      
+      const optimisationMatch = text.match(/^Optimisation Opportunity\s*✅?$/);
+      if (optimisationMatch) {
+        return (
+          <span {...props} className="inline-flex items-center gap-2">
+            <FaIcon icon="vial" className="w-4 h-4" />
+            <span>Optimisation Opportunity</span>
+          </span>
+        );
+      }
+      
+      // Check for Effort/Difficulty levels: "Effort: High/Moderate/Low" or "Difficulty: High/Moderate/Low"
+      const effortMatch = text.match(/^(Effort|Difficulty):\s*(High|Moderate|Low|Quick|Complex|Slow)\s*[🚩⚠️⬇⚡️🪲🏋️‍♂️]?/i);
+      if (effortMatch) {
+        const level = effortMatch[2].toLowerCase();
+        let iconName: string;
+        if (level === "quick") {
+          iconName = "bolt-lightning"; // Use bolt-lightning for quick
+        } else if (level === "moderate") {
+          iconName = "gauge"; // Use gauge for moderate
+        } else if (level === "slow") {
+          iconName = "turtle"; // Use turtle for slow
+        } else if (level === "high" || level === "complex") {
+          iconName = "signal-strong"; // Keep signal-strong for high/complex effort
+        } else if (level === "low") {
+          iconName = "signal-weak"; // Keep signal-weak for low effort
+        } else {
+          iconName = "signal-strong";
+        }
+        
+        return (
+          <span {...props} className="inline-flex items-center gap-2">
+            <FaIcon icon={iconName} className="w-4 h-4" />
+            <span>{effortMatch[1]}: {effortMatch[2]}</span>
+          </span>
+        );
+      }
+      
+      // Check for Impact levels: "Impact: High/Moderate/Medium/Low"
+      const impactMatch = text.match(/^Impact:\s*(High|Moderate|Medium|Low)\s*[‼️⚠️⬇]?/i);
+      if (impactMatch) {
+        const level = impactMatch[1].toLowerCase();
+        let iconName: string;
+        if (level === "high") {
+          iconName = "star";
+        } else if (level === "moderate" || level === "medium") {
+          iconName = "minus";
+        } else if (level === "low") {
+          iconName = "arrow-down";
+        } else {
+          iconName = "star";
+        }
+        
+        return (
+          <span {...props} className="inline-flex items-center gap-2">
+            <FaIcon icon={iconName} className="w-4 h-4" />
+            <span>Impact: {impactMatch[1]}</span>
+          </span>
+        );
+      }
+      
+      // Hide "Action Needed: Yes" when it appears in bold
+      const actionNeededMatch = text.match(/^Action Needed:\s*Yes\.?/i);
+      if (actionNeededMatch) {
+        return null; // Hide this element
+      }
+      
       return <strong {...props}>{children}</strong>;
     },
     // Replace ✓ and ✗ with Lucide icons and hide bullets
+    // Also handle Impact/Effort/Difficulty patterns that might appear in list items
     li: ({ children, className, ...props }) => {
       const text = extractText(children);
       
@@ -193,12 +274,75 @@ function createMarkdownComponents(): Components {
         );
       }
       
+      // Check for Impact/Effort/Difficulty patterns in list items
+      // These might appear as "* **Impact:** High ‼️" where ReactMarkdown parses it
+      // The text will be "Impact: High ‼️" (markdown already parsed)
+      const impactListMatch = text.match(/^Impact:\s*(High|Moderate|Medium|Low)\s*[‼️⚠️⬇]?/i);
+      if (impactListMatch) {
+        const level = impactListMatch[1].toLowerCase();
+        let iconName: string;
+        if (level === "high") {
+          iconName = "star";
+        } else if (level === "moderate" || level === "medium") {
+          iconName = "minus";
+        } else if (level === "low") {
+          iconName = "arrow-down";
+        } else {
+          iconName = "star";
+        }
+        
+        return (
+          <li {...props} className={cn("flex items-center gap-2", className)}>
+            <FaIcon icon={iconName} className="w-4 h-4" />
+            <span>
+              <strong>Impact:</strong> {impactListMatch[1]}
+            </span>
+          </li>
+        );
+      }
+      
+      const effortListMatch = text.match(/^(Effort|Difficulty):\s*(High|Moderate|Low|Quick|Complex|Slow)\s*[🚩⚠️⬇⚡️🪲🏋️‍♂️]?/i);
+      if (effortListMatch) {
+        const level = effortListMatch[2].toLowerCase();
+        let iconName: string;
+        if (level === "quick") {
+          iconName = "bolt-lightning"; // Use bolt-lightning for quick
+        } else if (level === "moderate") {
+          iconName = "gauge"; // Use gauge for moderate
+        } else if (level === "slow") {
+          iconName = "turtle"; // Use turtle for slow
+        } else if (level === "high" || level === "complex") {
+          iconName = "signal-strong"; // Keep signal-strong for high/complex effort
+        } else if (level === "low") {
+          iconName = "signal-weak"; // Keep signal-weak for low effort
+        } else {
+          iconName = "signal-strong";
+        }
+        
+        return (
+          <li {...props} className={cn("flex items-center gap-2", className)}>
+            <FaIcon icon={iconName} className="w-4 h-4" />
+            <span>
+              <strong>{effortListMatch[1]}:</strong> {effortListMatch[2]}
+            </span>
+          </li>
+        );
+      }
+      
+      // Hide "Action Needed: Yes" lines
+      const actionNeededMatch = text.match(/^Action Needed:\s*Yes\.?/i);
+      if (actionNeededMatch) {
+        return null; // Hide this list item
+      }
+      
       return <li {...props} className={className}>{children}</li>;
     },
     // Remove list styling for ul elements containing Key Takeaways items
+    // Also group category label with Impact and Difficulty in a single block
     ul: ({ children, className, ...props }) => {
-      // Check if any child contains ✓ or ✗
       const childrenArray = Array.isArray(children) ? children : [children];
+      
+      // Check if any child contains ✓ or ✗ (Key Takeaways)
       const hasKeyTakeaways = childrenArray.some((child) => {
         const text = extractText(child);
         return text.includes("✓") || text.includes("✗");
@@ -209,6 +353,117 @@ function createMarkdownComponents(): Components {
           <ul {...props} className={cn("list-none pl-0 space-y-2", className)}>
             {children}
           </ul>
+        );
+      }
+      
+      // Check if this ul contains category label, impact, and difficulty
+      // Extract information from children and group them together
+      let categoryLabel: string | null = null;
+      let categoryIcon: string | null = null;
+      let impactText: string | null = null;
+      let impactIcon: string | null = null;
+      let difficultyText: string | null = null;
+      let difficultyIcon: string | null = null;
+      const otherItems: React.ReactNode[] = [];
+      let hasCategory = false;
+      let categoryItem: React.ReactNode = null;
+      let impactItem: React.ReactNode = null;
+      let difficultyItem: React.ReactNode = null;
+      
+      childrenArray.forEach((child) => {
+        const text = extractText(child);
+        
+        // Check for category label (might be in strong tag or as plain text)
+        if ((text.includes("Area of concern") || text.match(/^Area of concern/i)) && !text.includes("Impact") && !text.includes("Difficulty")) {
+          categoryLabel = "Area of concern";
+          categoryIcon = "flag";
+          hasCategory = true;
+          categoryItem = child;
+        } else if ((text.includes("Optimisation Opportunity") || text.match(/^Optimisation Opportunity/i)) && !text.includes("Impact") && !text.includes("Difficulty")) {
+          categoryLabel = "Optimisation Opportunity";
+          categoryIcon = "vial";
+          hasCategory = true;
+          categoryItem = child;
+        }
+        // Check for Impact (might be rendered as "Impact: High" with icon already)
+        else if (text.includes("Impact:") || text.match(/Impact:\s*(High|Moderate|Medium|Low)/i)) {
+          const impactMatch = text.match(/Impact:\s*(High|Moderate|Medium|Low)/i);
+          if (impactMatch) {
+            impactText = impactMatch[1];
+            impactItem = child;
+            const level = impactMatch[1].toLowerCase();
+            if (level === "high") {
+              impactIcon = "star";
+            } else if (level === "moderate" || level === "medium") {
+              impactIcon = "shield-plus";
+            } else if (level === "low") {
+              impactIcon = "arrow-down";
+            }
+          }
+        }
+        // Check for Difficulty/Effort
+        else if (text.includes("Difficulty:") || text.includes("Effort:") || text.match(/(Difficulty|Effort):\s*(High|Moderate|Low|Quick|Complex|Slow)/i)) {
+          const effortMatch = text.match(/(Difficulty|Effort):\s*(High|Moderate|Low|Quick|Complex|Slow)/i);
+          if (effortMatch) {
+            difficultyText = effortMatch[2];
+            difficultyItem = child;
+            const level = effortMatch[2].toLowerCase();
+            if (level === "quick") {
+              difficultyIcon = "bolt-lightning";
+            } else if (level === "moderate") {
+              difficultyIcon = "gauge";
+            } else if (level === "slow") {
+              difficultyIcon = "turtle";
+            } else if (level === "high" || level === "complex") {
+              difficultyIcon = "signal-strong";
+            } else if (level === "low") {
+              difficultyIcon = "signal-weak";
+            }
+          }
+        }
+        // Skip Action Needed: Yes items
+        else if (!text.match(/Action Needed:\s*Yes/i)) {
+          otherItems.push(child);
+        }
+      });
+      
+      // If we found category with impact or difficulty, render them as a grouped block
+      if (hasCategory && (impactText || difficultyText)) {
+        return (
+          <div {...props} className={cn("space-y-2", className)}>
+            {/* Category label - render the original item but we'll override the styling */}
+            <div className="flex items-center gap-2">
+              {categoryIcon && <FaIcon icon={categoryIcon} className="w-4 h-4" />}
+              <span className="font-semibold">{categoryLabel}</span>
+            </div>
+            
+            {/* Impact and Difficulty in the same block */}
+            <div className="flex flex-col gap-2 pl-6">
+              {impactText && impactIcon && (
+                <div className="flex items-center gap-2">
+                  <FaIcon icon={impactIcon} className="w-4 h-4" />
+                  <span>
+                    <strong>Impact:</strong> {impactText}
+                  </span>
+                </div>
+              )}
+              {difficultyText && difficultyIcon && (
+                <div className="flex items-center gap-2">
+                  <FaIcon icon={difficultyIcon} className="w-4 h-4" />
+                  <span>
+                    <strong>Difficulty:</strong> {difficultyText}
+                  </span>
+                </div>
+              )}
+            </div>
+            
+            {/* Render other items normally */}
+            {otherItems.length > 0 && (
+              <ul className="list-none pl-0 space-y-2">
+                {otherItems}
+              </ul>
+            )}
+          </div>
         );
       }
       
@@ -347,6 +602,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
   const proseClasses = cn(
     "prose",
+    "prose-dark",
     "prose-lg"
   );
 
@@ -397,7 +653,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
               )}
 
 
-                <div className="space-y-6 bg-background-2 p-6 rounded-lg">
+                <div className="space-y-6 bg-background-2/50 p-6 rounded-lg">
 
                     <h2 className="text-2xl font-bold">Quick Wins</h2>
 
