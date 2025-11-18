@@ -184,7 +184,7 @@ function createMarkdownComponents(): Components {
             {hasCross && (
               <>
                 <span className="inline-flex items-center justify-center rounded bg-olive-100 p-1">
-                  <FaIcon style="classic" weight="light" icon="times" className="inline-block w-5 h-5 text-olive-700 shrink-0" />
+                  <FaIcon style="light" icon="times" className="inline-block w-5 h-5 text-olive-700 shrink-0" />
                 </span>
               </>
             )}
