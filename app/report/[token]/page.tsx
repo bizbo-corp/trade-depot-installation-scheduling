@@ -176,16 +176,16 @@ function createMarkdownComponents(): Components {
           <li {...props} className={cn("list-none flex items-start gap-2", className)}>
             {hasCheck && (
               <>
-                <span className="inline-flex items-center justify-center rounded bg-olive-100 p-1">
-                  <FaIcon style="duotone" weight="thin" icon="check" className="inline-block w-5 h-5 text-olive-700 shrink-0" />
-                </span>
+                <div className="inline-flex items-center justify-center rounded bg-olive-100 p-1">
+                  <FaIcon icon="check" className="w-6 h-6 text-olive-700 shrink-0" />
+                </div>
               </>
             )}
             {hasCross && (
               <>
-                <span className="inline-flex items-center justify-center rounded bg-olive-100 p-1">
-                  <FaIcon style="light" icon="times" className="inline-block w-5 h-5 text-olive-700 shrink-0" />
-                </span>
+                <div className="inline-flex items-center justify-center rounded bg-olive-100 p-1">
+                  <FaIcon icon="times" className="w-6 h-6 text-olive-700 shrink-0" />
+                </div>
               </>
             )}
             <span>{processedChildren}</span>
@@ -354,12 +354,24 @@ export default async function ReportPage({ params }: ReportPageProps) {
     <div className="flex bg-background flex-col min-h-screen">
       <Header />
 
-      <div className="flex-1 container mx-auto px-4 md:px-6 py-16">
-        <Card className="mt-4 bg-background border-0 p-0 m-0">
-          <CardHeader>
-            <CardTitle>UX Analysis Report: {url}</CardTitle>
-          </CardHeader>
-          <CardContent>
+      <div className="flex-1 container mx-auto px-4 md:px-6 py-24 space-y-6">
+
+            <CardTitle className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold">UX Analysis Report:</h1> 
+            <span className="inline-block rounded-full bg-olive-700/90 hover:bg-olive-500/100 transition-all px-3 py-1 text-xs font-semibold text-background">
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className=""
+              >
+                {new URL(url).hostname}
+              </a>
+            </span>
+
+            </CardTitle>
+
+            
             <div className="space-y-6 bg-background">
 
 
@@ -367,7 +379,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
                 <div className="space-y-6 md:col-span-2">
               {/* Key Takeaways - displayed first in a card */}
               {keyTakeaways && (
-                <Card className="w-full">
+                <Card className="w-full bg-background-2 border-0">
                   <CardHeader>
                     <CardTitle>Key Takeaways</CardTitle>
                   </CardHeader>
@@ -385,17 +397,17 @@ export default async function ReportPage({ params }: ReportPageProps) {
               )}
 
 
+                <div className="space-y-6 bg-background-2 p-6 rounded-lg">
+
+                    <h2 className="text-2xl font-bold">Quick Wins</h2>
+
                   {/* Quick Wins - each wrapped in a Card with sentiment-based background */}
                   {quickWins.length > 0 ? (
                     quickWins.map((quickWin, index) => {
-                      const bgColorClass = 
-                        quickWin.sentiment === "Bad" ? "bg-red-200" :
-                        quickWin.sentiment === "Good" ? "bg-green-200" :
-                        quickWin.sentiment === "Neutral" ? "bg-gray-200" :
-                        "";
+
                       
                       return (
-                        <Card key={index} className={cn("w-full", bgColorClass)}>
+                        <Card key={index} className={cn("w-full bg-background/50  border-0")}>
                           <CardContent className="pt-6">
                             <div className={proseClasses}>
                               <ReactMarkdown
@@ -421,6 +433,8 @@ export default async function ReportPage({ params }: ReportPageProps) {
                     </div>
                   )}
                 </div>
+                </div>
+
                 {screenshot && (
                   <div className="w-full md:col-span-1 rounded-lg overflow-hidden sticky top-6 h-fit shadow-2xl">
                     <img
@@ -432,8 +446,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
                 )}
               </div>
             </div>
-          </CardContent>
-        </Card>
+
       </div>
 
       <Footer />
