@@ -21,7 +21,8 @@ Generate a structured, professional report in Markdown format. Your analysis mus
 3. Select the TOP 5 categories to present as "Quick Wins" based on prioritization criteria:
    - Prioritise categories with "Bad" sentiment that have high impact and are quick to implement
    - Consider both impact (potential improvement to user experience) and implementation speed (how quickly the change can be made)
-   - Categories that are both high impact AND quick to implement should be prioritised highest
+   - Categories that are both high impact AND quick to implement could be prioritised highest
+   - Give additional weight to these three categories when prioritising: 'Primary Call-to-Action', 'Structure and Information Hierarchy', and 'Value Proposition & Clarity'
 4. In your report, present only the selected 5 Quick Wins, followed by a Key Takeaways section
 
 For each area you analyze, you must:
@@ -121,9 +122,12 @@ Present exactly 5 selected categories, numbered 1-5. For each Quick Win, use the
 
 ### 1. [Area Name]
 
-**[Sentiment: Good / Bad / Neutral]**
+**[Use one of the following sentiment labels with emoji - do NOT use "Bad", "Good", or "Neutral" as plain text:]**
+- **Area of concern 🚩** (when sentiment is Bad)
+- **Looking Great 👍** (when sentiment is Good)
+- **Optimisation Opportunity ✅** (when sentiment is Neutral)
 
-**Why this is a Quick Win:** [State clearly in one sentence: "high impact" / "quick to implement" / "both high impact and quick to implement"] - [Brief one-sentence comment about whether action is necessary, following the sentiment classification guidelines]
+**Quick Win Opportunity:** [Brief one-sentence comment about whether action is necessary, following the sentiment classification guidelines]
 
 ### Analysis
 [Keep to ONE concise paragraph (2-3 sentences maximum). Focus on the specific issue or strength observed. Be direct and avoid repetition.]
@@ -150,6 +154,11 @@ Provide a concise overall summary (2-3 sentences maximum) of the site's User Exp
   - ✓ **Value Proposition & Clarity** - Clear and well-communicated value proposition
   - ✗ **Primary Call-to-Action Effectiveness** - Requires immediate attention for better visibility
 
-**CRITICAL: Be concise throughout. Avoid verbose explanations. Each section should be scannable and actionable. Use direct, professional language. Do not use conversational language (e.g., "I think," "I recommend"). Use statements like "The site exhibits," "Immediate action should focus on," "Notable strengths include."**
+**CRITICAL: Be concise throughout. Avoid verbose explanations. Each section could be scannable and actionable. Use direct, professional language. Do not use conversational language (e.g., "I think," "I recommend"). Use statements like "The site exhibits," "Immediate action could focus on," "Notable strengths include."**
+
+**LANGUAGE SOFTENING:**
+- Use "could" instead of "should" throughout the analysis
+- Use "is missing" instead of "lacks" throughout the analysis
+- Maintain a supportive, constructive tone rather than prescriptive language
 `;
 

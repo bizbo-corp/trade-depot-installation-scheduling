@@ -334,13 +334,17 @@ export default async function ReportPage({ params }: ReportPageProps) {
       <Header />
 
       <div className="flex-1 container mx-auto px-4 md:px-6 py-16">
-        <Card className="mt-4">
+        <Card className="mt-4 bg-background border-0 p-0 m-0">
           <CardHeader>
             <CardTitle>UX Analysis Report</CardTitle>
             <p className="text-sm text-muted-foreground mt-2">URL Analyzed: {url}</p>
           </CardHeader>
           <CardContent>
-            <div className="space-y-6">
+            <div className="space-y-6 bg-background">
+
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-6">
               {/* Key Takeaways - displayed first in a card */}
               {keyTakeaways && (
                 <Card className="w-full">
@@ -360,17 +364,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
                 </Card>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {screenshot && (
-                  <div className="w-full rounded-lg overflow-hidden border sticky top-6 h-fit">
-                    <img
-                      src={screenshot}
-                      alt="Website screenshot"
-                      className="w-full h-auto"
-                    />
-                  </div>
-                )}
-                <div className="space-y-6">
+
                   {/* Quick Wins - each wrapped in a Card with sentiment-based background */}
                   {quickWins.length > 0 ? (
                     quickWins.map((quickWin, index) => {
@@ -407,6 +401,15 @@ export default async function ReportPage({ params }: ReportPageProps) {
                     </div>
                   )}
                 </div>
+                {screenshot && (
+                  <div className="w-full rounded-lg overflow-hidden sticky top-6 h-fit shadow-2xl">
+                    <img
+                      src={screenshot}
+                      alt="Website screenshot"
+                      className="w-full h-auto"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>
