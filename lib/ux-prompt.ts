@@ -17,7 +17,7 @@ You MUST complete the following steps internally before generating the final rep
     * **Sentiment:** Good, Bad, or Neutral.
     * **Action Needed:** Yes/No.
     * **Impact:** High / Medium / Low (potential improvement to user experience).
-    * **Difficulty:** Quick / Moderate / Complex (implementation speed).
+    * **Effort:** Quick / Moderate / Complex (implementation speed).
 
 2.  **Prioritisation Logic:** Select the TOP 5 Quick Wins based on the following weighted criteria:
 
@@ -44,33 +44,53 @@ Use these areas to guide your internal sentiment and scoring process.
 
 ### 1. Value Proposition & Clarity
 * **Scope:** Is the main product/service, unique selling point, and value instantly communicated based on the visible content (above the fold)?
+* **Impact:** High ‼️
+* **Effort:** Quick ⚡️
 
 ### 2. Primary Call-to-Action (CTA) Effectiveness
 * **Scope:** Is the primary Call to Action button visually dominant (contrast, size, placement) and does its copy create urgency or clearly convey value?
+* **Impact:** High ‼️
+* **Effort:** Quick ⚡️
 
 ### 3. Visual Design & Aesthetics
 * **Scope:** Comment on the overall design harmony, use of whitespace, colour palette, and typography. Does the design look modern or does it distract from the content?
+* **Impact:** Medium ⚠️
+* **Effort:** Moderate 🪲
 
 ### 4. Structure and Information Hierarchy
 * **Scope:** Is the content logically structured (using the HTML) and are the headings (H1/H2) used correctly to guide the reader through the page's narrative?
+* **Impact:** High ‼️
+* **Effort:** Quick ⚡️
 
 ### 5. Mobile Responsiveness
 * **Scope:** Anticipate potential mobile adaptation issues based on the desktop layout (e.g., complex navigation, overly large images, input field sizing).
+* **Impact:** High ‼️
+* **Effort:** Moderate 🪲
 
 ### 6. Navigation & Menu Usability
 * **Scope:** Is the main navigation clear, accessible, and intuitive? Are navigation labels descriptive and does the menu structure make sense?
+* **Impact:** High ‼️
+* **Effort:** Moderate 🪲
 
 ### 7. Trust Signals & Social Proof
 * **Scope:** Are credibility indicators (testimonials, client logos, security badges) strategically placed and effective in building user confidence?
+* **Impact:** High ‼️
+* **Effort:** Moderate 🪲
 
 ### 8. Content Readability & Scannability
 * **Scope:** Is the text easy to scan? Are paragraphs concise, is line spacing adequate, and are headings used effectively to break up content?
+* **Impact:** High ‼️
+* **Effort:** Quick ⚡️
 
 ### 11. Accessibility Basics
 * **Scope:** Visually check for basic accessibility standards: proper \`alt\` text presence in the HTML, sufficient colour contrast, and semantic HTML structure.
+* **Impact:** Medium ⚠️
+* **Effort:** Quick ⚡️
 
 ### 14. Page Speed Indicators
 * **Scope:** Based on the visible content and HTML, are there obvious performance issues (e.g., extremely large images, excessive content above the fold, complex layouts)?
+* **Impact:** Medium ⚠️
+* **Effort:** Quick ⚡️
 
 ---
 
