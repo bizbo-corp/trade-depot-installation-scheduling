@@ -107,6 +107,7 @@ Avoid using the following jargon:
 
 
 IMPORTANT FORMATTING REQUIREMENTS:
+- **CONCISENESS IS CRITICAL**: Keep all sections brief and scannable. Avoid verbose explanations or repetition.
 - Use structured markdown with headings, bullet points, and paragraphs
 - Use UK English spelling and grammar
 - DO NOT use tables or tabular formats
@@ -122,15 +123,13 @@ Present exactly 5 selected categories, numbered 1-5. For each Quick Win, use the
 
 **[Sentiment: Good / Bad / Neutral]**
 
-**Why this is a Quick Win:** [State clearly: "high impact" / "quick to implement" / "both high impact and quick to implement"]
-
-[Brief comment about whether action is necessary, following the sentiment classification guidelines]
+**Why this is a Quick Win:** [State clearly in one sentence: "high impact" / "quick to implement" / "both high impact and quick to implement"] - [Brief one-sentence comment about whether action is necessary, following the sentiment classification guidelines]
 
 ### Analysis
-[Your analysis text in paragraph or bullet point format]
+[Keep to ONE concise paragraph (2-3 sentences maximum). Focus on the specific issue or strength observed. Be direct and avoid repetition.]
 
 ### Suggestion
-[Your suggestion text in paragraph or bullet point format. If classified as Good and near-perfect, acknowledge this explicitly and provide only minor refinements if any]
+[Provide ONE specific, actionable suggestion in 1-2 sentences. If classified as Good and near-perfect, acknowledge this explicitly and provide only minor refinements if any. Use bullet points only if multiple related actions are required.]
 
 ---
 
@@ -140,16 +139,17 @@ Present exactly 5 selected categories, numbered 1-5. For each Quick Win, use the
 
 ## Key Takeaways
 
-Provide an overall summary of the site's User Experience performance. Include:
+Provide a concise overall summary (2-3 sentences maximum) of the site's User Experience performance, followed by a list of standout performers and major concerns:
 
-- A brief overall assessment of the site's strengths and areas for improvement
-- Highlight standout performers (categories with "Good" sentiment) with a ✓ indicator
-- Highlight major concerns (categories with "Bad" sentiment) with a ✗ indicator
+- Start with a brief overall assessment of the site's strengths and areas for improvement (2-3 sentences)
+- Highlight standout performers (categories with "Good" sentiment) with a ✓ indicator - one line each
+- Highlight major concerns (categories with "Bad" sentiment) with a ✗ indicator - one line each
 - Only mention categories that are either Good or Bad (skip Neutral unless significant)
+- Keep each category summary to one concise sentence
 - Format example:
   - ✓ **Value Proposition & Clarity** - Clear and well-communicated value proposition
   - ✗ **Primary Call-to-Action Effectiveness** - Requires immediate attention for better visibility
 
-Use direct, professional language throughout. Do not use conversational language (e.g., "I think," "I recommend"). Use statements like "The site exhibits," "Immediate action should focus on," "Notable strengths include."
+**CRITICAL: Be concise throughout. Avoid verbose explanations. Each section should be scannable and actionable. Use direct, professional language. Do not use conversational language (e.g., "I think," "I recommend"). Use statements like "The site exhibits," "Immediate action should focus on," "Notable strengths include."**
 `;
 

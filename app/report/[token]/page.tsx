@@ -1,3 +1,4 @@
+import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Header } from "@/components/header";
@@ -6,9 +7,118 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import { updateVerificationStatus } from "@/lib/hubspot";
+import { X, Check, Circle } from "lucide-react";
+import type { Components } from "react-markdown";
 
 interface ReportPageProps {
   params: Promise<{ token: string }>;
+}
+
+// Helper function to split markdown into Quick Win sections
+function splitQuickWins(markdown: string): { quickWins: string[]; keyTakeaways: string } {
+  // Split by Key Takeaways section
+  const parts = markdown.split("## Key Takeaways");
+  const quickWinsSection = parts[0] || "";
+  const keyTakeaways = parts.length > 1 ? "## Key Takeaways" + parts[1] : "";
+
+  // Remove "## Quick Wins" heading if present
+  let content = quickWinsSection.replace(/^## Quick Wins\s*/m, "").trim();
+
+  // Split by horizontal rules (---) that appear on their own line
+  const sections = content.split(/^---\s*$/m).filter((section) => section.trim());
+
+  // If we only have one section or no horizontal rules, try splitting by numbered headings
+  if (sections.length <= 1) {
+    const headingRegex = /^### \d+\./gm;
+    const matches = Array.from(content.matchAll(headingRegex));
+    
+    if (matches.length > 1) {
+      const parts: string[] = [];
+      for (let i = 0; i < matches.length; i++) {
+        const start = matches[i].index!;
+        const end = i < matches.length - 1 ? matches[i + 1].index! : content.length;
+        const section = content.substring(start, end).trim();
+        if (section) {
+          parts.push(section);
+        }
+      }
+      return { quickWins: parts, keyTakeaways };
+    }
+  }
+
+  // Filter out empty sections and return
+  return { 
+    quickWins: sections.filter((s) => s.trim() && !s.match(/^## Quick Wins\s*$/m)), 
+    keyTakeaways 
+  };
+}
+
+// Custom ReactMarkdown components
+function createMarkdownComponents(): Components {
+  return {
+    // Replace sentiment text with icons (handle bold text)
+    strong: ({ children, ...props }) => {
+      // Handle both string and array children
+      let text = "";
+      if (typeof children === "string") {
+        text = children;
+      } else if (Array.isArray(children)) {
+        text = children
+          .map((child) => (typeof child === "string" ? child : String(child)))
+          .join("");
+      } else {
+        text = String(children || "");
+      }
+
+      const sentimentMatch = text.match(/\[Sentiment:\s*(Good|Bad|Neutral)\]/);
+      if (sentimentMatch) {
+        const sentiment = sentimentMatch[1];
+        let icon;
+        let colorClass;
+        if (sentiment === "Bad") {
+          icon = <X className="inline-block w-5 h-5" />;
+          colorClass = "text-red-500";
+        } else if (sentiment === "Good") {
+          icon = <Check className="inline-block w-5 h-5" />;
+          colorClass = "text-green-500";
+        } else {
+          icon = <Circle className="inline-block w-5 h-5" />;
+          colorClass = "text-yellow-500";
+        }
+        return (
+          <span {...props} className={cn("inline-flex items-center gap-2", colorClass)}>
+            {icon}
+          </span>
+        );
+      }
+      return <strong {...props}>{children}</strong>;
+    },
+    // Make "Analysis" and "Suggestion" headings render as h4
+    heading: ({ level, children, ...props }) => {
+      // Handle both string and array children
+      let text = "";
+      if (typeof children === "string") {
+        text = children;
+      } else if (Array.isArray(children)) {
+        text = children
+          .map((child) => (typeof child === "string" ? child : String(child)))
+          .join("")
+          .trim();
+      } else {
+        text = String(children || "").trim();
+      }
+
+      if ((text === "Analysis" || text === "Suggestion") && level !== 4) {
+        return (
+          <h4 {...props} className="text-xl font-bold mt-4 mb-2">
+            {children}
+          </h4>
+        );
+      }
+      const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements;
+      return <HeadingTag {...props}>{children}</HeadingTag>;
+    },
+  };
 }
 
 async function getReportData(token: string): Promise<{
@@ -112,6 +222,67 @@ export default async function ReportPage({ params }: ReportPageProps) {
   }
 
   const { report, screenshot, url } = result.data;
+  const { quickWins, keyTakeaways } = splitQuickWins(report);
+  const markdownComponents = createMarkdownComponents();
+
+  const proseClasses = cn(
+    "prose",
+    "prose-lg",
+    "max-w-none",
+    "dark:prose-invert",
+    "prose-headings:font-bold",
+    "prose-headings:text-foreground",
+    "prose-p:text-foreground",
+    "prose-p:mb-4",
+    "prose-p:mt-0",
+    "prose-strong:text-foreground",
+    "prose-strong:font-bold",
+    "prose-ul:text-foreground",
+    "prose-ul:my-4",
+    "prose-ol:text-foreground",
+    "prose-ol:my-4",
+    "prose-li:text-foreground",
+    "prose-li:my-2",
+    "prose-a:text-primary",
+    "prose-a:no-underline",
+    "hover:prose-a:underline",
+    "prose-h1:text-4xl",
+    "prose-h1:font-bold",
+    "prose-h1:mt-8",
+    "prose-h1:mb-4",
+    "prose-h2:text-3xl",
+    "prose-h2:font-bold",
+    "prose-h2:mt-8",
+    "prose-h2:mb-4",
+    "prose-h3:text-2xl",
+    "prose-h3:font-bold",
+    "prose-h3:mt-6",
+    "prose-h3:mb-3",
+    "prose-h4:text-xl",
+    "prose-h4:font-bold",
+    "prose-h4:mt-4",
+    "prose-h4:mb-2",
+    "prose-blockquote:border-l-4",
+    "prose-blockquote:border-primary",
+    "prose-blockquote:pl-4",
+    "prose-blockquote:italic",
+    "prose-blockquote:my-4",
+    "prose-hr:my-8",
+    "prose-hr:border-border",
+    "prose-table:w-full",
+    "prose-table:my-8",
+    "prose-th:border",
+    "prose-th:border-border",
+    "prose-th:bg-muted",
+    "prose-th:px-4",
+    "prose-th:py-3",
+    "prose-th:text-left",
+    "prose-th:font-semibold",
+    "prose-td:border",
+    "prose-td:border-border",
+    "prose-td:px-4",
+    "prose-td:py-3"
+  );
 
   return (
     <div className="flex bg-background flex-col min-h-screen">
@@ -134,67 +305,45 @@ export default async function ReportPage({ params }: ReportPageProps) {
                   />
                 </div>
               )}
-              <div
-                className={cn(
-                  "prose",
-                  "prose-lg",
-                  "max-w-none",
-                  "dark:prose-invert",
-                  "prose-headings:font-bold",
-                  "prose-headings:text-foreground",
-                  "prose-p:text-foreground",
-                  "prose-p:mb-4",
-                  "prose-p:mt-0",
-                  "prose-strong:text-foreground",
-                  "prose-strong:font-bold",
-                  "prose-ul:text-foreground",
-                  "prose-ul:my-4",
-                  "prose-ol:text-foreground",
-                  "prose-ol:my-4",
-                  "prose-li:text-foreground",
-                  "prose-li:my-2",
-                  "prose-a:text-primary",
-                  "prose-a:no-underline",
-                  "hover:prose-a:underline",
-                  "prose-h1:text-4xl",
-                  "prose-h1:font-bold",
-                  "prose-h1:mt-8",
-                  "prose-h1:mb-4",
-                  "prose-h2:text-3xl",
-                  "prose-h2:font-bold",
-                  "prose-h2:mt-8",
-                  "prose-h2:mb-4",
-                  "prose-h3:text-2xl",
-                  "prose-h3:font-bold",
-                  "prose-h3:mt-6",
-                  "prose-h3:mb-3",
-                  "prose-h4:text-xl",
-                  "prose-h4:font-bold",
-                  "prose-h4:mt-4",
-                  "prose-h4:mb-2",
-                  "prose-blockquote:border-l-4",
-                  "prose-blockquote:border-primary",
-                  "prose-blockquote:pl-4",
-                  "prose-blockquote:italic",
-                  "prose-blockquote:my-4",
-                  "prose-hr:my-8",
-                  "prose-hr:border-border",
-                  "prose-table:w-full",
-                  "prose-table:my-8",
-                  "prose-th:border",
-                  "prose-th:border-border",
-                  "prose-th:bg-muted",
-                  "prose-th:px-4",
-                  "prose-th:py-3",
-                  "prose-th:text-left",
-                  "prose-th:font-semibold",
-                  "prose-td:border",
-                  "prose-td:border-border",
-                  "prose-td:px-4",
-                  "prose-td:py-3"
+              <div className="space-y-6">
+                {/* Quick Wins - each wrapped in a Card */}
+                {quickWins.length > 0 ? (
+                  quickWins.map((quickWin, index) => (
+                    <Card key={index} className="w-full">
+                      <CardContent className="pt-6">
+                        <div className={proseClasses}>
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={markdownComponents}
+                          >
+                            {quickWin}
+                          </ReactMarkdown>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  // Fallback: if no Quick Wins sections found, render the full report
+                  <div className={proseClasses}>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={markdownComponents}
+                    >
+                      {report}
+                    </ReactMarkdown>
+                  </div>
                 )}
-              >
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{report}</ReactMarkdown>
+                {/* Key Takeaways */}
+                {keyTakeaways && (
+                  <div className={proseClasses}>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={markdownComponents}
+                    >
+                      {keyTakeaways}
+                    </ReactMarkdown>
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>
