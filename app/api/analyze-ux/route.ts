@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Wait a bit after scrolling to allow lazy-loaded content to render
-      await page.waitForTimeout(1000);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Capture full page screenshot
       const screenshotBuffer = await page.screenshot({
