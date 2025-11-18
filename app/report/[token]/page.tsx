@@ -91,7 +91,8 @@ function extractText(children: React.ReactNode): string {
       .join("")
       .trim();
   } else if (React.isValidElement(children)) {
-    return extractText(children.props.children);
+    const props = children.props as { children?: React.ReactNode };
+    return extractText(props.children);
   }
   return String(children || "").trim();
 }
@@ -103,10 +104,11 @@ function removeSymbolsFromChildren(children: React.ReactNode): React.ReactNode {
   } else if (Array.isArray(children)) {
     return children.map((child) => removeSymbolsFromChildren(child));
   } else if (React.isValidElement(children)) {
+    const props = children.props as { children?: React.ReactNode; [key: string]: unknown };
     return React.cloneElement(children, {
-      ...children.props,
-      children: removeSymbolsFromChildren(children.props.children),
-    });
+      ...props,
+      children: removeSymbolsFromChildren(props.children),
+    } as any);
   }
   return children;
 }
