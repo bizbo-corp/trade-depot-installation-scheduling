@@ -99,6 +99,13 @@ function extractImageCoordinates(markdown: string): ImageCoordinates | null {
           height: coordinates.height,
           zoom: zoom,
           relevant: coordinates.relevant !== undefined ? coordinates.relevant : true,
+          focusPoint: coordinates.focusPoint && 
+            typeof coordinates.focusPoint.x === 'number' && 
+            typeof coordinates.focusPoint.y === 'number' &&
+            coordinates.focusPoint.x >= 0 &&
+            coordinates.focusPoint.y >= 0
+            ? coordinates.focusPoint
+            : undefined,
         };
         
         // Check if this match appears in a better location (between Quick Win Opportunity and Analysis)

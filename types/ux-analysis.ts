@@ -10,6 +10,10 @@ export interface AnalyzeUXResponse {
   success: true;
   report: string;
   screenshot: string; // Base64 data URL of the screenshot
+  screenshotWidth?: number; // Width of the screenshot in pixels
+  screenshotHeight?: number; // Height of the screenshot in pixels
+  viewportWidth?: number; // Viewport width used during capture
+  viewportHeight?: number; // Viewport height used during capture
 }
 
 export interface AnalyzeUXErrorResponse {
@@ -118,5 +122,13 @@ export interface ImageCoordinates {
    * Defaults to true if not specified.
    */
   relevant?: boolean;
+  /**
+   * Optional focus point for the visual indicator dot.
+   * If not specified, defaults to center of the coordinate area (x + width/2, y + height/2).
+   */
+  focusPoint?: {
+    x: number;
+    y: number;
+  };
 }
 

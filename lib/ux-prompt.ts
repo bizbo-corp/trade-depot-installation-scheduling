@@ -148,14 +148,26 @@ Use these areas to guide your internal sentiment and scoring process.
   "width": <number>,
   "height": <number>,
   "zoom": <number>,
+  "focusPoint": {
+    "x": <number>,
+    "y": <number>
+  },
   "relevant": <true|false>
 }
 \`\`\`
 
 Where:
-- \`x\` and \`y\` are the top-left pixel coordinates of the area of interest (relative to the full screenshot, starting from 0,0 at top-left). MUST be within the screenshot bounds.
-- \`width\` and \`height\` are the pixel dimensions of the area to highlight - should be tight around the specific element, typically 200-800px wide and 100-600px tall. MUST be at least 50px and should not exceed 80% of the screenshot dimensions.
-- \`zoom\` is an optional zoom level (1.0 = no zoom, 2.0 = 2x zoom, etc.) - use this to focus on smaller details. Recommended range: 1.5-3.0. If not specified, will default to 1.5.
+- \`x\` and \`y\` are the top-left pixel coordinates of the area of interest (relative to the full screenshot, starting from 0,0 at top-left). MUST be within the screenshot bounds. The screenshot dimensions are provided above - use them to ensure coordinates are valid.
+- \`width\` and \`height\` are the pixel dimensions of the area to highlight - should be tight around the specific element, typically 200-800px wide and 100-600px tall. MUST be at least 50px and should not exceed 80% of the screenshot dimensions. For small elements like buttons, use 100-300px. For text blocks, use 300-600px. For sections, use 400-800px.
+- \`zoom\` is an optional zoom level (1.0 = no zoom, 2.0 = 2x zoom, etc.) - use this to focus on smaller details. Recommended ranges:
+  - Small elements (<200px): 2.5-3.0x zoom
+  - Medium elements (200-500px): 1.5-2.0x zoom
+  - Large elements (>500px): 1.0-1.5x zoom
+  - Buttons: 2.0-3.0x zoom
+  - Text blocks: 1.5-2.0x zoom
+  - Sections: 1.0-1.5x zoom
+  If not specified, will be calculated automatically based on element size.
+- \`focusPoint\` is optional - an object with \`x\` and \`y\` coordinates for the center point of the focus indicator dot. If not specified, defaults to the center of the coordinate area (x + width/2, y + height/2).
 - \`relevant\` is optional - set to \`false\` if no image should be shown, or omit entirely (defaults to \`true\`)
 
 **CRITICAL ACCURACY REQUIREMENTS - READ CAREFULLY:**

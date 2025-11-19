@@ -80,6 +80,10 @@ export async function POST(request: NextRequest) {
   let browser;
   let htmlContent = '';
   let screenshotBase64 = '';
+  let screenshotWidth = 0;
+  let screenshotHeight = 0;
+  let viewportWidth = 0;
+  let viewportHeight = 0;
 
   // Realistic User-Agent string (Chrome on Windows)
   const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
@@ -138,6 +142,8 @@ export async function POST(request: NextRequest) {
       ];
       const viewport = viewports[attempt] || viewports[0];
       await page.setViewport(viewport);
+      viewportWidth = viewport.width;
+      viewportHeight = viewport.height;
 
       // Go to the URL with improved wait strategy
       await page.goto(url, { 
@@ -168,6 +174,24 @@ export async function POST(request: NextRequest) {
       // Wait a bit after scrolling to allow lazy-loaded content to render
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
+      // Get page dimensions before screenshot
+      const pageDimensions = await page.evaluate(() => ({
+        width: Math.max(
+          document.body.scrollWidth,
+          document.body.offsetWidth,
+          document.documentElement.clientWidth,
+          document.documentElement.scrollWidth,
+          document.documentElement.offsetWidth
+        ),
+        height: Math.max(
+          document.body.scrollHeight,
+          document.body.offsetHeight,
+          document.documentElement.clientHeight,
+          document.documentElement.scrollHeight,
+          document.documentElement.offsetHeight
+        )
+      }));
+
       // Capture full page screenshot
       const screenshotBuffer = await page.screenshot({
         fullPage: true,
@@ -175,6 +199,10 @@ export async function POST(request: NextRequest) {
         quality: 80,
       }) as Buffer;
       screenshotBase64 = bufferToBase64(screenshotBuffer, 'image/jpeg');
+
+      // Use actual page dimensions for screenshot dimensions
+      screenshotWidth = pageDimensions.width;
+      screenshotHeight = pageDimensions.height;
 
       // Capture the full rendered HTML content
       htmlContent = await page.content();
@@ -241,6 +269,25 @@ export async function POST(request: NextRequest) {
           // Textual Input (HTML content for structure and text extraction)
           { 
             text: `The HTML content of the page is provided below. Use it to confirm the presence and structure of elements seen in the image, and to extract text content, alt-text, and metadata. \n\nHTML Content:\n---\n${htmlContent}` 
+          },
+          // Screenshot dimension information for accurate coordinate generation
+          { 
+            text: `**SCREENSHOT DIMENSIONS (CRITICAL FOR COORDINATE ACCURACY):**
+The screenshot has the following dimensions:
+- Screenshot width: ${screenshotWidth} pixels
+- Screenshot height: ${screenshotHeight} pixels
+- Viewport width used: ${viewportWidth} pixels
+- Viewport height used: ${viewportHeight} pixels
+
+**IMPORTANT:** All coordinates you provide must be relative to the full screenshot dimensions (${screenshotWidth}x${screenshotHeight}px). The coordinate system starts at (0,0) in the top-left corner. X increases to the right, Y increases downward.
+
+When generating coordinates:
+- Ensure x + width does not exceed ${screenshotWidth}
+- Ensure y + height does not exceed ${screenshotHeight}
+- Coordinates must be positive integers
+- The screenshot is a full-page capture, so elements may be at any Y position from 0 to ${screenshotHeight}
+
+` 
           },
           // The main prompt for the AI to execute the analysis
           { text: CUSTOM_UX_PROMPT },
@@ -313,6 +360,10 @@ export async function POST(request: NextRequest) {
       success: true,
       report: generatedText,
       screenshot: screenshotBase64,
+      screenshotWidth,
+      screenshotHeight,
+      viewportWidth,
+      viewportHeight,
     });
   } catch (error) {
     console.error('Gemini API call failed:', error);

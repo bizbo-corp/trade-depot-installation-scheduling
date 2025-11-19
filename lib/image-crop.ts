@@ -63,10 +63,16 @@ export async function cropImage(
           return;
         }
         
-        // Get zoom level (default to 1.5 for better visibility, or use specified zoom)
-        const zoom = coordinates.zoom && coordinates.zoom > 0 && coordinates.zoom <= 5 
-          ? coordinates.zoom 
-          : 1.5;
+        // Calculate or use zoom level
+        // If zoom is specified and valid, use it; otherwise calculate optimal zoom
+        let zoom: number;
+        if (coordinates.zoom && coordinates.zoom > 0 && coordinates.zoom <= 5) {
+          zoom = coordinates.zoom;
+        } else {
+          // Calculate optimal zoom based on element size
+          // We'll use a simple category detection from coordinates size
+          zoom = calculateOptimalZoom(coordinates);
+        }
         
         // Calculate output canvas size (apply zoom by scaling the output)
         const outputWidth = Math.round(cropWidth * zoom);
@@ -74,45 +80,36 @@ export async function cropImage(
         
         // Limit maximum output size to prevent memory issues (max 2000px)
         const maxOutputSize = 2000;
+        let finalZoom = zoom;
+        let finalWidth = outputWidth;
+        let finalHeight = outputHeight;
+        
         if (outputWidth > maxOutputSize || outputHeight > maxOutputSize) {
           const scale = Math.min(maxOutputSize / outputWidth, maxOutputSize / outputHeight);
-          const adjustedZoom = zoom * scale;
-          const adjustedWidth = Math.round(cropWidth * adjustedZoom);
-          const adjustedHeight = Math.round(cropHeight * adjustedZoom);
-          
-          canvas.width = adjustedWidth;
-          canvas.height = adjustedHeight;
-          
-          // Draw with adjusted zoom
-          ctx.drawImage(
-            img,
-            cropX,
-            cropY,
-            cropWidth,
-            cropHeight,
-            0,
-            0,
-            adjustedWidth,
-            adjustedHeight
-          );
-        } else {
-          // Set canvas size to output dimensions
-          canvas.width = outputWidth;
-          canvas.height = outputHeight;
-          
-          // Draw the exact coordinate area, scaled to output size (zoom applied here)
-          ctx.drawImage(
-            img,
-            cropX,           // Source X (exact coordinate)
-            cropY,           // Source Y (exact coordinate)
-            cropWidth,       // Source width (exact coordinate)
-            cropHeight,      // Source height (exact coordinate)
-            0,               // Destination X
-            0,               // Destination Y
-            outputWidth,     // Destination width (with zoom)
-            outputHeight     // Destination height (with zoom)
-          );
+          finalZoom = zoom * scale;
+          finalWidth = Math.round(cropWidth * finalZoom);
+          finalHeight = Math.round(cropHeight * finalZoom);
         }
+        
+        // Set canvas size to final dimensions
+        canvas.width = finalWidth;
+        canvas.height = finalHeight;
+        
+        // Draw the exact coordinate area, scaled to output size (zoom applied here)
+        ctx.drawImage(
+          img,
+          cropX,           // Source X (exact coordinate)
+          cropY,           // Source Y (exact coordinate)
+          cropWidth,       // Source width (exact coordinate)
+          cropHeight,      // Source height (exact coordinate)
+          0,               // Destination X
+          0,               // Destination Y
+          finalWidth,      // Destination width (with zoom)
+          finalHeight      // Destination height (with zoom)
+        );
+        
+        // Add focus indicator
+        addFocusIndicator(canvas, ctx, coordinates, finalZoom, cropX, cropY);
         
         // Convert to base64 data URL
         const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
@@ -190,5 +187,108 @@ export function isCoordinateAreaTooSmall(
 ): boolean {
   const { width, height } = coordinates;
   return width < minSize || height < minSize;
+}
+
+/**
+ * Calculates optimal zoom level based on element size and category
+ * @param coordinates - Image coordinates
+ * @param category - Optional category name for category-specific adjustments
+ * @returns Optimal zoom level (1.0 to 3.0)
+ */
+export function calculateOptimalZoom(
+  coordinates: ImageCoordinates,
+  category?: string
+): number {
+  const { width, height } = coordinates;
+  const avgSize = (width + height) / 2;
+  
+  // Base zoom calculation based on element size
+  let zoom: number;
+  
+  if (avgSize < 200) {
+    // Small elements: higher zoom
+    zoom = 2.5;
+  } else if (avgSize < 500) {
+    // Medium elements: moderate zoom
+    zoom = 1.75;
+  } else {
+    // Large elements: lower zoom
+    zoom = 1.25;
+  }
+  
+  // Category-specific adjustments
+  if (category) {
+    const categoryLower = category.toLowerCase();
+    
+    if (categoryLower.includes('button') || categoryLower.includes('cta') || categoryLower.includes('call to action')) {
+      // Buttons: Higher zoom for better visibility
+      zoom = Math.max(zoom, 2.0);
+      zoom = Math.min(zoom, 3.0);
+    } else if (categoryLower.includes('text') || categoryLower.includes('readability') || categoryLower.includes('content')) {
+      // Text blocks: Moderate zoom
+      zoom = Math.max(zoom, 1.5);
+      zoom = Math.min(zoom, 2.0);
+    } else if (categoryLower.includes('section') || categoryLower.includes('design') || categoryLower.includes('aesthetic')) {
+      // Sections: Lower zoom to show context
+      zoom = Math.max(zoom, 1.0);
+      zoom = Math.min(zoom, 1.5);
+    }
+  }
+  
+  // Clamp zoom between 1.0 and 3.0
+  return Math.max(1.0, Math.min(3.0, zoom));
+}
+
+/**
+ * Adds a focus indicator (dark dot with white stroke) to a cropped image
+ * @param canvas - The canvas element with the cropped image already drawn
+ * @param ctx - The canvas 2D context
+ * @param coordinates - Image coordinates with optional focusPoint
+ * @param zoom - The zoom level applied to the crop
+ * @param cropX - The X coordinate of the crop area in the source image
+ * @param cropY - The Y coordinate of the crop area in the source image
+ */
+function addFocusIndicator(
+  canvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
+  coordinates: ImageCoordinates,
+  zoom: number,
+  cropX: number,
+  cropY: number
+): void {
+  // Calculate focus point position
+  let focusX: number;
+  let focusY: number;
+  
+  if (coordinates.focusPoint) {
+    // Use provided focus point, but adjust relative to crop area
+    focusX = (coordinates.focusPoint.x - cropX) * zoom;
+    focusY = (coordinates.focusPoint.y - cropY) * zoom;
+  } else {
+    // Default to center of coordinate area
+    focusX = (coordinates.width / 2) * zoom;
+    focusY = (coordinates.height / 2) * zoom;
+  }
+  
+  // Ensure focus point is within canvas bounds
+  focusX = Math.max(8, Math.min(canvas.width - 8, focusX));
+  focusY = Math.max(8, Math.min(canvas.height - 8, focusY));
+  
+  // Calculate dot size (proportional to image size, but with min/max)
+  const dotSize = Math.max(12, Math.min(16, Math.round(canvas.width * 0.02)));
+  const radius = dotSize / 2;
+  const strokeWidth = 2;
+  
+  // Draw white stroke (outer circle)
+  ctx.beginPath();
+  ctx.arc(focusX, focusY, radius + strokeWidth, 0, 2 * Math.PI);
+  ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+  ctx.fill();
+  
+  // Draw dark dot (inner circle)
+  ctx.beginPath();
+  ctx.arc(focusX, focusY, radius, 0, 2 * Math.PI);
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+  ctx.fill();
 }
 
