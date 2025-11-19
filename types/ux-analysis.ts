@@ -111,5 +111,12 @@ export interface ImageCoordinates {
   width: number;
   height: number;
   zoom?: number;
+  /**
+   * Whether an image is relevant for this Quick Win.
+   * Set to false when the issue cannot be visually demonstrated
+   * (e.g., missing elements, abstract concepts like Page Speed Indicators).
+   * Defaults to true if not specified.
+   */
+  relevant?: boolean;
 }
 

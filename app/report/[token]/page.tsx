@@ -49,6 +49,11 @@ function extractImageCoordinates(markdown: string): ImageCoordinates | null {
       const jsonContent = match[1].trim();
       const coordinates = JSON.parse(jsonContent) as Partial<ImageCoordinates>;
       
+      // Check relevant flag first - if false, return null (no image should be shown)
+      if (coordinates.relevant === false) {
+        return null;
+      }
+      
       // Validate required fields and ensure they are positive numbers
       if (
         typeof coordinates.x === 'number' &&
@@ -63,17 +68,22 @@ function extractImageCoordinates(markdown: string): ImageCoordinates | null {
         // Validate zoom if present
         if (coordinates.zoom !== undefined) {
           if (typeof coordinates.zoom !== 'number' || coordinates.zoom <= 0) {
-            // Invalid zoom, use default
-            return {
-              x: coordinates.x,
-              y: coordinates.y,
-              width: coordinates.width,
-              height: coordinates.height,
-            };
+            // Invalid zoom, remove it (will use default in crop function)
+            delete coordinates.zoom;
           }
         }
         
-        return coordinates as ImageCoordinates;
+        // Default relevant to true if not specified
+        const result: ImageCoordinates = {
+          x: coordinates.x,
+          y: coordinates.y,
+          width: coordinates.width,
+          height: coordinates.height,
+          zoom: coordinates.zoom,
+          relevant: coordinates.relevant !== undefined ? coordinates.relevant : true,
+        };
+        
+        return result;
       }
     } catch (error) {
       // Continue to next match if this one fails

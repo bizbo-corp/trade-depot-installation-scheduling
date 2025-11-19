@@ -29,84 +29,45 @@ export async function cropImage(
         }
 
         // Validate input coordinates first and clamp if needed
-        let validCoordinates = { ...coordinates };
+        let cropX = Math.max(0, coordinates.x);
+        let cropY = Math.max(0, coordinates.y);
+        let cropWidth = coordinates.width;
+        let cropHeight = coordinates.height;
         
-        if (
-          coordinates.x < 0 ||
-          coordinates.y < 0 ||
-          coordinates.width <= 0 ||
-          coordinates.height <= 0 ||
-          coordinates.x + coordinates.width > img.width ||
-          coordinates.y + coordinates.height > img.height
-        ) {
-          // If coordinates are out of bounds, clamp them to image bounds
-          const clampedX = Math.max(0, Math.min(coordinates.x, img.width - 1));
-          const clampedY = Math.max(0, Math.min(coordinates.y, img.height - 1));
-          const clampedWidth = Math.min(coordinates.width, img.width - clampedX);
-          const clampedHeight = Math.min(coordinates.height, img.height - clampedY);
-          
-          if (clampedWidth <= 0 || clampedHeight <= 0) {
-            reject(new Error('Invalid crop coordinates: area too small or out of bounds'));
-            return;
-          }
-          
-          // Use clamped coordinates
-          validCoordinates = {
-            ...coordinates,
-            x: clampedX,
-            y: clampedY,
-            width: clampedWidth,
-            height: clampedHeight,
-          };
-        }
+        // Clamp to image bounds
+        cropX = Math.min(cropX, img.width - 1);
+        cropY = Math.min(cropY, img.height - 1);
+        cropWidth = Math.min(cropWidth, img.width - cropX);
+        cropHeight = Math.min(cropHeight, img.height - cropY);
         
-        // Calculate actual crop dimensions based on zoom
-        const zoom = validCoordinates.zoom && validCoordinates.zoom > 0 ? validCoordinates.zoom : 1.5;
-        const cropWidth = validCoordinates.width / zoom;
-        const cropHeight = validCoordinates.height / zoom;
-        
-        // Calculate center point of the crop area
-        const centerX = validCoordinates.x + validCoordinates.width / 2;
-        const centerY = validCoordinates.y + validCoordinates.height / 2;
-        
-        // Calculate new crop coordinates (centered on the original area)
-        const cropX = Math.max(0, centerX - cropWidth / 2);
-        const cropY = Math.max(0, centerY - cropHeight / 2);
-        
-        // Ensure crop area doesn't exceed image bounds
-        const finalCropX = Math.min(cropX, img.width - cropWidth);
-        const finalCropY = Math.min(cropY, img.height - cropHeight);
-        const finalCropWidth = Math.min(cropWidth, img.width - finalCropX);
-        const finalCropHeight = Math.min(cropHeight, img.height - finalCropY);
-        
-        // Final validation
-        if (
-          finalCropX < 0 ||
-          finalCropY < 0 ||
-          finalCropWidth <= 0 ||
-          finalCropHeight <= 0 ||
-          finalCropX + finalCropWidth > img.width ||
-          finalCropY + finalCropHeight > img.height
-        ) {
-          reject(new Error('Invalid crop coordinates: calculated area out of bounds'));
+        // Validate final crop area
+        if (cropWidth <= 0 || cropHeight <= 0 || cropX + cropWidth > img.width || cropY + cropHeight > img.height) {
+          reject(new Error('Invalid crop coordinates: area too small or out of bounds'));
           return;
         }
         
-        // Set canvas size to the desired output size (with zoom applied)
-        canvas.width = validCoordinates.width;
-        canvas.height = validCoordinates.height;
+        // Get zoom level (default to 1.0 for no zoom, or use specified zoom)
+        const zoom = coordinates.zoom && coordinates.zoom > 0 ? coordinates.zoom : 1.0;
         
-        // Draw the cropped and zoomed portion of the image
+        // Calculate output canvas size (apply zoom by scaling the output)
+        const outputWidth = Math.round(cropWidth * zoom);
+        const outputHeight = Math.round(cropHeight * zoom);
+        
+        // Set canvas size to output dimensions
+        canvas.width = outputWidth;
+        canvas.height = outputHeight;
+        
+        // Draw the exact coordinate area, scaled to output size (zoom applied here)
         ctx.drawImage(
           img,
-          finalCropX,
-          finalCropY,
-          finalCropWidth,
-          finalCropHeight,
-          0,
-          0,
-          canvas.width,
-          canvas.height
+          cropX,           // Source X (exact coordinate)
+          cropY,           // Source Y (exact coordinate)
+          cropWidth,       // Source width (exact coordinate)
+          cropHeight,      // Source height (exact coordinate)
+          0,               // Destination X
+          0,               // Destination Y
+          outputWidth,     // Destination width (with zoom)
+          outputHeight     // Destination height (with zoom)
         );
         
         // Convert to base64 data URL
@@ -150,5 +111,40 @@ export function validateCoordinates(
   }
   
   return true;
+}
+
+/**
+ * Checks if coordinates represent an overly large area (likely not specific enough)
+ * @param coordinates - Image coordinates to check
+ * @param imageWidth - Width of the source image
+ * @param imageHeight - Height of the source image
+ * @param threshold - Percentage threshold (default 0.8 = 80%)
+ * @returns true if coordinates cover more than threshold of the image
+ */
+export function isCoordinateAreaTooLarge(
+  coordinates: ImageCoordinates,
+  imageWidth: number,
+  imageHeight: number,
+  threshold: number = 0.8
+): boolean {
+  const { width, height } = coordinates;
+  const imageArea = imageWidth * imageHeight;
+  const coordinateArea = width * height;
+  const percentage = coordinateArea / imageArea;
+  return percentage > threshold;
+}
+
+/**
+ * Checks if coordinates represent an overly small area (likely invalid)
+ * @param coordinates - Image coordinates to check
+ * @param minSize - Minimum size in pixels (default 50)
+ * @returns true if coordinates are smaller than minimum size
+ */
+export function isCoordinateAreaTooSmall(
+  coordinates: ImageCoordinates,
+  minSize: number = 50
+): boolean {
+  const { width, height } = coordinates;
+  return width < minSize || height < minSize;
 }
 

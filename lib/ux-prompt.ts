@@ -126,7 +126,20 @@ Use these areas to guide your internal sentiment and scoring process.
 
 **Quick Win Opportunity:** [Brief one-sentence comment about whether action is necessary, following the sentiment classification guidelines]
 
-**IMAGE COORDINATES:** For each Quick Win, you MUST identify the specific area of the screenshot that relates to the issue being discussed. Include a JSON code block with the pixel coordinates of the area of focus. The coordinates should reference the visible area of the issue in the screenshot. Use the following format:
+**IMAGE COORDINATES:** For each Quick Win, determine if a visual image is relevant. Only include coordinates when the issue can be visually demonstrated with a specific UI element, text, or area visible in the screenshot.
+
+**When to include coordinates (relevant: true or omit relevant field):**
+- The issue relates to a visible UI element (buttons, text, images, layout)
+- The issue can be shown by highlighting a specific section (e.g., footer with trust signals, hero section with CTA)
+- The issue demonstrates a visual design problem (spacing, contrast, typography)
+
+**When to omit coordinates or set relevant: false:**
+- The issue is about missing elements (nothing visible to show)
+- The issue is abstract (Page Speed Indicators, general performance concerns)
+- The issue cannot be visually demonstrated in the screenshot
+- The issue is about functionality that isn't visible (accessibility code, meta tags)
+
+**If coordinates are relevant**, include a JSON code block with the pixel coordinates. Look at the screenshot carefully and identify the EXACT visual element, text, or area that demonstrates the issue. The coordinates should be tight around the actual element, not the entire page section. Use the following format:
 
 \`\`\`json
 {
@@ -134,16 +147,25 @@ Use these areas to guide your internal sentiment and scoring process.
   "y": <number>,
   "width": <number>,
   "height": <number>,
-  "zoom": <number>
+  "zoom": <number>,
+  "relevant": <true|false>
 }
 \`\`\`
 
 Where:
-- \`x\` and \`y\` are the top-left pixel coordinates of the area of interest (relative to the full screenshot)
-- \`width\` and \`height\` are the pixel dimensions of the area to highlight
-- \`zoom\` is an optional zoom level (1.0 = no zoom, 2.0 = 2x zoom, etc.) - use this to focus on smaller details. If not specified, default to 1.5 for better visibility.
+- \`x\` and \`y\` are the top-left pixel coordinates of the area of interest (relative to the full screenshot, starting from 0,0 at top-left)
+- \`width\` and \`height\` are the pixel dimensions of the area to highlight - should be tight around the specific element, typically 200-800px wide and 100-600px tall
+- \`zoom\` is an optional zoom level (1.0 = no zoom, 2.0 = 2x zoom, etc.) - use this to focus on smaller details. If not specified, default to 1.5 for better visibility
+- \`relevant\` is optional - set to \`false\` if no image should be shown, or omit entirely (defaults to \`true\`)
 
-The coordinates should accurately identify the visual element or area in the screenshot that demonstrates the issue. Place this JSON code block immediately after the "Quick Win Opportunity" line and before the "### Analysis" heading.
+**Critical accuracy requirements:**
+- For Trust Signals & Social Proof: Identify the exact footer section or area containing reviews, ratings, testimonials, or trust badges
+- For Call to Action buttons: Identify the exact button element, not the entire hero section
+- For Content Readability: Identify the specific text block or paragraph that demonstrates the issue
+- For Navigation: Identify the exact navigation menu or problematic menu item
+- Coordinates must reference the actual visible element in the screenshot, not a conceptual area
+
+Place this JSON code block immediately after the "Quick Win Opportunity" line and before the "### Analysis" heading. If the issue is not visually demonstrable, omit the JSON block entirely or set \`"relevant": false\`.
 
 ### Analysis
 [Keep to ONE concise paragraph (2-3 sentences maximum). Focus on the specific issue or strength observed.]
