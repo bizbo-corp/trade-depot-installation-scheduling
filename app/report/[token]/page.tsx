@@ -36,7 +36,7 @@ function removeSentimentText(text: string): string {
 function extractImageCoordinates(markdown: string): ImageCoordinates | null {
   // Look for JSON code blocks containing coordinate data
   // More flexible regex to handle various JSON formatting
-  const jsonCodeBlockRegex = /```json\s*([\s\S]*?)\s*```/gis;
+  const jsonCodeBlockRegex = /```json\s*([\s\S]*?)\s*```/gi;
   const matches = Array.from(markdown.matchAll(jsonCodeBlockRegex));
   
   if (!matches || matches.length === 0) {
@@ -88,7 +88,7 @@ function extractImageCoordinates(markdown: string): ImageCoordinates | null {
 function removeImageCoordinates(markdown: string): string {
   // Remove JSON code blocks that contain coordinate-like data
   // Match any JSON code block and check if it looks like coordinates
-  const jsonCodeBlockRegex = /```json\s*([\s\S]*?)\s*```/gis;
+  const jsonCodeBlockRegex = /```json\s*([\s\S]*?)\s*```/gi;
   let cleaned = markdown;
   const matches = Array.from(markdown.matchAll(jsonCodeBlockRegex));
   
