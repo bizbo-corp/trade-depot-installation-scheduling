@@ -35,7 +35,8 @@ function removeSentimentText(text: string): string {
 // Helper function to extract image coordinates from markdown
 function extractImageCoordinates(markdown: string): ImageCoordinates | null {
   // Look for JSON code blocks containing coordinate data
-  // More flexible regex to handle various JSON formatting
+  // More specific regex: look for JSON blocks that appear after "Quick Win Opportunity" and before "Analysis"
+  // This ensures we get coordinates from the correct location in the Quick Win section
   const jsonCodeBlockRegex = /```json\s*([\s\S]*?)\s*```/gi;
   const matches = Array.from(markdown.matchAll(jsonCodeBlockRegex));
   
@@ -44,14 +45,19 @@ function extractImageCoordinates(markdown: string): ImageCoordinates | null {
   }
   
   // Try to find a JSON block that looks like coordinates
-  for (const match of matches) {
+  // Prefer blocks that appear between "Quick Win Opportunity" and "Analysis" headings
+  let bestMatch: ImageCoordinates | null = null;
+  let bestMatchIndex = -1;
+  
+  for (let i = 0; i < matches.length; i++) {
+    const match = matches[i];
     try {
       const jsonContent = match[1].trim();
       const coordinates = JSON.parse(jsonContent) as Partial<ImageCoordinates>;
       
-      // Check relevant flag first - if false, return null (no image should be shown)
+      // Check relevant flag first - if false, skip this match
       if (coordinates.relevant === false) {
-        return null;
+        continue;
       }
       
       // Validate required fields and ensure they are positive numbers
@@ -65,25 +71,52 @@ function extractImageCoordinates(markdown: string): ImageCoordinates | null {
         coordinates.width > 0 &&
         coordinates.height > 0
       ) {
+        // Additional validation: coordinates should be reasonable
+        // Width and height should be at least 50px and not exceed 5000px (likely invalid)
+        if (
+          coordinates.width < 50 ||
+          coordinates.height < 50 ||
+          coordinates.width > 5000 ||
+          coordinates.height > 5000
+        ) {
+          console.warn('Coordinate dimensions out of reasonable bounds:', coordinates);
+          continue;
+        }
+        
         // Validate zoom if present
-        if (coordinates.zoom !== undefined) {
-          if (typeof coordinates.zoom !== 'number' || coordinates.zoom <= 0) {
+        let zoom = coordinates.zoom;
+        if (zoom !== undefined) {
+          if (typeof zoom !== 'number' || zoom <= 0 || zoom > 5) {
             // Invalid zoom, remove it (will use default in crop function)
-            delete coordinates.zoom;
+            zoom = undefined;
           }
         }
         
-        // Default relevant to true if not specified
         const result: ImageCoordinates = {
           x: coordinates.x,
           y: coordinates.y,
           width: coordinates.width,
           height: coordinates.height,
-          zoom: coordinates.zoom,
+          zoom: zoom,
           relevant: coordinates.relevant !== undefined ? coordinates.relevant : true,
         };
         
-        return result;
+        // Check if this match appears in a better location (between Quick Win Opportunity and Analysis)
+        const matchIndex = match.index || 0;
+        const beforeMatch = markdown.substring(0, matchIndex);
+        const hasQuickWinOpportunity = /Quick Win Opportunity:/i.test(beforeMatch);
+        const hasAnalysisAfter = /###\s+Analysis/i.test(markdown.substring(matchIndex));
+        
+        // If this match is in the ideal location, use it immediately
+        if (hasQuickWinOpportunity && hasAnalysisAfter) {
+          return result;
+        }
+        
+        // Otherwise, keep track of the best match so far
+        if (!bestMatch || (hasQuickWinOpportunity && bestMatchIndex === -1)) {
+          bestMatch = result;
+          bestMatchIndex = matchIndex;
+        }
       }
     } catch (error) {
       // Continue to next match if this one fails
@@ -91,7 +124,7 @@ function extractImageCoordinates(markdown: string): ImageCoordinates | null {
     }
   }
   
-  return null;
+  return bestMatch;
 }
 
 // Helper function to remove image coordinates JSON code block from markdown

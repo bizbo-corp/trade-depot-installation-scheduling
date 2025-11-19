@@ -34,6 +34,12 @@ export async function cropImage(
         let cropWidth = coordinates.width;
         let cropHeight = coordinates.height;
         
+        // Validate coordinates are within image bounds before clamping
+        if (cropX >= img.width || cropY >= img.height) {
+          reject(new Error(`Coordinates out of bounds: (${cropX}, ${cropY}) exceeds image size (${img.width}, ${img.height})`));
+          return;
+        }
+        
         // Clamp to image bounds
         cropX = Math.min(cropX, img.width - 1);
         cropY = Math.min(cropY, img.height - 1);
@@ -41,34 +47,72 @@ export async function cropImage(
         cropHeight = Math.min(cropHeight, img.height - cropY);
         
         // Validate final crop area
-        if (cropWidth <= 0 || cropHeight <= 0 || cropX + cropWidth > img.width || cropY + cropHeight > img.height) {
-          reject(new Error('Invalid crop coordinates: area too small or out of bounds'));
+        if (cropWidth <= 0 || cropHeight <= 0) {
+          reject(new Error(`Invalid crop coordinates: area too small (${cropWidth}x${cropHeight})`));
           return;
         }
         
-        // Get zoom level (default to 1.0 for no zoom, or use specified zoom)
-        const zoom = coordinates.zoom && coordinates.zoom > 0 ? coordinates.zoom : 1.0;
+        if (cropX + cropWidth > img.width || cropY + cropHeight > img.height) {
+          reject(new Error(`Invalid crop coordinates: area extends beyond image bounds`));
+          return;
+        }
+        
+        // Ensure minimum crop size (at least 10px)
+        if (cropWidth < 10 || cropHeight < 10) {
+          reject(new Error(`Invalid crop coordinates: area too small (minimum 10x10px required)`));
+          return;
+        }
+        
+        // Get zoom level (default to 1.5 for better visibility, or use specified zoom)
+        const zoom = coordinates.zoom && coordinates.zoom > 0 && coordinates.zoom <= 5 
+          ? coordinates.zoom 
+          : 1.5;
         
         // Calculate output canvas size (apply zoom by scaling the output)
         const outputWidth = Math.round(cropWidth * zoom);
         const outputHeight = Math.round(cropHeight * zoom);
         
-        // Set canvas size to output dimensions
-        canvas.width = outputWidth;
-        canvas.height = outputHeight;
-        
-        // Draw the exact coordinate area, scaled to output size (zoom applied here)
-        ctx.drawImage(
-          img,
-          cropX,           // Source X (exact coordinate)
-          cropY,           // Source Y (exact coordinate)
-          cropWidth,       // Source width (exact coordinate)
-          cropHeight,      // Source height (exact coordinate)
-          0,               // Destination X
-          0,               // Destination Y
-          outputWidth,     // Destination width (with zoom)
-          outputHeight     // Destination height (with zoom)
-        );
+        // Limit maximum output size to prevent memory issues (max 2000px)
+        const maxOutputSize = 2000;
+        if (outputWidth > maxOutputSize || outputHeight > maxOutputSize) {
+          const scale = Math.min(maxOutputSize / outputWidth, maxOutputSize / outputHeight);
+          const adjustedZoom = zoom * scale;
+          const adjustedWidth = Math.round(cropWidth * adjustedZoom);
+          const adjustedHeight = Math.round(cropHeight * adjustedZoom);
+          
+          canvas.width = adjustedWidth;
+          canvas.height = adjustedHeight;
+          
+          // Draw with adjusted zoom
+          ctx.drawImage(
+            img,
+            cropX,
+            cropY,
+            cropWidth,
+            cropHeight,
+            0,
+            0,
+            adjustedWidth,
+            adjustedHeight
+          );
+        } else {
+          // Set canvas size to output dimensions
+          canvas.width = outputWidth;
+          canvas.height = outputHeight;
+          
+          // Draw the exact coordinate area, scaled to output size (zoom applied here)
+          ctx.drawImage(
+            img,
+            cropX,           // Source X (exact coordinate)
+            cropY,           // Source Y (exact coordinate)
+            cropWidth,       // Source width (exact coordinate)
+            cropHeight,      // Source height (exact coordinate)
+            0,               // Destination X
+            0,               // Destination Y
+            outputWidth,     // Destination width (with zoom)
+            outputHeight     // Destination height (with zoom)
+          );
+        }
         
         // Convert to base64 data URL
         const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
