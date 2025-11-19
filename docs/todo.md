@@ -17,11 +17,22 @@ Section in question is captured and displayed as an image next to the text
 
 
 ## Copy amendments
-UX Quick wins. Top five quick wins
+~~UX Quick wins. Top five quick wins~~
+
+## Marketing
 Get an in depth report worth $500. delivered in a week.
+CTA at bottom of report
+
+## Bugs
+Tablet an mobile bugs
+
+## Mutli image
+
+Make a new branch and explore if 
 
 
-
+## Post form
+Message to check email
 
 ## Email look and feel
 
@@ -38,6 +49,3 @@ Or copy and paste this link into your browser:
 https://www.bizbo.co.nz /report/21760be1-0ac7-4381-95c8-47465e595290
 
 
-
-
-Make a new branch and explore if gemini can split the image and show examples in context of each category suggestion

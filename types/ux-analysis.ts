@@ -102,3 +102,14 @@ export interface VerifyEmailErrorResponse {
   details?: string;
 }
 
+/**
+ * Image coordinates for cropping screenshots to highlight Quick Win areas
+ */
+export interface ImageCoordinates {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  zoom?: number;
+}
+

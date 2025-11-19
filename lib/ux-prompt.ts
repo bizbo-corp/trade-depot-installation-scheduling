@@ -126,6 +126,25 @@ Use these areas to guide your internal sentiment and scoring process.
 
 **Quick Win Opportunity:** [Brief one-sentence comment about whether action is necessary, following the sentiment classification guidelines]
 
+**IMAGE COORDINATES:** For each Quick Win, you MUST identify the specific area of the screenshot that relates to the issue being discussed. Include a JSON code block with the pixel coordinates of the area of focus. The coordinates should reference the visible area of the issue in the screenshot. Use the following format:
+
+\`\`\`json
+{
+  "x": <number>,
+  "y": <number>,
+  "width": <number>,
+  "height": <number>,
+  "zoom": <number>
+}
+\`\`\`
+
+Where:
+- \`x\` and \`y\` are the top-left pixel coordinates of the area of interest (relative to the full screenshot)
+- \`width\` and \`height\` are the pixel dimensions of the area to highlight
+- \`zoom\` is an optional zoom level (1.0 = no zoom, 2.0 = 2x zoom, etc.) - use this to focus on smaller details. If not specified, default to 1.5 for better visibility.
+
+The coordinates should accurately identify the visual element or area in the screenshot that demonstrates the issue. Place this JSON code block immediately after the "Quick Win Opportunity" line and before the "### Analysis" heading.
+
 ### Analysis
 [Keep to ONE concise paragraph (2-3 sentences maximum). Focus on the specific issue or strength observed.]
 
