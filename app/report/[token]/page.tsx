@@ -82,6 +82,48 @@ function splitQuickWins(markdown: string): { quickWins: Array<{ content: string;
   };
 }
 
+// Helper function to reorder markdown content so "Quick Win Opportunity:" description appears after heading and before Impact/Effort
+function reorderQuickWinContent(markdown: string): string {
+  // Process each quick win section (starts with ### heading)
+  return markdown.replace(/(### \d+\.[^\n]*\n)([\s\S]*?)(?=### \d+\.|## |$)/g, (match, heading, content) => {
+    // Find Impact/Effort list items
+    const impactEffortRegex = /((?:^[-*]\s*\*\*?(?:Impact|Effort|Difficulty):[^\n]*\n)+)/gm;
+    const impactEffortMatch = content.match(impactEffortRegex);
+    
+    // Find Quick Win Opportunity paragraph (may span multiple lines)
+    const quickWinRegex = /((?:^\*\*)?Quick Win Opportunity:\s*\*\*?\s*[^\n]+(?:\n(?![-*]|###|##)[^\n]+)*)/im;
+    const quickWinMatch = content.match(quickWinRegex);
+    
+    if (impactEffortMatch && quickWinMatch) {
+      const impactEffortText = impactEffortMatch[0];
+      const quickWinText = quickWinMatch[0];
+      
+      // Check if Quick Win comes after Impact/Effort (needs reordering)
+      const impactEffortIndex = content.indexOf(impactEffortText);
+      const quickWinIndex = content.indexOf(quickWinText);
+      
+      if (quickWinIndex > impactEffortIndex) {
+        // Remove both from content
+        let reordered = content;
+        reordered = reordered.replace(impactEffortText, '');
+        reordered = reordered.replace(quickWinText, '');
+        
+        // Insert in correct order: quick win first, then impact/effort
+        // Find where to insert (right after heading, before any other content)
+        const insertPosition = reordered.search(/\S/); // First non-whitespace
+        if (insertPosition >= 0) {
+          return heading + quickWinText + '\n' + impactEffortText + reordered.substring(insertPosition);
+        } else {
+          return heading + quickWinText + '\n' + impactEffortText + reordered;
+        }
+      }
+    }
+    
+    // No reordering needed
+    return match;
+  });
+}
+
 // Helper function to extract text from children (recursive)
 function extractText(children: React.ReactNode): string {
   if (typeof children === "string") {
@@ -659,7 +701,8 @@ export default async function ReportPage({ params }: ReportPageProps) {
                   {/* Quick Wins - each wrapped in a Card with sentiment-based background */}
                   {quickWins.length > 0 ? (
                     quickWins.map((quickWin, index) => {
-
+                      // Reorder content so Quick Win Opportunity description appears after heading and before Impact/Effort
+                      const reorderedContent = reorderQuickWinContent(quickWin.content);
                       
                       return (
                         <Card key={index} className={cn("w-full bg-foreground/10 p-6 shadow-none border-0")}>
@@ -670,7 +713,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
                                 remarkPlugins={[remarkGfm]}
                                 components={markdownComponents}
                               >
-                                {quickWin.content}
+                                {reorderedContent}
                               </ReactMarkdown>
                             </div>
                           </CardContent>
