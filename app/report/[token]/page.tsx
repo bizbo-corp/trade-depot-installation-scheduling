@@ -230,7 +230,7 @@ function createMarkdownComponents(): Components {
       if (impactMatch) {
         return (
           <span {...props} className="inline-flex items-center gap-2">
-            <FaIcon icon="star" className="w-4 h-4" />
+            <FaIcon icon="star" style="solid" className="w-4 h-4 text-yellow-500" />
             <span>Impact: {impactMatch[1]}</span>
           </span>
         );
@@ -313,7 +313,7 @@ function createMarkdownComponents(): Components {
       if (impactListMatch) {
         return (
           <li {...props} className={cn("flex items-center gap-2", className)}>
-            <FaIcon icon="star" className="w-4 h-4" />
+            <FaIcon icon="star" style="solid" className="w-4 h-4 text-olive-700 dark:text-olive-300" />
             <span>
               <strong>Impact:</strong> {impactListMatch[1]}
             </span>
@@ -325,7 +325,7 @@ function createMarkdownComponents(): Components {
       if (effortListMatch) {
         return (
           <li {...props} className={cn("flex items-center gap-2", className)}>
-            <FaIcon icon="bolt-lightning" className="w-4 h-4" />
+            <FaIcon icon="bolt-lightning" style="solid" className="w-4 h-4 text-olive-700 dark:text-olive-300" />
             <span>
               <strong>{effortListMatch[1]}:</strong> {effortListMatch[2]}
             </span>
@@ -488,7 +488,7 @@ function createMarkdownComponents(): Components {
         );
       }
       
-      return <ul {...props} className={cn("list-none pl-0 gap-12 inline-flex flex-row justify-evenly bg-foreground/10 px-6 rounded-3xl", className)}>{children}</ul>;
+      return <ul {...props} className={cn("list-none pl-0 gap-12 inline-flex flex-row justify-evenly bg-foreground/10 px-6 rounded-lg", className)}>{children}</ul>;
     },
     // Make "Analysis" and "Suggestion" headings render as h4
     h1: ({ children, ...props }) => {
@@ -643,8 +643,9 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
   const proseClasses = cn(
     "prose",
-    "prose-dark",
-    "prose-lg"
+    "dark:prose-invert",
+    "prose-lg",
+    "prose-foreground"
   );
 
   return (
@@ -655,7 +656,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
             <CardTitle className="flex items-center gap-2">
               <h1 className="text-2xl font-bold">UX Analysis Report:</h1> 
-            <span className="inline-block rounded-full bg-olive-700/90 hover:bg-olive-500/100 transition-all px-3 py-1 text-xs font-semibold text-background">
+            <span className="inline-block rounded-full bg-foreground hover:bg-foreground/80 transition-all px-3 py-1 text-xs font-semibold text-background">
               <a
                 href={url}
                 target="_blank"
@@ -676,13 +677,15 @@ export default async function ReportPage({ params }: ReportPageProps) {
                 <div className="space-y-6 md:col-span-2">
               {/* Key Takeaways - displayed first in a card */}
               {keyTakeaways && (
-                <Card className="w-full bg-background-2 border-0">
+                <Card className="w-full bg-foreground/20 shadow-none border-0">
                   <CardHeader>
-                    <CardTitle>Key Takeaways</CardTitle>
+                  <div  className={cn(proseClasses,"w-full bg-foreground/0 py-0 shadow-none border-0 mx-auto text-foreground")}>
+                    <CardTitle>Key takeaways</CardTitle>
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <div className={proseClasses}>
-                      <ReactMarkdown
+                  <div  className={cn(proseClasses,"w-full bg-foreground/0 py-0 shadow-none border-0 mx-auto text-foreground")}>
+                  <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={markdownComponents}
                       >
@@ -705,9 +708,9 @@ export default async function ReportPage({ params }: ReportPageProps) {
                       const reorderedContent = reorderQuickWinContent(quickWin.content);
                       
                       return (
-                        <Card key={index} className={cn("w-full bg-foreground/10 p-6 shadow-none border-0")}>
+                        <Card key={index} className={cn("w-full bg-foreground/10 py-6 shadow-none border-0")}>
                           <CardContent className="p-0">
-                            <div  className={cn(proseClasses,"w-full bg-foreground/0 p-6 shadow-none border-0 mx-auto")}>
+                            <div  className={cn(proseClasses,"w-full bg-foreground/0 py-6 shadow-none border-0 mx-auto text-foreground")}>
 
                               <ReactMarkdown
                                 remarkPlugins={[remarkGfm]}
