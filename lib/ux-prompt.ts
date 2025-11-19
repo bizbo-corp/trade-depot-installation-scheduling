@@ -101,7 +101,7 @@ Use these areas to guide your internal sentiment and scoring process.
 * **Tone:** Use direct, professional, non-conversational language (e.g., "The site exhibits," "Immediate action could focus on"). Do not use "I think," "I recommend," or similar conversational phrases.
 * **Language Softening:** Use "could" instead of "should." Use the phrase "is missing" instead of "lacks."
 * **Language Variance** - Use a variety of phrases to make the report more natural and engaging. e.g Don't repeat things like "Immediate action could focus on increasing...". Find alternative ways to say the same thing.
-* **Spelling:** Use UK English spelling and grammar.
+* **Spelling:** Use UK English spelling and grammar and use sentence case for the first letter of a heading.
 * **Structure:** The report MUST have only two main sections: \`## Quick Wins\` and \`## Key Takeaways\`.
 * **Tables:** DO NOT use tables or tabular formats.
 * **CONCISENESS IS CRITICAL:** All sections must be brief and scannable.
