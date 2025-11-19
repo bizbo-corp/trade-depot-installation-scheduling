@@ -203,6 +203,18 @@ export async function POST(request: NextRequest) {
       // Use actual page dimensions for screenshot dimensions
       screenshotWidth = pageDimensions.width;
       screenshotHeight = pageDimensions.height;
+      
+      // Log dimensions for debugging
+      console.log('Screenshot dimensions captured:', {
+        width: screenshotWidth,
+        height: screenshotHeight,
+        viewport: { width: viewportWidth, height: viewportHeight }
+      });
+      
+      // Validate dimensions are reasonable
+      if (screenshotWidth < 100 || screenshotHeight < 100 || screenshotWidth > 10000 || screenshotHeight > 50000) {
+        console.warn('Screenshot dimensions seem unusual:', { width: screenshotWidth, height: screenshotHeight });
+      }
 
       // Capture the full rendered HTML content
       htmlContent = await page.content();
@@ -272,20 +284,37 @@ export async function POST(request: NextRequest) {
           },
           // Screenshot dimension information for accurate coordinate generation
           { 
-            text: `**SCREENSHOT DIMENSIONS (CRITICAL FOR COORDINATE ACCURACY):**
-The screenshot has the following dimensions:
-- Screenshot width: ${screenshotWidth} pixels
-- Screenshot height: ${screenshotHeight} pixels
-- Viewport width used: ${viewportWidth} pixels
-- Viewport height used: ${viewportHeight} pixels
+            text: `**SCREENSHOT DIMENSIONS (CRITICAL FOR COORDINATE ACCURACY - READ THIS FIRST):**
 
-**IMPORTANT:** All coordinates you provide must be relative to the full screenshot dimensions (${screenshotWidth}x${screenshotHeight}px). The coordinate system starts at (0,0) in the top-left corner. X increases to the right, Y increases downward.
+═══════════════════════════════════════════════════════════════
+THE SCREENSHOT YOU ARE ANALYZING HAS THESE EXACT DIMENSIONS:
+═══════════════════════════════════════════════════════════════
 
-When generating coordinates:
-- Ensure x + width does not exceed ${screenshotWidth}
-- Ensure y + height does not exceed ${screenshotHeight}
-- Coordinates must be positive integers
-- The screenshot is a full-page capture, so elements may be at any Y position from 0 to ${screenshotHeight}
+📐 Screenshot Width: ${screenshotWidth} pixels
+📐 Screenshot Height: ${screenshotHeight} pixels
+🖥️ Viewport Width: ${viewportWidth} pixels  
+🖥️ Viewport Height: ${viewportHeight} pixels
+
+═══════════════════════════════════════════════════════════════
+
+**CRITICAL COORDINATE RULES:**
+
+1. All coordinates MUST be relative to the full screenshot (${screenshotWidth}x${screenshotHeight}px)
+2. Coordinate system: (0,0) = top-left corner, X increases right, Y increases downward
+3. Maximum valid coordinates:
+   - x can be 0 to ${screenshotWidth - 1}
+   - y can be 0 to ${screenshotHeight - 1}
+   - x + width must not exceed ${screenshotWidth}
+   - y + height must not exceed ${screenshotHeight}
+4. Coordinates must be positive integers (whole numbers)
+5. The screenshot is a FULL-PAGE capture, so elements can be anywhere from y=0 to y=${screenshotHeight}
+
+**BEFORE INCLUDING COORDINATES, VERIFY:**
+✓ x is between 0 and ${screenshotWidth - 1}
+✓ y is between 0 and ${screenshotHeight - 1}
+✓ x + width ≤ ${screenshotWidth}
+✓ y + height ≤ ${screenshotHeight}
+✓ All values are positive integers
 
 ` 
           },

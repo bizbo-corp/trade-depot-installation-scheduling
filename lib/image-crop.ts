@@ -29,22 +29,32 @@ export async function cropImage(
         }
 
         // Validate input coordinates first and clamp if needed
-        let cropX = Math.max(0, coordinates.x);
-        let cropY = Math.max(0, coordinates.y);
+        // Allow up to 5px outside bounds for clamping tolerance
+        let cropX = Math.max(-5, coordinates.x);
+        let cropY = Math.max(-5, coordinates.y);
         let cropWidth = coordinates.width;
         let cropHeight = coordinates.height;
         
-        // Validate coordinates are within image bounds before clamping
-        if (cropX >= img.width || cropY >= img.height) {
-          reject(new Error(`Coordinates out of bounds: (${cropX}, ${cropY}) exceeds image size (${img.width}, ${img.height})`));
-          return;
-        }
-        
-        // Clamp to image bounds
-        cropX = Math.min(cropX, img.width - 1);
-        cropY = Math.min(cropY, img.height - 1);
+        // Clamp to image bounds (normalize instead of reject)
+        cropX = Math.max(0, Math.min(cropX, img.width - 1));
+        cropY = Math.max(0, Math.min(cropY, img.height - 1));
         cropWidth = Math.min(cropWidth, img.width - cropX);
         cropHeight = Math.min(cropHeight, img.height - cropY);
+        
+        // Log if coordinates were adjusted
+        const wasAdjusted = 
+          cropX !== coordinates.x || 
+          cropY !== coordinates.y || 
+          cropWidth !== coordinates.width || 
+          cropHeight !== coordinates.height;
+        
+        if (wasAdjusted && process.env.NODE_ENV === 'development') {
+          console.warn('Coordinates adjusted during clamping:', {
+            original: { x: coordinates.x, y: coordinates.y, width: coordinates.width, height: coordinates.height },
+            adjusted: { x: cropX, y: cropY, width: cropWidth, height: cropHeight },
+            imageSize: { width: img.width, height: img.height }
+          });
+        }
         
         // Validate final crop area
         if (cropWidth <= 0 || cropHeight <= 0) {
@@ -68,10 +78,16 @@ export async function cropImage(
         let zoom: number;
         if (coordinates.zoom && coordinates.zoom > 0 && coordinates.zoom <= 5) {
           zoom = coordinates.zoom;
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Using provided zoom:', zoom);
+          }
         } else {
           // Calculate optimal zoom based on element size
           // We'll use a simple category detection from coordinates size
           zoom = calculateOptimalZoom(coordinates);
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Calculated optimal zoom:', zoom, 'for element size:', cropWidth, 'x', cropHeight);
+          }
         }
         
         // Calculate output canvas size (apply zoom by scaling the output)

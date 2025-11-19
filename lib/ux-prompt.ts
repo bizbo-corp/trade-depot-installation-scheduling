@@ -156,9 +156,61 @@ Use these areas to guide your internal sentiment and scoring process.
 }
 \`\`\`
 
+**CRITICAL: You MUST include coordinates for ALL visual issues. Do NOT omit coordinates unless the issue truly cannot be visually demonstrated (e.g., missing elements, abstract performance concerns).**
+
+**EXAMPLES OF VALID COORDINATE JSON:**
+
+Example 1 - Small Call to Action Button (high zoom):
+\`\`\`json
+{
+  "x": 850,
+  "y": 320,
+  "width": 180,
+  "height": 50,
+  "zoom": 2.5,
+  "relevant": true
+}
+\`\`\`
+
+Example 2 - Text Block (moderate zoom):
+\`\`\`json
+{
+  "x": 200,
+  "y": 450,
+  "width": 600,
+  "height": 200,
+  "zoom": 1.8,
+  "relevant": true
+}
+\`\`\`
+
+Example 3 - Section/Area (lower zoom):
+\`\`\`json
+{
+  "x": 100,
+  "y": 1200,
+  "width": 800,
+  "height": 400,
+  "zoom": 1.2,
+  "relevant": true
+}
+\`\`\`
+
+Example 4 - Navigation Menu:
+\`\`\`json
+{
+  "x": 50,
+  "y": 0,
+  "width": 900,
+  "height": 60,
+  "zoom": 2.0,
+  "relevant": true
+}
+\`\`\`
+
 Where:
 - \`x\` and \`y\` are the top-left pixel coordinates of the area of interest (relative to the full screenshot, starting from 0,0 at top-left). MUST be within the screenshot bounds. The screenshot dimensions are provided above - use them to ensure coordinates are valid.
-- \`width\` and \`height\` are the pixel dimensions of the area to highlight - should be tight around the specific element, typically 200-800px wide and 100-600px tall. MUST be at least 50px and should not exceed 80% of the screenshot dimensions. For small elements like buttons, use 100-300px. For text blocks, use 300-600px. For sections, use 400-800px.
+- \`width\` and \`height\` are the pixel dimensions of the area to highlight - should be tight around the specific element, typically 200-800px wide and 100-600px tall. MUST be at least 30px and should not exceed 80% of the screenshot dimensions. For small elements like buttons, use 100-300px. For text blocks, use 300-600px. For sections, use 400-800px.
 - \`zoom\` is an optional zoom level (1.0 = no zoom, 2.0 = 2x zoom, etc.) - use this to focus on smaller details. Recommended ranges:
   - Small elements (<200px): 2.5-3.0x zoom
   - Medium elements (200-500px): 1.5-2.0x zoom
@@ -171,17 +223,28 @@ Where:
 - \`relevant\` is optional - set to \`false\` if no image should be shown, or omit entirely (defaults to \`true\`)
 
 **CRITICAL ACCURACY REQUIREMENTS - READ CAREFULLY:**
-1. **Measure coordinates precisely**: Look at the screenshot and identify the exact pixel position of the element. The coordinates MUST point to the actual visible element in the screenshot, not a conceptual area.
-2. **Tight bounding box**: The coordinates should form a tight rectangle around ONLY the specific element being discussed. Do NOT include large empty areas or the entire page section.
+
+**MANDATORY: For visual issues, you MUST include coordinates. This is not optional.**
+
+1. **Measure coordinates precisely**: Look at the screenshot and identify the exact pixel position of the element. The coordinates MUST point to the actual visible element in the screenshot, not a conceptual area. Use the screenshot dimensions provided above to ensure your coordinates are valid.
+
+2. **Tight bounding box**: The coordinates should form a tight rectangle around ONLY the specific element being discussed. Do NOT include large empty areas or the entire page section. Typical sizes:
+   - Buttons: 100-300px wide, 40-80px tall
+   - Text blocks: 300-700px wide, 150-400px tall
+   - Sections: 500-900px wide, 300-600px tall
+
 3. **Verify visibility**: Before including coordinates, verify that the element is actually visible in the screenshot. If it's not visible or is off-screen, set \`"relevant": false\` or omit the JSON block.
+
 4. **Category-specific guidance:**
-   - **Trust Signals & Social Proof**: Identify the exact footer section or area containing reviews, ratings, testimonials, or trust badges. If these are not visible, set \`"relevant": false\`.
-   - **Call to Action buttons**: Identify the exact button element only, not the entire hero section. The coordinates should tightly wrap around the button itself.
-   - **Content Readability**: Identify the specific text block or paragraph that demonstrates the issue, not the entire content area.
-   - **Navigation**: Identify the exact navigation menu or problematic menu item, not the entire header.
-   - **Visual Design & Aesthetics**: Focus on the specific visual element (e.g., a poorly designed section, colour clash, spacing issue), not the entire page.
+   - **Trust Signals & Social Proof**: Identify the exact footer section or area containing reviews, ratings, testimonials, or trust badges. Coordinates typically: y > 1000px (footer area), width 600-900px, height 200-400px. If these are not visible, set \`"relevant": false\`.
+   - **Call to Action buttons**: Identify the exact button element only, not the entire hero section. The coordinates should tightly wrap around the button itself. Typically: width 150-250px, height 45-65px, zoom 2.0-3.0.
+   - **Content Readability**: Identify the specific text block or paragraph that demonstrates the issue, not the entire content area. Typically: width 400-700px, height 150-300px, zoom 1.5-2.0.
+   - **Navigation**: Identify the exact navigation menu or problematic menu item, not the entire header. Typically: y near 0, width 800-1000px, height 50-80px, zoom 1.8-2.5.
+   - **Visual Design & Aesthetics**: Focus on the specific visual element (e.g., a poorly designed section, colour clash, spacing issue), not the entire page. Typically: width 400-800px, height 200-500px, zoom 1.2-1.8.
+
 5. **Avoid blank areas**: Do NOT set coordinates that point to empty white space, backgrounds, or areas without visible content. If the issue cannot be visually demonstrated, set \`"relevant": false\`.
-6. **Coordinate validation**: Ensure x + width and y + height do not exceed the screenshot dimensions. Coordinates must be positive integers.
+
+6. **Coordinate validation**: Ensure x + width and y + height do not exceed the screenshot dimensions. Coordinates must be positive integers. The screenshot dimensions are provided above - use them to validate your coordinates before including them.
 
 Place this JSON code block immediately after the "Quick Win Opportunity" line and before the "### Analysis" heading. If the issue is not visually demonstrable, omit the JSON block entirely or set \`"relevant": false\`.
 

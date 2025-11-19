@@ -35,7 +35,23 @@ export function QuickWinCard({
   const shouldShowImage = coordinates && coordinates.relevant !== false;
 
   useEffect(() => {
+    const debug = process.env.NODE_ENV === 'development';
+    
+    if (debug) {
+      console.group(`[Quick Win ${index + 1}] Image Processing`);
+      console.log('Coordinates:', coordinates);
+      console.log('Screenshot available:', !!screenshot);
+    }
+    
     if (!coordinates || !screenshot || coordinates.relevant === false) {
+      if (debug) {
+        console.log('Skipping image processing:', {
+          hasCoordinates: !!coordinates,
+          hasScreenshot: !!screenshot,
+          relevant: coordinates?.relevant
+        });
+        console.groupEnd();
+      }
       setCroppedImage(null);
       setError(null);
       setIsLoading(false);
@@ -53,26 +69,66 @@ export function QuickWinCard({
       coordinates.x < 0 ||
       coordinates.y < 0
     ) {
-      console.warn(`Quick Win ${index + 1}: Invalid coordinates structure:`, coordinates);
-      setError("Invalid coordinates: missing or invalid values");
+      const errorDetails = {
+        x: coordinates.x,
+        y: coordinates.y,
+        width: coordinates.width,
+        height: coordinates.height,
+        types: {
+          x: typeof coordinates.x,
+          y: typeof coordinates.y,
+          width: typeof coordinates.width,
+          height: typeof coordinates.height
+        }
+      };
+      console.warn(`Quick Win ${index + 1}: Invalid coordinates structure:`, errorDetails);
+      setError(`Invalid coordinates: missing or invalid values. Details: ${JSON.stringify(errorDetails)}`);
       setIsLoading(false);
+      if (debug) {
+        console.groupEnd();
+      }
       return;
     }
 
     // Get image dimensions to validate coordinate size
     const img = new Image();
     img.onload = () => {
-      // Validate coordinates are within image bounds
+      if (debug) {
+        console.log('Image loaded:', {
+          width: img.width,
+          height: img.height,
+          coordinates: {
+            x: coordinates.x,
+            y: coordinates.y,
+            width: coordinates.width,
+            height: coordinates.height
+          }
+        });
+      }
+      
+      // Validate coordinates are within image bounds (allow 5px tolerance for clamping)
       if (coordinates.x >= img.width || coordinates.y >= img.height) {
         console.warn(`Quick Win ${index + 1}: Coordinates (${coordinates.x}, ${coordinates.y}) exceed image bounds (${img.width}, ${img.height})`);
-        setError("Coordinates are outside image bounds");
+        setError(`Coordinates are outside image bounds. Image: ${img.width}x${img.height}, Coordinates: (${coordinates.x}, ${coordinates.y})`);
         setIsLoading(false);
+        if (debug) {
+          console.groupEnd();
+        }
         return;
       }
       
-      // Check if coordinates extend beyond image bounds
-      if (coordinates.x + coordinates.width > img.width || coordinates.y + coordinates.height > img.height) {
-        console.warn(`Quick Win ${index + 1}: Coordinates extend beyond image bounds. Clamping will be applied.`);
+      // Check if coordinates extend beyond image bounds (allow 5px tolerance)
+      const extendsBeyondBounds = 
+        coordinates.x + coordinates.width > img.width + 5 || 
+        coordinates.y + coordinates.height > img.height + 5;
+      
+      if (extendsBeyondBounds) {
+        console.warn(`Quick Win ${index + 1}: Coordinates extend beyond image bounds. Clamping will be applied.`, {
+          coordinateEndX: coordinates.x + coordinates.width,
+          coordinateEndY: coordinates.y + coordinates.height,
+          imageWidth: img.width,
+          imageHeight: img.height
+        });
       }
       
       // Check if coordinates are too large (likely not specific enough)
@@ -90,33 +146,57 @@ export function QuickWinCard({
       setIsLoading(true);
       setError(null);
 
+      if (debug) {
+        console.log('Starting image crop...');
+      }
+
       cropImage(screenshot, coordinates)
         .then((cropped) => {
+          if (debug) {
+            console.log('Image cropped successfully, checking quality...');
+          }
+          
           // Check if cropped image is mostly blank/white
           checkImageQuality(cropped)
             .then((isBlank) => {
               if (isBlank) {
                 console.warn(`Quick Win ${index + 1}: Cropped image appears to be mostly blank/white`);
-                setError("Cropped area appears to be blank or invalid");
-                setCroppedImage(null);
+                // Make blank detection less aggressive - show warning but still display
+                if (debug) {
+                  console.warn('Blank image detected, but displaying anyway with warning');
+                }
+                setError("Note: Cropped area may be mostly blank");
+                setCroppedImage(cropped); // Still show the image
               } else {
+                if (debug) {
+                  console.log('✅ Image quality check passed');
+                }
                 setCroppedImage(cropped);
               }
               setIsLoading(false);
+              if (debug) {
+                console.groupEnd();
+              }
             })
             .catch((qualityError) => {
               // If quality check fails, still show the image but log the error
               console.warn(`Quick Win ${index + 1}: Image quality check failed:`, qualityError);
               setCroppedImage(cropped);
               setIsLoading(false);
+              if (debug) {
+                console.groupEnd();
+              }
             });
         })
         .catch((err) => {
           console.error(`Failed to crop image for Quick Win ${index + 1}:`, err);
           const errorMessage = err instanceof Error ? err.message : "Failed to crop image";
-          setError(errorMessage);
+          setError(`${errorMessage}. Coordinates: x=${coordinates.x}, y=${coordinates.y}, w=${coordinates.width}, h=${coordinates.height}`);
           setIsLoading(false);
           setCroppedImage(null);
+          if (debug) {
+            console.groupEnd();
+          }
         });
     };
     
@@ -124,6 +204,9 @@ export function QuickWinCard({
       console.error(`Quick Win ${index + 1}: Failed to load source image for validation`);
       setError("Failed to load source image for validation");
       setIsLoading(false);
+      if (debug) {
+        console.groupEnd();
+      }
     };
     
     img.src = screenshot;
@@ -235,10 +318,30 @@ export function QuickWinCard({
                 </div>
               )}
               {error && !isLoading && (
-                <div className="w-full h-48 bg-muted/50 flex items-center justify-center p-4">
+                <div className="w-full h-48 bg-muted/50 flex flex-col items-center justify-center p-4 gap-2">
                   <span className="text-muted-foreground text-sm text-center">
                     Image unavailable: {error}
                   </span>
+                  {process.env.NODE_ENV === 'development' && coordinates && (
+                    <div className="text-xs text-muted-foreground/70 mt-2 p-2 bg-muted rounded">
+                      <div>Coordinates: x={coordinates.x}, y={coordinates.y}</div>
+                      <div>Size: {coordinates.width}x{coordinates.height}px</div>
+                      <div>Zoom: {coordinates.zoom || 'auto'}</div>
+                    </div>
+                  )}
+                  {/* Fallback: Show full screenshot if coordinates fail */}
+                  {!croppedImage && screenshot && (
+                    <div className="mt-4 w-full">
+                      <p className="text-xs text-muted-foreground mb-2 text-center">
+                        Showing full screenshot as fallback
+                      </p>
+                      <img
+                        src={screenshot}
+                        alt="Full screenshot (fallback)"
+                        className="w-full h-auto border border-foreground/20 rounded"
+                      />
+                    </div>
+                  )}
                 </div>
               )}
               {croppedImage && !isLoading && !error && (

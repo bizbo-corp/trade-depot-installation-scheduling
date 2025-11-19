@@ -10,6 +10,7 @@ import { updateVerificationStatus } from "@/lib/hubspot";
 import type { ImageCoordinates } from "@/types/ux-analysis";
 import { QuickWinCard } from "@/components/ux-analysis/QuickWinCard";
 import { createMarkdownComponents } from "@/lib/markdown-components";
+import { logCoordinateExtraction } from "@/lib/debug-coordinates";
 
 interface ReportPageProps {
   params: Promise<{ token: string }>;
@@ -33,14 +34,29 @@ function removeSentimentText(text: string): string {
 }
 
 // Helper function to extract image coordinates from markdown
-function extractImageCoordinates(markdown: string): ImageCoordinates | null {
+function extractImageCoordinates(markdown: string, quickWinIndex?: number): ImageCoordinates | null {
+  const debug = process.env.NODE_ENV === 'development';
+  const logPrefix = quickWinIndex !== undefined ? `Quick Win ${quickWinIndex + 1}` : 'Coordinate Extraction';
+  
+  if (debug) {
+    console.group(`[${logPrefix}] Extracting image coordinates`);
+  }
+  
   // Look for JSON code blocks containing coordinate data
   // More specific regex: look for JSON blocks that appear after "Quick Win Opportunity" and before "Analysis"
   // This ensures we get coordinates from the correct location in the Quick Win section
   const jsonCodeBlockRegex = /```json\s*([\s\S]*?)\s*```/gi;
   const matches = Array.from(markdown.matchAll(jsonCodeBlockRegex));
   
+  if (debug) {
+    console.log(`Found ${matches.length} JSON code block(s) in markdown`);
+  }
+  
   if (!matches || matches.length === 0) {
+    if (debug) {
+      console.warn('No JSON code blocks found in markdown');
+      console.groupEnd();
+    }
     return null;
   }
   
@@ -53,10 +69,27 @@ function extractImageCoordinates(markdown: string): ImageCoordinates | null {
     const match = matches[i];
     try {
       const jsonContent = match[1].trim();
-      const coordinates = JSON.parse(jsonContent) as Partial<ImageCoordinates>;
+      
+      if (debug) {
+        console.log(`\nAttempting to parse JSON block ${i + 1}:`, jsonContent.substring(0, 200) + '...');
+      }
+      
+      // Try to clean up JSON (remove trailing commas, handle scientific notation)
+      let cleanedJson = jsonContent
+        .replace(/,(\s*[}\]])/g, '$1') // Remove trailing commas
+        .trim();
+      
+      const coordinates = JSON.parse(cleanedJson) as Partial<ImageCoordinates>;
+      
+      if (debug) {
+        console.log('Parsed coordinates:', coordinates);
+      }
       
       // Check relevant flag first - if false, skip this match
       if (coordinates.relevant === false) {
+        if (debug) {
+          console.log('Coordinates marked as not relevant, skipping');
+        }
         continue;
       }
       
@@ -72,14 +105,21 @@ function extractImageCoordinates(markdown: string): ImageCoordinates | null {
         coordinates.height > 0
       ) {
         // Additional validation: coordinates should be reasonable
-        // Width and height should be at least 50px and not exceed 5000px (likely invalid)
+        // Width and height should be at least 30px (reduced from 50px) and not exceed 5000px (likely invalid)
         if (
-          coordinates.width < 50 ||
-          coordinates.height < 50 ||
+          coordinates.width < 30 ||
+          coordinates.height < 30 ||
           coordinates.width > 5000 ||
           coordinates.height > 5000
         ) {
-          console.warn('Coordinate dimensions out of reasonable bounds:', coordinates);
+          if (debug) {
+            console.warn('Coordinate dimensions out of reasonable bounds:', {
+              width: coordinates.width,
+              height: coordinates.height,
+              min: 30,
+              max: 5000
+            });
+          }
           continue;
         }
         
@@ -114,8 +154,21 @@ function extractImageCoordinates(markdown: string): ImageCoordinates | null {
         const hasQuickWinOpportunity = /Quick Win Opportunity:/i.test(beforeMatch);
         const hasAnalysisAfter = /###\s+Analysis/i.test(markdown.substring(matchIndex));
         
+        if (debug) {
+          console.log('Match location check:', {
+            hasQuickWinOpportunity,
+            hasAnalysisAfter,
+            matchIndex
+          });
+        }
+        
         // If this match is in the ideal location, use it immediately
         if (hasQuickWinOpportunity && hasAnalysisAfter) {
+          if (debug) {
+            console.log('✅ Found coordinates in ideal location, using immediately');
+            console.log('Extracted coordinates:', result);
+            console.groupEnd();
+          }
           return result;
         }
         
@@ -124,11 +177,38 @@ function extractImageCoordinates(markdown: string): ImageCoordinates | null {
           bestMatch = result;
           bestMatchIndex = matchIndex;
         }
+      } else {
+        if (debug) {
+          console.warn('Coordinates missing required fields or invalid:', {
+            x: coordinates.x,
+            y: coordinates.y,
+            width: coordinates.width,
+            height: coordinates.height,
+            types: {
+              x: typeof coordinates.x,
+              y: typeof coordinates.y,
+              width: typeof coordinates.width,
+              height: typeof coordinates.height
+            }
+          });
+        }
       }
     } catch (error) {
       // Continue to next match if this one fails
+      if (debug) {
+        console.error(`Failed to parse JSON block ${i + 1}:`, error);
+      }
       continue;
     }
+  }
+  
+  if (debug) {
+    if (bestMatch) {
+      console.log('✅ Using best match found:', bestMatch);
+    } else {
+      console.warn('❌ No valid coordinates found in any JSON blocks');
+    }
+    console.groupEnd();
   }
   
   return bestMatch;
@@ -195,8 +275,11 @@ function splitQuickWins(markdown: string): { quickWins: Array<{ content: string;
         }
       }
       return { 
-        quickWins: parts.map(p => {
-          const coordinates = extractImageCoordinates(p);
+        quickWins: parts.map((p, idx) => {
+          const coordinates = extractImageCoordinates(p, idx);
+          if (process.env.NODE_ENV === 'development') {
+            logCoordinateExtraction(idx, p, coordinates);
+          }
           return { 
             content: removeSentimentText(removeImageCoordinates(p)), 
             sentiment: extractSentiment(p),
@@ -212,8 +295,11 @@ function splitQuickWins(markdown: string): { quickWins: Array<{ content: string;
   return { 
     quickWins: sections
       .filter((s) => s.trim() && !s.match(/^## Quick Wins\s*$/m))
-      .map(s => {
-        const coordinates = extractImageCoordinates(s);
+      .map((s, idx) => {
+        const coordinates = extractImageCoordinates(s, idx);
+        if (process.env.NODE_ENV === 'development') {
+          logCoordinateExtraction(idx, s, coordinates);
+        }
         return { 
           content: removeSentimentText(removeImageCoordinates(s)), 
           sentiment: extractSentiment(s),
