@@ -134,10 +134,14 @@ Use these areas to guide your internal sentiment and scoring process.
 - The issue demonstrates a visual design problem (spacing, contrast, typography)
 
 **When to omit coordinates or set relevant: false:**
+- **Accessibility Basics**: This category focuses on code-level accessibility (alt text, semantic HTML, ARIA attributes) that cannot be visually demonstrated. ALWAYS set `"relevant": false` for this category.
+- **Page Speed Indicators**: This category is about abstract performance concerns (image sizes, loading times, code complexity) that cannot be visually shown. ALWAYS set `"relevant": false` for this category.
 - The issue is about missing elements (nothing visible to show)
-- The issue is abstract (Page Speed Indicators, general performance concerns)
+- The issue is abstract (general performance concerns, code quality)
 - The issue cannot be visually demonstrated in the screenshot
-- The issue is about functionality that isn't visible (accessibility code, meta tags)
+- The issue is about functionality that isn't visible (meta tags, server-side code)
+
+**CRITICAL: For "Accessibility Basics" and "Page Speed Indicators" categories, you MUST include the JSON block with `"relevant": false` to explicitly indicate no image should be shown.**
 
 **If coordinates are relevant**, include a JSON code block with the pixel coordinates. Look at the screenshot carefully and identify the EXACT visual element, text, or area that demonstrates the issue. The coordinates should be tight around the actual element, not the entire page section. Use the following format:
 
@@ -167,7 +171,7 @@ Example 1 - Small Call to Action Button (high zoom):
   "y": 320,
   "width": 180,
   "height": 50,
-  "zoom": 2.5,
+  "zoom": 2.0,
   "relevant": true
 }
 \`\`\`
@@ -203,20 +207,29 @@ Example 4 - Navigation Menu:
   "y": 0,
   "width": 900,
   "height": 60,
-  "zoom": 2.0,
+  "zoom": 1.8,
   "relevant": true
 }
 \`\`\`
 
+Example 5 - Non-visual issue (Accessibility or Page Speed - MUST use this format):
+\`\`\`json
+{
+  "relevant": false
+}
+\`\`\`
+
+**IMPORTANT**: For Accessibility Basics and Page Speed Indicators, you MUST include the JSON block with `"relevant": false`. Do NOT omit the JSON block entirely.
+
 Where:
 - \`x\` and \`y\` are the top-left pixel coordinates of the area of interest (relative to the full screenshot, starting from 0,0 at top-left). MUST be within the screenshot bounds. The screenshot dimensions are provided above - use them to ensure coordinates are valid.
 - \`width\` and \`height\` are the pixel dimensions of the area to highlight - should be tight around the specific element, typically 200-800px wide and 100-600px tall. MUST be at least 30px and should not exceed 80% of the screenshot dimensions. For small elements like buttons, use 100-300px. For text blocks, use 300-600px. For sections, use 400-800px.
-- \`zoom\` is an optional zoom level (1.0 = no zoom, 2.0 = 2x zoom, etc.) - use this to focus on smaller details. Recommended ranges:
-  - Small elements (<200px): 2.5-3.0x zoom
-  - Medium elements (200-500px): 1.5-2.0x zoom
+- \`zoom\` is an optional zoom level (1.0 = no zoom, 2.0 = 2x zoom, etc.) - use this to focus on smaller details. **Maximum zoom is 2.0x**. Recommended ranges:
+  - Small elements (<200px): 1.8-2.0x zoom
+  - Medium elements (200-500px): 1.5-1.8x zoom
   - Large elements (>500px): 1.0-1.5x zoom
-  - Buttons: 2.0-3.0x zoom
-  - Text blocks: 1.5-2.0x zoom
+  - Buttons: 1.8-2.0x zoom
+  - Text blocks: 1.5-1.8x zoom
   - Sections: 1.0-1.5x zoom
   If not specified, will be calculated automatically based on element size.
 - \`focusPoint\` is optional - an object with \`x\` and \`y\` coordinates for the center point of the focus indicator dot. If not specified, defaults to the center of the coordinate area (x + width/2, y + height/2).
@@ -237,10 +250,12 @@ Where:
 
 4. **Category-specific guidance:**
    - **Trust Signals & Social Proof**: Identify the exact footer section or area containing reviews, ratings, testimonials, or trust badges. Coordinates typically: y > 1000px (footer area), width 600-900px, height 200-400px. If these are not visible, set \`"relevant": false\`.
-   - **Call to Action buttons**: Identify the exact button element only, not the entire hero section. The coordinates should tightly wrap around the button itself. Typically: width 150-250px, height 45-65px, zoom 2.0-3.0.
-   - **Content Readability**: Identify the specific text block or paragraph that demonstrates the issue, not the entire content area. Typically: width 400-700px, height 150-300px, zoom 1.5-2.0.
-   - **Navigation**: Identify the exact navigation menu or problematic menu item, not the entire header. Typically: y near 0, width 800-1000px, height 50-80px, zoom 1.8-2.5.
-   - **Visual Design & Aesthetics**: Focus on the specific visual element (e.g., a poorly designed section, colour clash, spacing issue), not the entire page. Typically: width 400-800px, height 200-500px, zoom 1.2-1.8.
+   - **Call to Action buttons**: Identify the exact button element only, not the entire hero section. The coordinates should tightly wrap around the button itself. Typically: width 150-250px, height 45-65px, zoom 1.8-2.0.
+   - **Content Readability**: Identify the specific text block or paragraph that demonstrates the issue, not the entire content area. Typically: width 400-700px, height 150-300px, zoom 1.5-1.8.
+   - **Navigation**: Identify the exact navigation menu or problematic menu item, not the entire header. Typically: y near 0, width 800-1000px, height 50-80px, zoom 1.8-2.0.
+   - **Visual Design & Aesthetics**: Focus on the specific visual element (e.g., a poorly designed section, colour clash, spacing issue), not the entire page. Typically: width 400-800px, height 200-500px, zoom 1.2-1.5.
+   - **Accessibility Basics**: This category focuses on code-level issues (alt text, semantic HTML, ARIA) that cannot be visually demonstrated. ALWAYS set `"relevant": false` and include the JSON block with only `"relevant": false`.
+   - **Page Speed Indicators**: This category is about abstract performance (image sizes, loading times) that cannot be visually shown. ALWAYS set `"relevant": false` and include the JSON block with only `"relevant": false`.
 
 5. **Avoid blank areas**: Do NOT set coordinates that point to empty white space, backgrounds, or areas without visible content. If the issue cannot be visually demonstrated, set \`"relevant": false\`.
 

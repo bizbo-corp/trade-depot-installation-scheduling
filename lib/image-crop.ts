@@ -76,7 +76,7 @@ export async function cropImage(
         // Calculate or use zoom level
         // If zoom is specified and valid, use it; otherwise calculate optimal zoom
         let zoom: number;
-        if (coordinates.zoom && coordinates.zoom > 0 && coordinates.zoom <= 5) {
+        if (coordinates.zoom && coordinates.zoom > 0 && coordinates.zoom <= 2.0) {
           zoom = coordinates.zoom;
           if (process.env.NODE_ENV === 'development') {
             console.log('Using provided zoom:', zoom);
@@ -89,6 +89,9 @@ export async function cropImage(
             console.log('Calculated optimal zoom:', zoom, 'for element size:', cropWidth, 'x', cropHeight);
           }
         }
+        
+        // Ensure zoom doesn't exceed maximum of 2.0
+        zoom = Math.min(zoom, 2.0);
         
         // Calculate output canvas size (apply zoom by scaling the output)
         const outputWidth = Math.round(cropWidth * zoom);
@@ -209,7 +212,7 @@ export function isCoordinateAreaTooSmall(
  * Calculates optimal zoom level based on element size and category
  * @param coordinates - Image coordinates
  * @param category - Optional category name for category-specific adjustments
- * @returns Optimal zoom level (1.0 to 3.0)
+ * @returns Optimal zoom level (1.0 to 2.0)
  */
 export function calculateOptimalZoom(
   coordinates: ImageCoordinates,
@@ -222,8 +225,8 @@ export function calculateOptimalZoom(
   let zoom: number;
   
   if (avgSize < 200) {
-    // Small elements: higher zoom
-    zoom = 2.5;
+    // Small elements: higher zoom (reduced from 2.5 to 2.0)
+    zoom = 2.0;
   } else if (avgSize < 500) {
     // Medium elements: moderate zoom
     zoom = 1.75;
@@ -237,13 +240,13 @@ export function calculateOptimalZoom(
     const categoryLower = category.toLowerCase();
     
     if (categoryLower.includes('button') || categoryLower.includes('cta') || categoryLower.includes('call to action')) {
-      // Buttons: Higher zoom for better visibility
-      zoom = Math.max(zoom, 2.0);
-      zoom = Math.min(zoom, 3.0);
+      // Buttons: Higher zoom for better visibility (capped at 2.0)
+      zoom = Math.max(zoom, 1.8);
+      zoom = Math.min(zoom, 2.0);
     } else if (categoryLower.includes('text') || categoryLower.includes('readability') || categoryLower.includes('content')) {
       // Text blocks: Moderate zoom
       zoom = Math.max(zoom, 1.5);
-      zoom = Math.min(zoom, 2.0);
+      zoom = Math.min(zoom, 1.8);
     } else if (categoryLower.includes('section') || categoryLower.includes('design') || categoryLower.includes('aesthetic')) {
       // Sections: Lower zoom to show context
       zoom = Math.max(zoom, 1.0);
@@ -251,8 +254,8 @@ export function calculateOptimalZoom(
     }
   }
   
-  // Clamp zoom between 1.0 and 3.0
-  return Math.max(1.0, Math.min(3.0, zoom));
+  // Clamp zoom between 1.0 and 2.0 (reduced from 3.0)
+  return Math.max(1.0, Math.min(2.0, zoom));
 }
 
 /**
@@ -295,16 +298,31 @@ function addFocusIndicator(
   const radius = dotSize / 2;
   const strokeWidth = 2;
   
-  // Draw white stroke (outer circle)
+  // Draw white stroke (outer circle) with shadow
+  ctx.save();
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+  ctx.shadowBlur = 4;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 2;
+  
   ctx.beginPath();
   ctx.arc(focusX, focusY, radius + strokeWidth, 0, 2 * Math.PI);
   ctx.fillStyle = 'rgba(255, 255, 255, 1)';
   ctx.fill();
+  ctx.restore();
   
-  // Draw dark dot (inner circle)
+  // Draw primary color dot (inner circle) with shadow
+  ctx.save();
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+  ctx.shadowBlur = 6;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 2;
+  
   ctx.beginPath();
   ctx.arc(focusX, focusY, radius, 0, 2 * Math.PI);
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+  // Use primary button color: #bef264
+  ctx.fillStyle = '#bef264';
   ctx.fill();
+  ctx.restore();
 }
 

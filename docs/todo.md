@@ -30,6 +30,7 @@ Tablet an mobile bugs
 
 Make a new branch and explore if 
 
+NTH: Pass the image direct to the modal. Scan graphic
 
 ## Post form
 Message to check email
