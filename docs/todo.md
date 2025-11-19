@@ -23,3 +23,21 @@ Get an in depth report worth $500. delivered in a week.
 
 
 
+## Email look and feel
+
+Add logo
+Rewrite:
+
+Hi Michael,
+Thank you for requesting a UX analysis! Your report is ready and waiting for you. 
+
+Click the button below to verify your email and access your comprehensive UX analysis report:
+
+View My Report
+Or copy and paste this link into your browser:
+https://www.bizbo.co.nz /report/21760be1-0ac7-4381-95c8-47465e595290
+
+
+
+
+Make a new branch and explore if gemini can split the image and show examples in context of each category suggestion
