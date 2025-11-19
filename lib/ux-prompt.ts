@@ -134,14 +134,14 @@ Use these areas to guide your internal sentiment and scoring process.
 - The issue demonstrates a visual design problem (spacing, contrast, typography)
 
 **When to omit coordinates or set relevant: false:**
-- **Accessibility Basics**: This category focuses on code-level accessibility (alt text, semantic HTML, ARIA attributes) that cannot be visually demonstrated. ALWAYS set `"relevant": false` for this category.
-- **Page Speed Indicators**: This category is about abstract performance concerns (image sizes, loading times, code complexity) that cannot be visually shown. ALWAYS set `"relevant": false` for this category.
+- **Accessibility Basics**: This category focuses on code-level accessibility (alt text, semantic HTML, ARIA attributes) that cannot be visually demonstrated. ALWAYS set \`"relevant": false\` for this category.
+- **Page Speed Indicators**: This category is about abstract performance concerns (image sizes, loading times, code complexity) that cannot be visually shown. ALWAYS set \`"relevant": false\` for this category.
 - The issue is about missing elements (nothing visible to show)
 - The issue is abstract (general performance concerns, code quality)
 - The issue cannot be visually demonstrated in the screenshot
 - The issue is about functionality that isn't visible (meta tags, server-side code)
 
-**CRITICAL: For "Accessibility Basics" and "Page Speed Indicators" categories, you MUST include the JSON block with `"relevant": false` to explicitly indicate no image should be shown.**
+**CRITICAL: For "Accessibility Basics" and "Page Speed Indicators" categories, you MUST include the JSON block with \`"relevant": false\` to explicitly indicate no image should be shown.**
 
 **If coordinates are relevant**, include a JSON code block with the pixel coordinates. Look at the screenshot carefully and identify the EXACT visual element, text, or area that demonstrates the issue. The coordinates should be tight around the actual element, not the entire page section. Use the following format:
 
@@ -219,7 +219,7 @@ Example 5 - Non-visual issue (Accessibility or Page Speed - MUST use this format
 }
 \`\`\`
 
-**IMPORTANT**: For Accessibility Basics and Page Speed Indicators, you MUST include the JSON block with `"relevant": false`. Do NOT omit the JSON block entirely.
+**IMPORTANT**: For Accessibility Basics and Page Speed Indicators, you MUST include the JSON block with \`"relevant": false\`. Do NOT omit the JSON block entirely.
 
 Where:
 - \`x\` and \`y\` are the top-left pixel coordinates of the area of interest (relative to the full screenshot, starting from 0,0 at top-left). MUST be within the screenshot bounds. The screenshot dimensions are provided above - use them to ensure coordinates are valid.
@@ -254,8 +254,8 @@ Where:
    - **Content Readability**: Identify the specific text block or paragraph that demonstrates the issue, not the entire content area. Typically: width 400-700px, height 150-300px, zoom 1.5-1.8.
    - **Navigation**: Identify the exact navigation menu or problematic menu item, not the entire header. Typically: y near 0, width 800-1000px, height 50-80px, zoom 1.8-2.0.
    - **Visual Design & Aesthetics**: Focus on the specific visual element (e.g., a poorly designed section, colour clash, spacing issue), not the entire page. Typically: width 400-800px, height 200-500px, zoom 1.2-1.5.
-   - **Accessibility Basics**: This category focuses on code-level issues (alt text, semantic HTML, ARIA) that cannot be visually demonstrated. ALWAYS set `"relevant": false` and include the JSON block with only `"relevant": false`.
-   - **Page Speed Indicators**: This category is about abstract performance (image sizes, loading times) that cannot be visually shown. ALWAYS set `"relevant": false` and include the JSON block with only `"relevant": false`.
+   - **Accessibility Basics**: This category focuses on code-level issues (alt text, semantic HTML, ARIA) that cannot be visually demonstrated. ALWAYS set \`"relevant": false\` and include the JSON block with only \`"relevant": false\`.
+   - **Page Speed Indicators**: This category is about abstract performance (image sizes, loading times) that cannot be visually shown. ALWAYS set \`"relevant": false\` and include the JSON block with only \`"relevant": false\`.
 
 5. **Avoid blank areas**: Do NOT set coordinates that point to empty white space, backgrounds, or areas without visible content. If the issue cannot be visually demonstrated, set \`"relevant": false\`.
 
