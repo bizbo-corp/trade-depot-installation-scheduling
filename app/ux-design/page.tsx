@@ -19,6 +19,15 @@ import { Button } from "@/components/ui/button";
 import { LottieAnimation } from "@/components/LottieAnimation";
 import { animations } from "@/lib/images";
 import { UXIllustration } from "@/app/ux-design/UXIllustration";
+import { UXAnalysisForm } from "@/components/ux-analysis/UXAnalysisForm";
+import { EmailCollectionDialog, EmailCollectionData } from "@/components/ux-analysis/EmailCollectionDialog";
+import { useState } from "react";
+import type {
+  AnalyzeUXResponse,
+  AnalyzeUXErrorResponse,
+  SubmitAnalysisErrorResponse,
+} from "@/types/ux-analysis";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const FEATURE_ITEMS = [
   {
@@ -61,6 +70,122 @@ const FEATURE_ITEMS = [
 
 export default function Home() {
   useHeroScrollAnimation();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [analysisData, setAnalysisData] = useState<{
+    url: string;
+    report: string;
+    screenshot: string;
+  } | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleAnalysisSubmit = async (url: string) => {
+    setLoading(true);
+    setError(null);
+    setAnalysisData(null);
+    // Open dialog immediately after URL submission
+    setIsDialogOpen(true);
+
+    try {
+      const response = await fetch("/api/analyze-ux", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const errorData = data as AnalyzeUXErrorResponse;
+        setError(errorData.error || "An error occurred during analysis");
+        if (errorData.details) {
+          console.error("Analysis error details:", errorData.details);
+        }
+      } else {
+        const successData = data as AnalyzeUXResponse;
+        setAnalysisData({
+          url,
+          report: successData.report,
+          screenshot: successData.screenshot,
+        });
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to connect to the analysis service";
+      setError(errorMessage);
+      console.error("Analysis request failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailSubmit = async (data: EmailCollectionData) => {
+    if (!analysisData) {
+      setError("No analysis data available. Please try again.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/submit-analysis", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url: analysisData.url,
+          report: analysisData.report,
+          screenshot: analysisData.screenshot,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          mobile: data.mobile || undefined,
+          areaOfInterest: ["UX optimisation"], // Hidden field - automatically set for UX form
+        }),
+      });
+
+      // Check if response is JSON before parsing
+      const contentType = response.headers.get("content-type");
+      let responseData: SubmitAnalysisErrorResponse | { success: boolean; message: string };
+      
+      if (contentType && contentType.includes("application/json")) {
+        responseData = await response.json();
+      } else {
+        // If not JSON, read as text to see what we got
+        const text = await response.text();
+        console.error("Non-JSON response received:", text.substring(0, 200));
+        setError(`Server error: ${response.status} ${response.statusText}`);
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = responseData as SubmitAnalysisErrorResponse;
+        setError(errorData.error || "Failed to submit analysis");
+        if (errorData.details) {
+          console.error("Submit error details:", errorData.details);
+        }
+        return;
+      }
+
+      // Success - close dialog
+      setIsDialogOpen(false);
+      // Could show a toast/notification here if desired
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to submit analysis";
+      setError(errorMessage);
+      console.error("Submit request failed:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="flex bg-background min-h-screen flex-col ">
@@ -148,19 +273,18 @@ Boost accessibility and improve your page rank
                     </span>
                   </li>
                 </ul>
-                <div className="flex flex-row gap-4 w-full">
-                  <BookingDialog>
-                    <Button
-                      variant="primary"
-                      size="lg"
-                      className="px-8 sm:w-auto"
-                    >
-                      Schedule a call
-                    </Button>
-                  </BookingDialog>
-                  <Button variant="ghost" size="lg" className="px-8 sm:w-auto">
-                    Find out more
-                  </Button>
+                <div className="flex flex-col gap-4 w-full max-w-md">
+                  <UXAnalysisForm onSubmit={handleAnalysisSubmit} loading={loading} />
+                  {error && (
+                    <Card className="border-destructive bg-destructive/10">
+                      <CardHeader className="p-4">
+                        <CardTitle className="text-destructive text-sm">Error</CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4 pt-0">
+                        <p className="text-sm text-destructive">{error}</p>
+                      </CardContent>
+                    </Card>
+                  )}
                 </div>
               </div>
             </div>
@@ -190,6 +314,14 @@ Boost accessibility and improve your page rank
 
       <CtaSection variant="analysis" sectionTheme="dark" />
       <Footer />
+      <EmailCollectionDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onSubmit={handleEmailSubmit}
+        isSubmitting={isSubmitting}
+        screenshot={analysisData?.screenshot}
+        isAnalyzing={loading}
+      />
     </div>
   );
 }
