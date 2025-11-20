@@ -24,13 +24,10 @@ Get an in depth report worth $500. delivered in a week.
 CTA at bottom of report
 
 ## Bugs
-Tablet an mobile bugs
+~~Tablet an mobile bugs~~
 
-## Mutli image
-
-Make a new branch and explore if 
-
-NTH: Pass the image direct to the modal. Scan graphic
+~~## Mutli image~~
+~~NTH: Pass the image direct to the modal. Scan graphic~~
 
 ## Post form
 Message to check email
@@ -40,13 +37,38 @@ Message to check email
 Add logo
 Rewrite:
 
+**Subject Line Options:**
+- Your £500 Website Analysis Report is Ready! 🎯
+- Discover Your Website's Hidden Opportunities [Free Report Inside]
+- Your Free UX Analysis: 5 Quick Wins Waiting for You
+- Unlock Your Website's Potential: Your Analysis Report is Ready
+
+**Email Body:**
+
 Hi Michael,
-Thank you for requesting a UX analysis! Your report is ready and waiting for you. 
 
-Click the button below to verify your email and access your comprehensive UX analysis report:
+Great news! Your comprehensive website experience (UX) analysis is complete.
 
-View My Report
+We've completed a detailed review of your website and identified actionable insights that could transform your user experience. Inside your report, you'll discover:
+
+• Top 5 quick wins to fix UX issues and improve conversions
+• Performance opportunities tailored to your site
+
+This comprehensive analysis is our complimentary gift to help you succeed. 
+
+Click below to verify your email and unlock your full report:
+
+[View My Free Report →]
+
 Or copy and paste this link into your browser:
-https://www.bizbo.co.nz /report/21760be1-0ac7-4381-95c8-47465e595290
+https://www.bizbo.co.nz/report/21760be1-0ac7-4381-95c8-47465e595290
+
+
+This quick win report highlights your top opportunities. Want a deeper analysis? We're offering a free comprehensive manual assessment — normally a premium offering.
+
+Your report will remain accessible for 7 days, so you can review it at your convenience.
+
+Best regards,
+The Bizbo Team
 
 
