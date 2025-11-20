@@ -306,60 +306,56 @@ export function QuickWinCard({
   };
 
   return (
-    <Card className={cn("w-full bg-foreground/10 py-6 shadow-none border-0")}>
-      <CardContent className="p-6">
-        <div className={cn(proseClasses, "w-full bg-foreground/0 py-6 shadow-none border-0 mx-auto text-foreground")}>
-          {/* Display cropped image only if coordinates are available and relevant */}
-          {shouldShowImage && (
-            <div className="mb-6 rounded-lg overflow-hidden border border-foreground/20 bg-muted/30">
-              {isLoading && (
-                <div className="w-full h-64 bg-muted animate-pulse flex items-center justify-center">
-                  <span className="text-muted-foreground text-sm">Loading cropped image...</span>
+    <Card className={cn("w-full bg-foreground/10 py-0 border-0 shadow-none overflow-hidden", shouldShowImage && "rounded-lg")}>
+      {/* Display cropped image only if coordinates are available and relevant */}
+      {shouldShowImage && (
+        <div className="overflow-hidden bg-foreground/10 rounded-t-lg min-h-[200px] max-h-[400px]">
+          {isLoading && (
+            <div className="w-full h-full bg-muted animate-pulse flex items-center justify-center">
+              <span className="text-muted-foreground text-sm">Loading cropped image...</span>
+            </div>
+          )}
+          {error && !isLoading && (
+            <div className="w-full h-full bg-muted/50 flex flex-col items-center justify-center p-4 gap-2">
+              <span className="text-muted-foreground text-sm text-center">
+                Image unavailable: {error}
+              </span>
+              {process.env.NODE_ENV === 'development' && coordinates && (
+                <div className="text-xs text-muted-foreground/70 mt-2 p-2 bg-muted rounded">
+                  <div>Coordinates: x={coordinates.x}, y={coordinates.y}</div>
+                  <div>Size: {coordinates.width}x{coordinates.height}px</div>
+                  <div>Zoom: {coordinates.zoom || 'auto'}</div>
                 </div>
               )}
-              {error && !isLoading && (
-                <div className="w-full h-48 bg-muted/50 flex flex-col items-center justify-center p-4 gap-2">
-                  <span className="text-muted-foreground text-sm text-center">
-                    Image unavailable: {error}
-                  </span>
-                  {process.env.NODE_ENV === 'development' && coordinates && (
-                    <div className="text-xs text-muted-foreground/70 mt-2 p-2 bg-muted rounded">
-                      <div>Coordinates: x={coordinates.x}, y={coordinates.y}</div>
-                      <div>Size: {coordinates.width}x{coordinates.height}px</div>
-                      <div>Zoom: {coordinates.zoom || 'auto'}</div>
-                    </div>
-                  )}
-                  {/* Fallback: Show full screenshot if coordinates fail */}
-                  {!croppedImage && screenshot && (
-                    <div className="mt-4 w-full">
-                      <p className="text-xs text-muted-foreground mb-2 text-center">
-                        Showing full screenshot as fallback
-                      </p>
-                      <img
-                        src={screenshot}
-                        alt="Full screenshot (fallback)"
-                        className="w-full h-auto border border-foreground/20 rounded"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-              {croppedImage && !isLoading && !error && (
-                <div className="relative w-full">
+              {/* Fallback: Show full screenshot if coordinates fail */}
+              {!croppedImage && screenshot && (
+                <div className="w-full h-full p-6 ">
                   <img
-                    src={croppedImage}
-                    alt={`Quick Win ${index + 1} focus area`}
-                    className="w-full h-auto object-contain"
-                    onError={() => {
-                      setError("Failed to load cropped image");
-                      setCroppedImage(null);
-                    }}
+                    src={screenshot}
+                    alt="Full screenshot (fallback)"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               )}
             </div>
           )}
-
+          {croppedImage && !isLoading && !error && (
+            <div className="relative w-full h-full p-6 overflow-hidden flex items-center justify-center">
+              <img
+                src={croppedImage}
+                alt={`Quick Win ${index + 1} focus area`}
+                className="h-full w-auto max-w-full object-contain object-center rounded-lg"
+                onError={() => {
+                  setError("Failed to load cropped image");
+                  setCroppedImage(null);
+                }}
+              />
+            </div>
+          )}
+        </div>
+      )}
+      <CardContent className="p-6 rounded-b-xl">
+        <div className={cn(proseClasses, "w-full bg-foreground/0 py-6 shadow-none border-0 mx-auto text-foreground ")}>
           {/* Render markdown content */}
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}

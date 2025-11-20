@@ -493,7 +493,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
                 <div className="space-y-6 md:col-span-2 order-2 md:order-1">
               {/* Key Takeaways - displayed first in a card */}
               {keyTakeaways && (
-                <Card className="w-full bg-foreground/20 shadow-none border-0">
+                <Card className="w-full bg-foreground/10 shadow-none border-0">
                   <CardHeader>
                   <div  className={cn(proseClasses,"w-full bg-foreground/0 py-0 shadow-none border-0 mx-auto text-foreground")}>
                     <CardTitle>Key takeaways</CardTitle>

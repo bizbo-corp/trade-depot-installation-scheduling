@@ -148,15 +148,15 @@ export function createMarkdownComponents(): Components {
           <li {...props} className={cn("list-none flex items-start gap-2", className)}>
             {hasCheck && (
               <>
-                <div className="inline-flex items-center justify-center rounded bg-olive-100 p-1">
-                  <FaIcon icon="check" className="w-6 h-6 text-olive-700 shrink-0" />
+                <div className="inline-flex items-center justify-center rounded bg-foreground/10 p-1">
+                  <FaIcon icon="check" className="w-6 h-6 text-foreground shrink-0" />
                 </div>
               </>
             )}
             {hasCross && (
               <>
-                <div className="inline-flex items-center justify-center rounded bg-olive-100 p-1">
-                  <FaIcon icon="times" className="w-6 h-6 text-olive-700 shrink-0" />
+                <div className="inline-flex items-center justify-center rounded bg-foreground/50 p-1">
+                  <FaIcon icon="times" className="w-6 h-6 text-background shrink-0" />
                 </div>
               </>
             )}
