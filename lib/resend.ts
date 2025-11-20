@@ -86,14 +86,14 @@ export async function sendVerificationEmail(params: {
               
               <div style="text-align: center; margin: 30px 0;">
                 <a href="${reportLink}" 
-                   style="display: inline-block; background-color: #4ce846; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 6px; font-size: 16px; font-weight: 600;">
+                   style="display: inline-block; background-color: #bef264; color: #365314; text-decoration: none; padding: 14px 28px; border-radius: 6px; font-size: 16px; font-weight: 600;">
                   View My Free Report →
                 </a>
               </div>
               
               <p style="font-size: 14px; color: #666; margin-top: 30px;">
                 Or copy and paste this link into your browser:<br>
-                <a href="${reportLink}" style="color: #4ce846; word-break: break-all;">${reportLink}</a>
+                <a href="${reportLink}" style="color: #bef264; word-break: break-all;">${reportLink}</a>
               </p>
               
               <p style="font-size: 16px; margin-top: 30px; margin-bottom: 20px;">
