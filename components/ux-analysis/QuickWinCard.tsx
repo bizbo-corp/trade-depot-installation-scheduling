@@ -307,7 +307,7 @@ export function QuickWinCard({
 
   return (
     <Card className={cn("w-full bg-foreground/10 py-6 shadow-none border-0")}>
-      <CardContent className="p-0">
+      <CardContent className="p-6">
         <div className={cn(proseClasses, "w-full bg-foreground/0 py-6 shadow-none border-0 mx-auto text-foreground")}>
           {/* Display cropped image only if coordinates are available and relevant */}
           {shouldShowImage && (

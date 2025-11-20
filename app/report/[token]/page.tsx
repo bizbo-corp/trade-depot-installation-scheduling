@@ -490,7 +490,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-6 md:col-span-2">
+                <div className="space-y-6 md:col-span-2 order-2 md:order-1">
               {/* Key Takeaways - displayed first in a card */}
               {keyTakeaways && (
                 <Card className="w-full bg-foreground/20 shadow-none border-0">
@@ -549,11 +549,11 @@ export default async function ReportPage({ params }: ReportPageProps) {
                 </div>
 
                 {screenshot && (
-                  <div className="w-full md:col-span-1 rounded-lg overflow-hidden sticky top-6 h-fit shadow-2xl">
+                  <div className="w-full md:col-span-1 rounded-lg overflow-hidden relative md:sticky md:top-6 h-fit shadow-2xl order-1 md:order-2 md:overflow-visible max-h-[600px] md:max-h-none ">
                     <img
                       src={screenshot}
                       alt="Website screenshot"
-                      className="w-full h-auto object-cover object-top"
+                      className="w-full h-auto object-cover object-top md:max-h-none max-h-[600px] rounded-lg"
                     />
                   </div>
                 )}
