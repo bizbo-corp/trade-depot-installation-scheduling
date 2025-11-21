@@ -330,88 +330,100 @@ export default function Home() {
           >
             <div
               id="hero-left-col"
-              className="bg-lime-500/00 w-full grow h-full lg:min-w-1/2 lg:self-stretch md:flex md:flex-col md:justify-center"
+              className="bg-lime-500/00 w-full grow h-full lg:min-w-2/3 bg-lime-500/00 lg:self-stretch md:flex md:flex-col md:justify-center"
             >
-              <div className="flex flex-col gap-8 md:max-w-2xl">
-                <div className="flex flex-col gap-6 ">
-                  <h1 className="text-xl font-extrabold tracking-tight text-foreground md:text-3xl lg:text-5xl">
-              <span className="block ">Want to grow twice as fast?</span>
-              <span className="text-muted-foreground">You have two choices:</span>
+              <div className="flex flex-col gap-8 ">
+                <div className="flex flex-col gap-6">
+                  <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-4xl lg:text-5xl leading-none">
+                    <span className="block">Want to grow twice as fast?</span>
+                    <span className="block text-foreground/80 mt-1">You have two choices:</span>
                   </h1>
-                                 <div className="flex flex-row">
-
-                      <FaIcon
-                        icon="circle-1"
-                        style="duotone"
-                        size={1.5}
-                        className=" h-8 w-12 shrink-0 text-foreground"
+                  
+                      <div className="flex flex-row gap-16">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-4">
+                        <FaIcon
+                          icon="circle-1"
+                          style="duotone"
+                          size={2}
+                          className="h-12 w-12 shrink-0 text-foreground"
                         />
-                  <p className="max-w-xl text-lg font-bold leading-relaxed text-foreground md:text-xl">
-                  Chuck money and pray
-                  </p>
+                        <h3 className="text-xl font-bold text-foreground md:text-2xl">
+                          Throw good money after bad
+                        </h3>
+                      </div>
+                                            <div className="flex items-center gap-4">
+
+                      <ul className="flex flex-col gap-1.5 pl-14">
+                        <li className="flex items-start gap-3">
+                          <FaIcon
+                            icon="square"
+                            className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
+                          />
+                          <span className="text-lg text-foreground/80">
+                            Raise twice the cash
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <FaIcon
+                            icon="square"
+                            className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
+                          />
+                          <span className="text-lg text-foreground/80">
+                            Hire twice the staff
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <FaIcon
+                            icon="square"
+                            className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
+                          />
+                          <span className="text-lg text-foreground/80">
+                            Spend twice as much on ads
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <FaIcon
+                            icon="square"
+                            className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
+                          />
+                          <span className="text-lg text-foreground/80">
+                            Cross both your fingers
+                          </span>
+                        </li>
+                      </ul>
+                      </div>
+                      </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-4">
+                        <FaIcon
+                          icon="circle-2"
+                          style="duotone"
+                          size={2}
+                          className="h-12 w-12 shrink-0 text-foreground"
+                        />
+                        <h3 className="text-xl font-bold text-foreground md:text-2xl">
+                          Optimise your UX
+                        </h3>
+                      </div>
+                      <ul className="flex flex-col gap-1.5 pl-14">
+                        <li className="flex items-start gap-3">
+                          <FaIcon
+                            icon="square"
+                            className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
+                          />
+                          <span className="text-lg text-foreground/80">
+                            Increase conversions from 1% to 2% <br /><i>(That's twice as many)</i>
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
-                  <ul className="flex flex-col gap-4">
-                    <li className="flex items-start gap-3">
-                      <FaIcon
-                        icon="minus"
-                        className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
-                      />
-                      <span className="text-lg text-foreground/70 md:text-xl">
-                      Raise twice the cash
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <FaIcon
-                        icon="minus"
-                        className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
-                      />
-                      <span className="text-lg text-foreground/70 md:text-xl">
-                      Hire twice the staff  
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <FaIcon
-                        icon="minus"
-                        className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
-                      />
-                      <span className="text-lg text-foreground/70 md:text-xl">
-                      Spend twice as much on ads
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <FaIcon
-                        icon="minus"
-                        className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
-                      />
-                      <span className="text-lg text-foreground/70 md:text-xl">
-                      Cross both your fingers
-                      </span>
-                    </li>
-                  </ul>
-                  <div className="flex flex-row">
 
-                      <FaIcon
-                        icon="circle-2"
-                        style="duotone"
-                        size={1.5}
-                        className=" h-8 w-12 shrink-0 text-foreground"
-                        />
-                  <p className="max-w-xl text-lg font-bold leading-relaxed text-foreground md:text-xl">
-                  Optimise your UX
+                  <p className="text-xl font-medium leading-relaxed text-foreground/80 max-w-2xl">
+                    Stop pouring money into websites & ads that don't convert. We optimise your digital presence to turn visitors into customers, not just traffic.
                   </p>
-                        </div>
-                  <ul className="flex flex-col gap-4">
-                    <li className="flex items-start gap-3">
-                      <FaIcon
-                        icon="minus"
-                        className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
-                      />
-                      <span className="text-lg text-foreground/70 md:text-xl">
-                      Increase conversions from 1% to 2% (That's twice as many)
-                      </span>
-                    </li>
-                  </ul>                  
-                  <p>Stop Pouring Money Into Websites & Ads That Don't Convert. We optimize your digital presence to turn visitors into customers, not just traffic.</p>
                 </div>
                 
 
@@ -471,7 +483,7 @@ export default function Home() {
             </div>
             <div
               id="hero-right-col"
-              className="bg-pink-500/00 w-full grow h-full lg:min-w-1/2 lg:self-stretch"
+              className="bg-pink-500/00 w-full grow h-full lg:min-w-1/3 bg-red-500/00 lg:self-stretch"
             >
             <div className="flex items-center justify-center h-full w-full">
               <UXIllustration className="w-full h-auto" />
