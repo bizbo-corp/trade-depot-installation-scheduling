@@ -224,16 +224,16 @@ Example 5 - Non-visual issue (Accessibility or Page Speed - MUST use this format
 Where:
 - \`x\` and \`y\` are the top-left pixel coordinates of the area of interest (relative to the full screenshot, starting from 0,0 at top-left). MUST be within the screenshot bounds. The screenshot dimensions are provided above - use them to ensure coordinates are valid.
 - \`width\` and \`height\` are the pixel dimensions of the area to highlight - should be tight around the specific element, typically 200-800px wide and 100-600px tall. MUST be at least 30px and should not exceed 80% of the screenshot dimensions. For small elements like buttons, use 100-300px. For text blocks, use 300-600px. For sections, use 400-800px.
-- \`zoom\` is an optional zoom level (1.0 = no zoom, 2.0 = 2x zoom, etc.) - use this to focus on smaller details. **Maximum zoom is 2.0x**. Recommended ranges:
-  - Small elements (<200px): 1.8-2.0x zoom
-  - Medium elements (200-500px): 1.5-1.8x zoom
-  - Large elements (>500px): 1.0-1.5x zoom
-  - Buttons: 1.8-2.0x zoom
-  - Text blocks: 1.5-1.8x zoom
-  - Sections: 1.0-1.5x zoom
-  If not specified, will be calculated automatically based on element size.
+- "zoom" is an optional zoom level (1.0 = context view, 2.0 = detailed view). **PRIORITIZE ZOOM 1.0 (CONTEXT VIEW)** to ensure the user sees where the element is on the page. Only use higher zoom (1.5-2.0) for very small elements that would be unreadable otherwise.
+  - Small elements (<200px): 1.5-1.8x zoom
+  - Medium elements (200-500px): 1.2-1.5x zoom
+  - Large elements (>500px): 1.0x zoom (Context is key!)
+  - Buttons: 1.5-1.8x zoom
+  - Text blocks: 1.2-1.5x zoom
+  - Sections: 1.0x zoom
+  If not specified, defaults to 1.0 (Context View).
 - \`focusPoint\` is optional - an object with \`x\` and \`y\` coordinates for the center point of the focus indicator dot. If not specified, defaults to the center of the coordinate area (x + width/2, y + height/2).
-- \`relevant\` is optional - set to \`false\` if no image should be shown, or omit entirely (defaults to \`true\`)
+- \`relevant\` is MANDATORY. Set to \`true\` if an image should be shown, or \`false\` if no image is relevant (e.g. abstract concepts, missing elements, code issues).
 
 **CRITICAL ACCURACY REQUIREMENTS - READ CAREFULLY:**
 

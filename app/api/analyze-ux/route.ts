@@ -204,8 +204,8 @@ export async function POST(request: NextRequest) {
       screenshotWidth = pageDimensions.width;
       screenshotHeight = pageDimensions.height;
       
-      // Log dimensions for debugging
-      console.log('Screenshot dimensions captured:', {
+      // Log dimensions for debugging (Requested by user)
+      console.log('DEBUG: INPUT IMAGE DIMENSIONS:', {
         width: screenshotWidth,
         height: screenshotHeight,
         viewport: { width: viewportWidth, height: viewportHeight }

@@ -28,109 +28,112 @@ export async function cropImage(
           return;
         }
 
-        // Validate input coordinates first and clamp if needed
-        // Allow up to 5px outside bounds for clamping tolerance
-        let cropX = Math.max(-5, coordinates.x);
-        let cropY = Math.max(-5, coordinates.y);
-        let cropWidth = coordinates.width;
-        let cropHeight = coordinates.height;
+        // 1. Identify the Target Element (the tight bounding box from Gemini)
+        const targetX = coordinates.x;
+        const targetY = coordinates.y;
+        const targetWidth = coordinates.width;
+        const targetHeight = coordinates.height;
         
-        // Clamp to image bounds (normalize instead of reject)
-        cropX = Math.max(0, Math.min(cropX, img.width - 1));
-        cropY = Math.max(0, Math.min(cropY, img.height - 1));
-        cropWidth = Math.min(cropWidth, img.width - cropX);
-        cropHeight = Math.min(cropHeight, img.height - cropY);
-        
-        // Log if coordinates were adjusted
-        const wasAdjusted = 
-          cropX !== coordinates.x || 
-          cropY !== coordinates.y || 
-          cropWidth !== coordinates.width || 
-          cropHeight !== coordinates.height;
-        
-        if (wasAdjusted && process.env.NODE_ENV === 'development') {
-          console.warn('Coordinates adjusted during clamping:', {
-            original: { x: coordinates.x, y: coordinates.y, width: coordinates.width, height: coordinates.height },
-            adjusted: { x: cropX, y: cropY, width: cropWidth, height: cropHeight },
-            imageSize: { width: img.width, height: img.height }
-          });
-        }
-        
-        // Validate final crop area
-        if (cropWidth <= 0 || cropHeight <= 0) {
-          reject(new Error(`Invalid crop coordinates: area too small (${cropWidth}x${cropHeight})`));
-          return;
-        }
-        
-        if (cropX + cropWidth > img.width || cropY + cropHeight > img.height) {
-          reject(new Error(`Invalid crop coordinates: area extends beyond image bounds`));
-          return;
-        }
-        
-        // Ensure minimum crop size (at least 10px)
-        if (cropWidth < 10 || cropHeight < 10) {
-          reject(new Error(`Invalid crop coordinates: area too small (minimum 10x10px required)`));
-          return;
-        }
-        
-        // Calculate or use zoom level
-        // If zoom is specified and valid, use it; otherwise calculate optimal zoom
+        // 2. Determine Zoom/Context Level
+        // If zoom is specified, use it; otherwise calculate optimal zoom
         let zoom: number;
         if (coordinates.zoom && coordinates.zoom > 0 && coordinates.zoom <= 2.0) {
           zoom = coordinates.zoom;
-          if (process.env.NODE_ENV === 'development') {
-            console.log('Using provided zoom:', zoom);
-          }
         } else {
-          // Calculate optimal zoom based on element size
-          // We'll use a simple category detection from coordinates size
           zoom = calculateOptimalZoom(coordinates);
-          if (process.env.NODE_ENV === 'development') {
-            console.log('Calculated optimal zoom:', zoom, 'for element size:', cropWidth, 'x', cropHeight);
-          }
         }
         
-        // Ensure zoom doesn't exceed maximum of 2.0
-        zoom = Math.min(zoom, 2.0);
+        // Clamp zoom between 1.0 and 2.0
+        zoom = Math.max(1.0, Math.min(2.0, zoom));
+
+        // 3. Calculate Context Multiplier
+        // Zoom 2.0 (High) -> Less context (tighter crop)
+        // Zoom 1.0 (Low) -> More context (wider crop)
+        // Formula: Multiplier ranges from ~1.5x (at zoom 2.0) to ~3.0x (at zoom 1.0)
+        // This ensures we ALWAYS show some context around the element
+        const contextMultiplier = 1.5 + (2.0 - zoom) * 1.5;
         
-        // Calculate output canvas size (apply zoom by scaling the output)
-        const outputWidth = Math.round(cropWidth * zoom);
-        const outputHeight = Math.round(cropHeight * zoom);
+        // 4. Calculate the Expanded Crop Area (centered on the target)
+        const cropWidth = Math.round(targetWidth * contextMultiplier);
+        const cropHeight = Math.round(targetHeight * contextMultiplier);
         
-        // Limit maximum output size to prevent memory issues (max 2000px)
+        const centerX = targetX + targetWidth / 2;
+        const centerY = targetY + targetHeight / 2;
+        
+        let cropX = Math.round(centerX - cropWidth / 2);
+        let cropY = Math.round(centerY - cropHeight / 2);
+        
+        // 5. Clamp the Crop Area to Image Bounds
+        // We try to keep the size but shift if possible, otherwise shrink
+        
+        // Shift to fit horizontally
+        if (cropX < 0) cropX = 0;
+        if (cropX + cropWidth > img.width) cropX = Math.max(0, img.width - cropWidth);
+        
+        // Shift to fit vertically
+        if (cropY < 0) cropY = 0;
+        if (cropY + cropHeight > img.height) cropY = Math.max(0, img.height - cropHeight);
+        
+        // Shrink if still too big (image is smaller than desired crop)
+        const finalCropWidth = Math.min(cropWidth, img.width);
+        const finalCropHeight = Math.min(cropHeight, img.height);
+        
+        // 6. Determine Output Size (Resolution)
+        // We want a high-res output. If the crop is small, we upscale.
+        // Target a minimum dimension of 800px for crisp display
+        const minOutputDimension = 800;
+        const scaleFactor = Math.max(1, minOutputDimension / Math.min(finalCropWidth, finalCropHeight));
+        
+        // Limit max scale to avoid extreme blurriness (e.g. 4x max)
+        const finalScale = Math.min(scaleFactor, 4.0);
+        
+        const outputWidth = Math.round(finalCropWidth * finalScale);
+        const outputHeight = Math.round(finalCropHeight * finalScale);
+        
+        // Limit maximum output size (max 2000px)
         const maxOutputSize = 2000;
-        let finalZoom = zoom;
-        let finalWidth = outputWidth;
-        let finalHeight = outputHeight;
+        let renderWidth = outputWidth;
+        let renderHeight = outputHeight;
         
         if (outputWidth > maxOutputSize || outputHeight > maxOutputSize) {
-          const scale = Math.min(maxOutputSize / outputWidth, maxOutputSize / outputHeight);
-          finalZoom = zoom * scale;
-          finalWidth = Math.round(cropWidth * finalZoom);
-          finalHeight = Math.round(cropHeight * finalZoom);
+          const reduction = Math.min(maxOutputSize / outputWidth, maxOutputSize / outputHeight);
+          renderWidth = Math.round(outputWidth * reduction);
+          renderHeight = Math.round(outputHeight * reduction);
         }
+
+        // Set canvas size
+        canvas.width = renderWidth;
+        canvas.height = renderHeight;
         
-        // Set canvas size to final dimensions
-        canvas.width = finalWidth;
-        canvas.height = finalHeight;
-        
-        // Draw the exact coordinate area, scaled to output size (zoom applied here)
+        // 7. Draw the Crop
         ctx.drawImage(
           img,
-          cropX,           // Source X (exact coordinate)
-          cropY,           // Source Y (exact coordinate)
-          cropWidth,       // Source width (exact coordinate)
-          cropHeight,      // Source height (exact coordinate)
-          0,               // Destination X
-          0,               // Destination Y
-          finalWidth,      // Destination width (with zoom)
-          finalHeight      // Destination height (with zoom)
+          cropX,           // Source X
+          cropY,           // Source Y
+          finalCropWidth,  // Source Width
+          finalCropHeight, // Source Height
+          0,               // Dest X
+          0,               // Dest Y
+          renderWidth,     // Dest Width
+          renderHeight     // Dest Height
         );
         
-        // Add focus indicator
-        addFocusIndicator(canvas, ctx, coordinates, finalZoom, cropX, cropY);
+        // 8. Add Focus Indicator
+        // We need to map the target center to the new canvas coordinates
+        // Relative position of target center in the crop area
+        const relativeCenterX = centerX - cropX;
+        const relativeCenterY = centerY - cropY;
         
-        // Convert to base64 data URL
+        // Scale to render size
+        const renderScaleX = renderWidth / finalCropWidth;
+        const renderScaleY = renderHeight / finalCropHeight;
+        
+        const indicatorX = relativeCenterX * renderScaleX;
+        const indicatorY = relativeCenterY * renderScaleY;
+        
+        addFocusIndicator(canvas, ctx, indicatorX, indicatorY);
+        
+        // Convert to base64
         const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
         resolve(croppedDataUrl);
       } catch (error) {
@@ -225,14 +228,14 @@ export function calculateOptimalZoom(
   let zoom: number;
   
   if (avgSize < 200) {
-    // Small elements: higher zoom (reduced from 2.5 to 2.0)
-    zoom = 2.0;
+    // Small elements: moderate zoom (reduced to 1.8)
+    zoom = 1.8;
   } else if (avgSize < 500) {
-    // Medium elements: moderate zoom
-    zoom = 1.75;
+    // Medium elements: lower zoom (reduced to 1.5)
+    zoom = 1.5;
   } else {
-    // Large elements: lower zoom
-    zoom = 1.25;
+    // Large elements: context zoom
+    zoom = 1.0;
   }
   
   // Category-specific adjustments
@@ -240,17 +243,16 @@ export function calculateOptimalZoom(
     const categoryLower = category.toLowerCase();
     
     if (categoryLower.includes('button') || categoryLower.includes('cta') || categoryLower.includes('call to action')) {
-      // Buttons: Higher zoom for better visibility (capped at 2.0)
-      zoom = Math.max(zoom, 1.8);
-      zoom = Math.min(zoom, 2.0);
-    } else if (categoryLower.includes('text') || categoryLower.includes('readability') || categoryLower.includes('content')) {
-      // Text blocks: Moderate zoom
+      // Buttons: Moderate zoom for visibility (capped at 1.8)
       zoom = Math.max(zoom, 1.5);
       zoom = Math.min(zoom, 1.8);
-    } else if (categoryLower.includes('section') || categoryLower.includes('design') || categoryLower.includes('aesthetic')) {
-      // Sections: Lower zoom to show context
-      zoom = Math.max(zoom, 1.0);
+    } else if (categoryLower.includes('text') || categoryLower.includes('readability') || categoryLower.includes('content')) {
+      // Text blocks: Low-Moderate zoom
+      zoom = Math.max(zoom, 1.2);
       zoom = Math.min(zoom, 1.5);
+    } else if (categoryLower.includes('section') || categoryLower.includes('design') || categoryLower.includes('aesthetic')) {
+      // Sections: Context zoom
+      zoom = 1.0;
     }
   }
   
@@ -258,45 +260,28 @@ export function calculateOptimalZoom(
   return Math.max(1.0, Math.min(2.0, zoom));
 }
 
+
 /**
  * Adds a focus indicator (dark dot with white stroke) to a cropped image
- * @param canvas - The canvas element with the cropped image already drawn
+ * @param canvas - The canvas element
  * @param ctx - The canvas 2D context
- * @param coordinates - Image coordinates with optional focusPoint
- * @param zoom - The zoom level applied to the crop
- * @param cropX - The X coordinate of the crop area in the source image
- * @param cropY - The Y coordinate of the crop area in the source image
+ * @param x - The X coordinate of the focus point on the canvas
+ * @param y - The Y coordinate of the focus point on the canvas
  */
 function addFocusIndicator(
   canvas: HTMLCanvasElement,
   ctx: CanvasRenderingContext2D,
-  coordinates: ImageCoordinates,
-  zoom: number,
-  cropX: number,
-  cropY: number
+  x: number,
+  y: number
 ): void {
-  // Calculate focus point position
-  let focusX: number;
-  let focusY: number;
-  
-  if (coordinates.focusPoint) {
-    // Use provided focus point, but adjust relative to crop area
-    focusX = (coordinates.focusPoint.x - cropX) * zoom;
-    focusY = (coordinates.focusPoint.y - cropY) * zoom;
-  } else {
-    // Default to center of coordinate area
-    focusX = (coordinates.width / 2) * zoom;
-    focusY = (coordinates.height / 2) * zoom;
-  }
-  
-  // Ensure focus point is within canvas bounds
-  focusX = Math.max(8, Math.min(canvas.width - 8, focusX));
-  focusY = Math.max(8, Math.min(canvas.height - 8, focusY));
+  // Ensure focus point is within canvas bounds (with padding)
+  const safeX = Math.max(8, Math.min(canvas.width - 8, x));
+  const safeY = Math.max(8, Math.min(canvas.height - 8, y));
   
   // Calculate dot size (proportional to image size, but with min/max)
-  const dotSize = Math.max(12, Math.min(16, Math.round(canvas.width * 0.02)));
+  const dotSize = Math.max(12, Math.min(20, Math.round(canvas.width * 0.025)));
   const radius = dotSize / 2;
-  const strokeWidth = 2;
+  const strokeWidth = 3;
   
   // Draw white stroke (outer circle) with shadow
   ctx.save();
@@ -306,7 +291,7 @@ function addFocusIndicator(
   ctx.shadowOffsetY = 2;
   
   ctx.beginPath();
-  ctx.arc(focusX, focusY, radius + strokeWidth, 0, 2 * Math.PI);
+  ctx.arc(safeX, safeY, radius + strokeWidth, 0, 2 * Math.PI);
   ctx.fillStyle = 'rgba(255, 255, 255, 1)';
   ctx.fill();
   ctx.restore();
@@ -319,7 +304,7 @@ function addFocusIndicator(
   ctx.shadowOffsetY = 2;
   
   ctx.beginPath();
-  ctx.arc(focusX, focusY, radius, 0, 2 * Math.PI);
+  ctx.arc(safeX, safeY, radius, 0, 2 * Math.PI);
   // Use primary button color: #bef264
   ctx.fillStyle = '#bef264';
   ctx.fill();

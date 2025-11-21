@@ -45,7 +45,7 @@ function extractImageCoordinates(markdown: string, quickWinIndex?: number): Imag
   // Look for JSON code blocks containing coordinate data
   // More specific regex: look for JSON blocks that appear after "Quick Win Opportunity" and before "Analysis"
   // This ensures we get coordinates from the correct location in the Quick Win section
-  const jsonCodeBlockRegex = /```json\s*([\s\S]*?)\s*```/gi;
+  const jsonCodeBlockRegex = /```(?:json)?\s*([\s\S]*?)\s*```/gi;
   const matches = Array.from(markdown.matchAll(jsonCodeBlockRegex));
   
   if (debug) {
@@ -218,20 +218,26 @@ function extractImageCoordinates(markdown: string, quickWinIndex?: number): Imag
 function removeImageCoordinates(markdown: string): string {
   // Remove JSON code blocks that contain coordinate-like data
   // Match any JSON code block and check if it looks like coordinates
-  const jsonCodeBlockRegex = /```json\s*([\s\S]*?)\s*```/gi;
+  const jsonCodeBlockRegex = /```(?:json)?\s*([\s\S]*?)\s*```/gi;
   let cleaned = markdown;
   const matches = Array.from(markdown.matchAll(jsonCodeBlockRegex));
   
   for (const match of matches) {
     try {
       const jsonContent = match[1].trim();
-      const parsed = JSON.parse(jsonContent);
+      // Try to clean up JSON (remove trailing commas)
+      const cleanJson = jsonContent.replace(/,(\s*[}\]])/g, '$1');
+      const parsed = JSON.parse(cleanJson);
+      
       // Check if this looks like coordinates (has x, y, width, height)
+      // OR if it explicitly sets relevant to false
       if (
-        typeof parsed.x === 'number' &&
+        (typeof parsed.x === 'number' &&
         typeof parsed.y === 'number' &&
         typeof parsed.width === 'number' &&
-        typeof parsed.height === 'number'
+        typeof parsed.height === 'number') ||
+        parsed.relevant === false ||
+        parsed.image_relevant === false
       ) {
         // Remove this JSON code block
         cleaned = cleaned.replace(match[0], '');
