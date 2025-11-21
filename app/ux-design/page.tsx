@@ -334,47 +334,87 @@ export default function Home() {
             >
               <div className="flex flex-col gap-8 md:max-w-2xl">
                 <div className="flex flex-col gap-6 ">
-                  <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-4xl lg:text-6xl">
-              <span className="block">Transform your digital presence with expert</span>
-              <span className="text-muted-foreground">UX design</span>
+                  <h1 className="text-xl font-extrabold tracking-tight text-foreground md:text-3xl lg:text-5xl">
+              <span className="block ">Want to grow twice as fast?</span>
+              <span className="text-muted-foreground">You have two choices:</span>
                   </h1>
-                  <p className="max-w-xl text-lg font-medium leading-relaxed text-foreground md:text-xl">
-                  Identify and eliminate user journey friction points for enhanced engagement and conversion. Our UX experts provide tailored insights to improve user engagement and boost conversion rates.
+                                 <div className="flex flex-row">
+
+                      <FaIcon
+                        icon="circle-1"
+                        style="duotone"
+                        size={1.5}
+                        className=" h-8 w-12 shrink-0 text-foreground"
+                        />
+                  <p className="max-w-xl text-lg font-bold leading-relaxed text-foreground md:text-xl">
+                  Chuck money and pray
                   </p>
-                </div>
-                
-                {/* Feature List */}
-                {!isReportSent && (
+                  </div>
                   <ul className="flex flex-col gap-4">
                     <li className="flex items-start gap-3">
                       <FaIcon
-                        icon="check"
+                        icon="minus"
                         className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
                       />
                       <span className="text-lg text-foreground/70 md:text-xl">
-                      Find quick-win user experience improvements
+                      Raise twice the cash
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
                       <FaIcon
-                        icon="check"
+                        icon="minus"
                         className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
                       />
                       <span className="text-lg text-foreground/70 md:text-xl">
-                      Increase conversions and sales funnel health
+                      Hire twice the staff  
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
                       <FaIcon
-                        icon="check"
+                        icon="minus"
                         className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
                       />
                       <span className="text-lg text-foreground/70 md:text-xl">
-                      Boost accessibility and improve your page rank
+                      Spend twice as much on ads
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <FaIcon
+                        icon="minus"
+                        className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
+                      />
+                      <span className="text-lg text-foreground/70 md:text-xl">
+                      Cross both your fingers
                       </span>
                     </li>
                   </ul>
-                )}
+                  <div className="flex flex-row">
+
+                      <FaIcon
+                        icon="circle-2"
+                        style="duotone"
+                        size={1.5}
+                        className=" h-8 w-12 shrink-0 text-foreground"
+                        />
+                  <p className="max-w-xl text-lg font-bold leading-relaxed text-foreground md:text-xl">
+                  Optimise your UX
+                  </p>
+                        </div>
+                  <ul className="flex flex-col gap-4">
+                    <li className="flex items-start gap-3">
+                      <FaIcon
+                        icon="minus"
+                        className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
+                      />
+                      <span className="text-lg text-foreground/70 md:text-xl">
+                      Increase conversions from 1% to 2% (That's twice as many)
+                      </span>
+                    </li>
+                  </ul>                  
+                  <p>Stop Pouring Money Into Websites & Ads That Don't Convert. We optimize your digital presence to turn visitors into customers, not just traffic.</p>
+                </div>
+                
+
 
                 <div className="flex flex-col gap-4 w-full max-w-md">
                   {isWaitingForAnalysis ? (
