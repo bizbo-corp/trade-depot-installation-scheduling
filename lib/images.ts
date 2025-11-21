@@ -60,6 +60,10 @@ export const svgGraphics = {
 } as const;
 
 export const bizLogos = {
+  bizboLogo: {
+    path: "/BizboLogo.png",
+    alt: "Bizbo Logo",
+  },
   nzaa: {
     path: "/svg/biz-logos/NZAA.svg",
     alt: "NZAA logo",

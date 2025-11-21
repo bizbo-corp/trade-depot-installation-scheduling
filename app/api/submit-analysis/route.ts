@@ -139,6 +139,7 @@ export async function POST(request: NextRequest) {
         email,
         firstName,
         token: verificationToken,
+        screenshotUrl: screenshot,
       });
     } catch (emailError) {
       // If email fails, we should still return success but log the error

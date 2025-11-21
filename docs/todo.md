@@ -12,28 +12,23 @@ Score and checks and crosses for report.
 
 ## Report Format
 ~~Image alongside the report text. Assess side-by-side~~
-
-Section in question is captured and displayed as an image next to the text
-
+~~Section in question is captured and displayed as an image next to the text~~
 
 ## Copy amendments
 ~~UX Quick wins. Top five quick wins~~
 
 ## Marketing
-Get an in depth report worth $500. delivered in a week.
 CTA at bottom of report
 
 ## Bugs
 ~~Tablet an mobile bugs~~
-
 ~~## Mutli image~~
 ~~NTH: Pass the image direct to the modal. Scan graphic~~
 
 ## Post form
-Message to check email
+~~Message to check email~~
 
 ## Email look and feel
-
 Add logo
 Rewrite:
 
