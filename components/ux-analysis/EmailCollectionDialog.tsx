@@ -84,8 +84,9 @@ export function EmailCollectionDialog({
                 className="w-full h-full object-cover object-top"
               />
               {isAnalyzing && (
-                <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <div className="absolute bottom-2 right-2 bg-background/90 px-3 py-1 rounded-full flex items-center gap-2 shadow-sm border">
+                  <Loader2 className="h-3 w-3 animate-spin text-primary" />
+                  <span className="text-xs font-medium">Analyzing...</span>
                 </div>
               )}
             </>

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Header } from "@/components/header";
+import { Header as HeaderComponent } from "@/components/header"; // Alias to avoid conflict if needed, but Header is fine
 import { HeroSection } from "@/components/sections/HeroSection";
 import { ValuePropositionSection } from "@/components/sections/ValuePropositionSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
@@ -21,13 +22,15 @@ import { animations } from "@/lib/images";
 import { UXIllustration } from "@/app/ux-design/UXIllustration";
 import { UXAnalysisForm } from "@/components/ux-analysis/UXAnalysisForm";
 import { EmailCollectionDialog, EmailCollectionData } from "@/components/ux-analysis/EmailCollectionDialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type {
   AnalyzeUXResponse,
   AnalyzeUXErrorResponse,
   SubmitAnalysisErrorResponse,
 } from "@/types/ux-analysis";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { toast } from "sonner";
+import { CheckCircle2, RefreshCw, Loader2 } from "lucide-react";
 
 const FEATURE_ITEMS = [
   {
@@ -68,69 +71,138 @@ const FEATURE_ITEMS = [
   },
 ]
 
+type AnalysisStatus = 'idle' | 'capturing' | 'analyzing' | 'complete' | 'error';
+
 export default function Home() {
   useHeroScrollAnimation();
-  const [loading, setLoading] = useState(false);
+  
+  // State management
+  const [analysisStatus, setAnalysisStatus] = useState<AnalysisStatus>('idle');
   const [error, setError] = useState<string | null>(null);
   const [analysisData, setAnalysisData] = useState<{
     url: string;
-    report: string;
-    screenshot: string;
+    report: string | null;
+    screenshot: string | null;
+    htmlContent?: string;
+    screenshotWidth?: number;
+    screenshotHeight?: number;
+    viewportWidth?: number;
+    viewportHeight?: number;
   } | null>(null);
+  
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
+  const [isWaitingForAnalysis, setIsWaitingForAnalysis] = useState(false);
+  const [emailFormData, setEmailFormData] = useState<EmailCollectionData | null>(null);
+  const [isReportSent, setIsReportSent] = useState(false);
+
+  // Effect to handle pending email submission when analysis completes
+  useEffect(() => {
+    const processPendingSubmission = async () => {
+      if (analysisStatus === 'complete' && emailFormData && isWaitingForAnalysis && !isReportSent) {
+        await submitEmailForm(emailFormData);
+      }
+    };
+
+    processPendingSubmission();
+  }, [analysisStatus, emailFormData, isWaitingForAnalysis, isReportSent]);
+
+  // Effect to handle analysis errors while waiting
+  useEffect(() => {
+    if (analysisStatus === 'error' && isWaitingForAnalysis) {
+      setIsWaitingForAnalysis(false);
+      toast.error("Analysis failed. Please try again.");
+      setEmailFormData(null);
+    }
+  }, [analysisStatus, isWaitingForAnalysis]);
 
   const handleAnalysisSubmit = async (url: string) => {
-    setLoading(true);
+    setAnalysisStatus('capturing');
     setError(null);
     setAnalysisData(null);
+    setEmailFormData(null);
+    setIsReportSent(false);
+    setIsWaitingForAnalysis(false);
+    
     // Open dialog immediately after URL submission
     setIsDialogOpen(true);
 
     try {
-      const response = await fetch("/api/analyze-ux", {
+      // Step 1: Capture Screenshot
+      const captureResponse = await fetch("/api/capture-screenshot", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url }),
       });
 
-      const data = await response.json();
+      const captureData = await captureResponse.json();
 
-      if (!response.ok) {
-        const errorData = data as AnalyzeUXErrorResponse;
-        setError(errorData.error || "An error occurred during analysis");
-        if (errorData.details) {
-          console.error("Analysis error details:", errorData.details);
-        }
-      } else {
-        const successData = data as AnalyzeUXResponse;
-        setAnalysisData({
-          url,
-          report: successData.report,
-          screenshot: successData.screenshot,
-        });
+      if (!captureResponse.ok) {
+        throw new Error(captureData.error || "Failed to capture website screenshot");
       }
+
+      // Update state with screenshot immediately
+      setAnalysisData({
+        url,
+        report: null,
+        screenshot: captureData.screenshot,
+        htmlContent: captureData.htmlContent,
+        screenshotWidth: captureData.screenshotWidth,
+        screenshotHeight: captureData.screenshotHeight,
+        viewportWidth: captureData.viewportWidth,
+        viewportHeight: captureData.viewportHeight,
+      });
+      
+      setAnalysisStatus('analyzing');
+
+      // Step 2: Generate Report
+      const reportResponse = await fetch("/api/generate-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          screenshot: captureData.screenshot,
+          htmlContent: captureData.htmlContent,
+          screenshotWidth: captureData.screenshotWidth,
+          screenshotHeight: captureData.screenshotHeight,
+          viewportWidth: captureData.viewportWidth,
+          viewportHeight: captureData.viewportHeight,
+        }),
+      });
+
+      const reportData = await reportResponse.json();
+
+      if (!reportResponse.ok) {
+        throw new Error(reportData.error || "Failed to generate analysis report");
+      }
+
+      // Update state with report
+      setAnalysisData(prev => prev ? {
+        ...prev,
+        report: reportData.report,
+      } : null);
+      
+      setAnalysisStatus('complete');
+
     } catch (err) {
       const errorMessage =
         err instanceof Error
           ? err.message
-          : "Failed to connect to the analysis service";
+          : "An error occurred during analysis";
       setError(errorMessage);
+      setAnalysisStatus('error');
       console.error("Analysis request failed:", err);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const handleEmailSubmit = async (data: EmailCollectionData) => {
-    if (!analysisData) {
-      setError("No analysis data available. Please try again.");
+  const submitEmailForm = async (data: EmailCollectionData) => {
+    if (!analysisData || !analysisData.report || !analysisData.screenshot) {
+      console.error("Missing analysis data for submission");
       return;
     }
 
-    setIsSubmitting(true);
+    setIsSubmittingEmail(true);
+    // Don't clear waiting state here - wait for success
+    // setIsWaitingForAnalysis(false); 
     setError(null);
 
     try {
@@ -147,44 +219,73 @@ export default function Home() {
           lastName: data.lastName,
           email: data.email,
           mobile: data.mobile || undefined,
-          areaOfInterest: ["UX optimisation"], // Hidden field - automatically set for UX form
+          areaOfInterest: ["UX optimisation"],
         }),
       });
 
-      // Check if response is JSON before parsing
       const contentType = response.headers.get("content-type");
       let responseData: SubmitAnalysisErrorResponse | { success: boolean; message: string };
       
       if (contentType && contentType.includes("application/json")) {
         responseData = await response.json();
       } else {
-        // If not JSON, read as text to see what we got
         const text = await response.text();
         console.error("Non-JSON response received:", text.substring(0, 200));
-        setError(`Server error: ${response.status} ${response.statusText}`);
-        return;
+        throw new Error(`Server error: ${response.status} ${response.statusText}`);
       }
 
       if (!response.ok) {
         const errorData = responseData as SubmitAnalysisErrorResponse;
-        setError(errorData.error || "Failed to submit analysis");
-        if (errorData.details) {
-          console.error("Submit error details:", errorData.details);
-        }
-        return;
+        throw new Error(errorData.error || "Failed to submit analysis");
       }
 
-      // Success - close dialog
+      // Success
       setIsDialogOpen(false);
-      // Could show a toast/notification here if desired
+      setIsReportSent(true);
+      setIsWaitingForAnalysis(false); // Clear waiting state only on success
+      toast.success("Analysis sent - check your inbox");
+      
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to submit analysis";
       setError(errorMessage);
       console.error("Submit request failed:", err);
+      
+      // On error, we should probably stop waiting so user can see the error
+      setIsWaitingForAnalysis(false);
+      toast.error(errorMessage);
     } finally {
-      setIsSubmitting(false);
+      setIsSubmittingEmail(false);
+      // Clear form data if successful to prevent re-submission loop
+      if (!error) {
+        setEmailFormData(null);
+      }
     }
+  };
+
+  const handleEmailSubmit = async (data: EmailCollectionData) => {
+    // Store form data
+    setEmailFormData(data);
+    
+    // If analysis is already complete, submit immediately
+    if (analysisStatus === 'complete' && analysisData?.report) {
+      await submitEmailForm(data);
+    } else {
+      // Otherwise, wait for analysis to complete (handled by useEffect)
+      setIsWaitingForAnalysis(true);
+      setIsDialogOpen(false);
+      toast.info("Analysis finalising...", {
+        description: "We'll email you the report as soon as it's ready."
+      });
+    }
+  };
+  
+  const handleReset = () => {
+    setAnalysisStatus('idle');
+    setAnalysisData(null);
+    setError(null);
+    setIsReportSent(false);
+    setEmailFormData(null);
   };
 
   return (
@@ -206,7 +307,6 @@ export default function Home() {
         ></div>
         <div className="relative overflow-hidden bg-red-500/00 p-0 w-full min-h-[calc(100vh-100px)] ">
           {/* Animated circles background */}
-          {/* Top circle - smallest (w-3) - Olive-500 */}
           <div
             id="hero-accent0"
             className="absolute w-[200px] h-[200px] bg-background rounded-full z-1000"
@@ -215,12 +315,10 @@ export default function Home() {
             id="hero-accent1"
             className="absolute w-[1200px] h-[400px] bg-olive-600/25 rounded-full z-30"
           ></div>
-          {/* Middle circle (w-4) - Olive-400 */}
           <div
             id="hero-accent2"
             className="absolute w-[1600px] h-[800px] bg-olive-600/25 rounded-full z-20"
           ></div>
-          {/* Bottom circle - largest (w-5) - Olive-300 */}
           <div
             id="hero-accent3"
             className="absolute w-[2000px] h-[1200px] bg-olive-600/25 rounded-full z-10"
@@ -244,37 +342,80 @@ export default function Home() {
                   Identify and eliminate user journey friction points for enhanced engagement and conversion. Our UX experts provide tailored insights to improve user engagement and boost conversion rates.
                   </p>
                 </div>
-                <ul className="flex flex-col gap-4">
-                  <li className="flex items-start gap-3">
-                    <FaIcon
-                      icon="check"
-                      className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
-                    />
-                    <span className="text-lg text-foreground/70 md:text-xl">
-                    Find quick-win user experience improvements
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <FaIcon
-                      icon="check"
-                      className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
-                    />
-                    <span className="text-lg text-foreground/70 md:text-xl">
-                    Increase conversions and sales funnel health
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <FaIcon
-                      icon="check"
-                      className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
-                    />
-                    <span className="text-lg text-foreground/70 md:text-xl">
-Boost accessibility and improve your page rank
-                    </span>
-                  </li>
-                </ul>
+                
+                {/* Feature List */}
+                {!isReportSent && (
+                  <ul className="flex flex-col gap-4">
+                    <li className="flex items-start gap-3">
+                      <FaIcon
+                        icon="check"
+                        className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
+                      />
+                      <span className="text-lg text-foreground/70 md:text-xl">
+                      Find quick-win user experience improvements
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <FaIcon
+                        icon="check"
+                        className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
+                      />
+                      <span className="text-lg text-foreground/70 md:text-xl">
+                      Increase conversions and sales funnel health
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <FaIcon
+                        icon="check"
+                        className="mt-0.5 h-5 w-5 shrink-0 text-foreground md:h-6 md:w-6"
+                      />
+                      <span className="text-lg text-foreground/70 md:text-xl">
+                      Boost accessibility and improve your page rank
+                      </span>
+                    </li>
+                  </ul>
+                )}
+
                 <div className="flex flex-col gap-4 w-full max-w-md">
-                  <UXAnalysisForm onSubmit={handleAnalysisSubmit} loading={loading} />
+                  {isWaitingForAnalysis ? (
+                    <Card className="border-primary/20 bg-primary/5 shadow-lg">
+                      <CardHeader>
+                        <div className="flex items-center gap-2 text-primary mb-2">
+                          <Loader2 className="h-6 w-6 animate-spin" />
+                          <span className="font-semibold">Finalizing Analysis...</span>
+                        </div>
+                        <CardTitle>Generating Your Report</CardTitle>
+                        <CardDescription>
+                          We are compiling your comprehensive UX analysis. This usually takes about 30 seconds. Your report will be delivered to your inbox shortly.
+                        </CardDescription>
+                      </CardHeader>
+                    </Card>
+                  ) : isReportSent ? (
+                    <Card className="border-primary/20 bg-primary/5 shadow-lg">
+                      <CardHeader>
+                        <div className="flex items-center gap-2 text-primary mb-2">
+                          <CheckCircle2 className="h-6 w-6" />
+                          <span className="font-semibold">Analysis Complete</span>
+                        </div>
+                        <CardTitle>Report Sent to Inbox</CardTitle>
+                        <CardDescription>
+                          We've sent the detailed UX analysis for <strong>{analysisData?.url}</strong> to your email address.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardFooter>
+                        <Button onClick={handleReset} variant="outline" className="w-full gap-2">
+                          <RefreshCw className="h-4 w-4" />
+                          Run Another Analysis
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  ) : (
+                    <UXAnalysisForm 
+                      onSubmit={handleAnalysisSubmit} 
+                      loading={analysisStatus === 'capturing' || analysisStatus === 'analyzing'} 
+                    />
+                  )}
+                  
                   {error && (
                     <Card className="border-destructive bg-destructive/10">
                       <CardHeader className="p-4">
@@ -316,11 +457,14 @@ Boost accessibility and improve your page rank
       <Footer />
       <EmailCollectionDialog
         open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
+        onOpenChange={(open) => {
+          // Only allow closing if not submitting email
+          if (!isSubmittingEmail) setIsDialogOpen(open);
+        }}
         onSubmit={handleEmailSubmit}
-        isSubmitting={isSubmitting}
-        screenshot={analysisData?.screenshot}
-        isAnalyzing={loading}
+        isSubmitting={isSubmittingEmail}
+        screenshot={analysisData?.screenshot || undefined}
+        isAnalyzing={analysisStatus === 'analyzing' || analysisStatus === 'capturing'}
       />
     </div>
   );
