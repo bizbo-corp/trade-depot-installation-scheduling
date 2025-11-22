@@ -200,8 +200,9 @@ export function FaIcon({
     // Try to get icon definition from kit
     const iconDef = getIconDefinitionForReact(cleanIconName, "duotone");
     
-    // If icon definition is found, use FontAwesomeIcon (SVG approach)
-    if (iconDef) {
+    // If icon definition is found AND we are using the default solid base style, use FontAwesomeIcon (SVG approach)
+    // For other base styles (thin, light), we fall back to CSS/Kit approach as standard 'fad' prefix is solid
+    if (iconDef && duotoneBaseStyle === "solid") {
       // Build style object for CSS custom properties
       // Always set opacities: primary to 1.0, secondary to 0.4 by default
       const duotoneStyle: DuotoneCSSVariables = {

@@ -21,7 +21,7 @@ import { LottieAnimation } from "@/components/LottieAnimation";
 import { animations } from "@/lib/images";
 import { UXIllustration } from "@/app/ux-design/UXIllustration";
 import { UXAnalysisForm } from "@/components/ux-analysis/UXAnalysisForm";
-
+import { UXProcessAccordion } from "@/components/ux-analysis/UXProcessAccordion";
 
 const FEATURE_ITEMS = [
   {
@@ -227,7 +227,7 @@ export default function Home() {
 
         </div>
       </div>
-
+      <UXProcessAccordion />
       <FeatureSection
           title="User-centric design"
           description="At Bizbo, we believe that user-centric design is the cornerstone of successful digital experiences. By prioritising the needs of your users, we create intuitive interfaces that not only engage but also convert."
