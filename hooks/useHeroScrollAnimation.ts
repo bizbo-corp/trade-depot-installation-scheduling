@@ -61,9 +61,12 @@ export function useHeroScrollAnimation() {
         { element: heroAccent2, size: actualSizes.middle },
         { element: heroAccent3, size: actualSizes.bottom },
       ];
-      
+
       // hero-accent0 will be animated separately with a delay
-      const heroAccent0Element = { element: heroAccent0, size: actualSizes.accent0 };
+      const heroAccent0Element = {
+        element: heroAccent0,
+        size: actualSizes.accent0,
+      };
 
       elements.forEach(({ element, size }) => {
         // Override CSS positioning and set initial position
@@ -93,7 +96,6 @@ export function useHeroScrollAnimation() {
         width: `${heroAccent0Element.size}px`,
         height: `${heroAccent0Element.size}px`,
       });
-      
 
       // Calculate scroll end point: 50% of hero-scroll-section height
       const scrollEndDistance = heroScrollSectionRect.height * 0.5;
@@ -133,7 +135,6 @@ export function useHeroScrollAnimation() {
           },
           0 // All animations start at the same time
         );
-
       });
 
       // Animate hero-accent0 with a staggered delay after the other circles start
@@ -165,10 +166,26 @@ export function useHeroScrollAnimation() {
       // Animate all hero accent circles to scale down, move to 0,0, and fade out
       // Starting at 25% of timeline (last three-quarters)
       const allHeroAccents = [
-        { element: heroAccent0, originalWidth: heroAccent0Rect.width, originalHeight: heroAccent0Rect.height },
-        { element: heroAccent1, originalWidth: heroAccent1Rect.width, originalHeight: heroAccent1Rect.height },
-        { element: heroAccent2, originalWidth: heroAccent2Rect.width, originalHeight: heroAccent2Rect.height },
-        { element: heroAccent3, originalWidth: heroAccent3Rect.width, originalHeight: heroAccent3Rect.height },
+        {
+          element: heroAccent0,
+          originalWidth: heroAccent0Rect.width,
+          originalHeight: heroAccent0Rect.height,
+        },
+        {
+          element: heroAccent1,
+          originalWidth: heroAccent1Rect.width,
+          originalHeight: heroAccent1Rect.height,
+        },
+        {
+          element: heroAccent2,
+          originalWidth: heroAccent2Rect.width,
+          originalHeight: heroAccent2Rect.height,
+        },
+        {
+          element: heroAccent3,
+          originalWidth: heroAccent3Rect.width,
+          originalHeight: heroAccent3Rect.height,
+        },
       ];
 
       allHeroAccents.forEach(({ element, originalWidth, originalHeight }) => {
@@ -206,7 +223,7 @@ export function useHeroScrollAnimation() {
         // Get the bounding rects to calculate how far to move them off screen
         const desktopRect = desktopAppImage.getBoundingClientRect();
         const mobileRect = mobileAppImage.getBoundingClientRect();
-        
+
         // Calculate the distance needed to move them completely off screen to the right
         const desktopOffScreenDistance = desktopRect.width + 100; // Extra padding to ensure it's off screen
         const mobileOffScreenDistance = mobileRect.width + 100;
@@ -318,4 +335,3 @@ export function useHeroScrollAnimation() {
     };
   }, []);
 }
-

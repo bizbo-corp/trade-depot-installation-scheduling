@@ -57,13 +57,14 @@ export const svgGraphics = {
     alt: "Prototype Actionable Roadmap illustration",
     description: "Prototyping and roadmap planning graphic",
   },
+  paperPlaneMoney: {
+    path: "/svg/paper-plane-money.svg",
+    alt: "Paper plane money SVG",
+    description: "Vector illustration of a paper plane",
+  },
 } as const;
 
 export const bizLogos = {
-  bizboLogo: {
-    path: "/BizboLogo.png",
-    alt: "Bizbo Logo",
-  },
   nzaa: {
     path: "/svg/biz-logos/NZAA.svg",
     alt: "NZAA logo",
@@ -105,7 +106,8 @@ export const bitmapImages = {
   techStack: {
     path: "/bitmap/tech-stack.png",
     alt: "Technology stack logos",
-    description: "Technology platform and tool logos including Webflow, Google, Apple, HubSpot, and others",
+    description:
+      "Technology platform and tool logos including Webflow, Google, Apple, HubSpot, and others",
   },
   workshopSession: {
     path: "/bitmap/workshop-session.png",
@@ -115,22 +117,26 @@ export const bitmapImages = {
   desktopApp: {
     path: "/bitmap/desktop-app.png",
     alt: "Desktop application dashboard",
-    description: "Desktop application interface showing orders dashboard and analytics",
+    description:
+      "Desktop application interface showing orders dashboard and analytics",
   },
   mobileApp: {
     path: "/bitmap/mobile-app.png",
     alt: "Mobile application dashboard",
-    description: "Mobile application interface showing orders dashboard and analytics",
+    description:
+      "Mobile application interface showing orders dashboard and analytics",
   },
   dotVoting: {
     path: "/bitmap/dot-voting.png",
     alt: "Dot voting workshop board",
-    description: "Facilitators reviewing dot-voted concepts during a workshop session",
+    description:
+      "Facilitators reviewing dot-voted concepts during a workshop session",
   },
   doubleDiamond: {
     path: "/bitmap/double-diamond.png",
     alt: "Double Diamond framework slide",
-    description: "Team presenting the Discover, Define, Develop, Deliver double diamond model",
+    description:
+      "Team presenting the Discover, Define, Develop, Deliver double diamond model",
   },
   ideationSession: {
     path: "/bitmap/ideation.jpg",
@@ -150,12 +156,18 @@ export const bitmapImages = {
   workshopWall: {
     path: "/bitmap/workshop.jpg",
     alt: "Workshop inspiration wall",
-    description: "Sticky notes and sketches covering a wall of workshop insights",
+    description:
+      "Sticky notes and sketches covering a wall of workshop insights",
   },
   onboardingJourney: {
     path: "/bitmap/Onboarding-Journey.png",
     alt: "Onboarding journey visualisation",
     description: "User onboarding journey and flow diagram",
+  },
+  paperPlaneMoney: {
+    path: "/bitmap/paper-plane-money.png",
+    alt: "Paper plane made of money",
+    description: "A paper plane folded from a New Zealand twenty dollar bill",
   },
 } as const;
 
@@ -207,23 +219,23 @@ export type ImageCategory = {
  */
 export function getImage(
   category: "svgIcons",
-  key: keyof typeof svgIcons,
+  key: keyof typeof svgIcons
 ): ImageAsset;
 export function getImage(
   category: "svgGraphics",
-  key: keyof typeof svgGraphics,
+  key: keyof typeof svgGraphics
 ): ImageAsset;
 export function getImage(
   category: "bizLogos",
-  key: keyof typeof bizLogos,
+  key: keyof typeof bizLogos
 ): ImageAsset;
 export function getImage(
   category: "bitmapImages",
-  key: keyof typeof bitmapImages,
+  key: keyof typeof bitmapImages
 ): ImageAsset;
 export function getImage(
   category: "peoplePortraits",
-  key: keyof typeof peoplePortraits,
+  key: keyof typeof peoplePortraits
 ): ImageAsset;
 export function getImage(category: string, key: string): ImageAsset | null {
   const categories = {
@@ -244,7 +256,7 @@ export function getImage(category: string, key: string): ImageAsset | null {
  * Get animation path by key
  */
 export function getAnimation(
-  key: keyof typeof animations,
+  key: keyof typeof animations
 ): AnimationAsset | null {
   return animations[key] || null;
 }

@@ -298,16 +298,16 @@ export function UXAnalysisForm({ className }: UXAnalysisFormProps) {
 
   return (
     <div className={className}>
-      <div className="bg-foreground p-8 rounded-lg">
+      <div className="bg-foreground/10 p-6 md:p-8 rounded-lg md:mr-48">
         <form onSubmit={onFormSubmit} className="flex flex-col gap-4 w-full">
-          <label htmlFor="url" className="text-sm font-medium text-background">
-            <h2 className="text-xl font-bold mb-0">Get a free website analysis</h2>
-            <p className="text-sm text-muted-foreground">Enter your website or landing page below</p>
+          <label htmlFor="url" className="text-sm font-medium text-foreground">
+            <h2 className="text-lg md:text-xl font-bold mb-0">Get a free website analysis</h2>
           </label>
+          <div className="flex flex-col md:flex-row gap-2">
           <Input
             id="url"
             placeholder="Website or landing page URL"
-            className="w-full h-12"
+            className="w-full h-10 md:h-12"
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
@@ -318,11 +318,12 @@ export function UXAnalysisForm({ className }: UXAnalysisFormProps) {
             type="submit"
             variant="primary"
             size="lg"
-            className="px-8 sm:w-auto"
+            className="px-6 md:px-8 sm:w-auto"
             disabled={analysisStatus === 'capturing' || analysisStatus === 'analyzing'}
           >
-            {analysisStatus === 'capturing' || analysisStatus === 'analyzing' ? "Analysing..." : "Get a website analysis!"}
+            {analysisStatus === 'capturing' || analysisStatus === 'analyzing' ? "Analysing..." : "Analyse my website"}
           </Button>
+          </div>
         </form>
       </div>
       

@@ -1,8 +1,8 @@
-# Bizbo Brochure
+# Trade Depot Installation Scheduling
 
-A modern brochure website built with Next.js, React, and Tailwind CSS.
+A installation scheduling website built with Next.js, React, and Tailwind CSS.
 
-**Repository:** [github.com/bizbo-corp/bizbo-brochure](https://github.com/bizbo-corp/bizbo-brochure)
+**Repository:** [github.com/trade-depot/trade-depot-installation-scheduling](https://github.com/trade-depot/trade-depot-installation-scheduling)
 
 ## Quick Start
 

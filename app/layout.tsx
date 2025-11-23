@@ -17,9 +17,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bizbo | From Idea to App - Design Thinking Workshops & Digital Product Development",
-  description: "Simplify the process of building a market-defining digital web app. Get clarity, validation, and quality-first execution through Design Thinking workshops, prototypes, and expert consultancy. Transform your idea into a product your customers can't live without.",
-  keywords: ["design thinking", "digital product development", "prototyping", "UX design", "workshop facilitation", "New Zealand"],
+  title:
+    "Bizbo | From Idea to App - Design Thinking Workshops & Digital Product Development",
+  description:
+    "Simplify the process of building a market-defining digital web app. Get clarity, validation, and quality-first execution through Design Thinking workshops, prototypes, and expert consultancy. Transform your idea into a product your customers can't live without.",
+  keywords: [
+    "design thinking",
+    "digital product development",
+    "prototyping",
+    "UX design",
+    "workshop facilitation",
+    "New Zealand",
+  ],
 };
 
 export default function RootLayout({
@@ -38,7 +47,13 @@ export default function RootLayout({
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
-        <Script type="text/javascript" id="hs-script-loader" async defer src="//js-ap1.hs-scripts.com/442452565.js"></Script>
+        <Script
+          type="text/javascript"
+          id="hs-script-loader"
+          async
+          defer
+          src="//js-ap1.hs-scripts.com/442452565.js"
+        ></Script>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
           <Toaster />

@@ -13,7 +13,7 @@ import { Footer } from "@/components/sections/Footer";
 import { CTAhome } from "@/components/sections/CTAhome";
 import { FeatureSection } from "@/components/sections/FeatureSection";
 import { useHeroScrollAnimation } from "@/hooks/useHeroScrollAnimation";
-import { bitmapImages } from "@/lib/images";
+import { bitmapImages, svgGraphics } from "@/lib/images";
 import { FaIcon } from "@/components/ui/fa-icon";
 import { BookingDialog } from "@/components/booking/BookingDialog";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,11 @@ import { animations } from "@/lib/images";
 import { UXIllustration } from "@/app/ux-design/UXIllustration";
 import { UXAnalysisForm } from "@/components/ux-analysis/UXAnalysisForm";
 import { UXProcessAccordion } from "@/components/ux-analysis/UXProcessAccordion";
+import { UXSkillsGrid } from "@/components/sections/UXSkillsGrid";
+import { PaperPlaneMoney } from "@/components/icons/PaperPlaneMoney";
+import { useRef, useEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const FEATURE_ITEMS = [
   {
@@ -60,37 +65,52 @@ const FEATURE_ITEMS = [
     description:
       "Our A/B and usability testing helps you understand what works and what doesn't, so you can make data-driven decisions that improve user experience and boost your bottom line.",
   },
-]
-
-
+];
 
 export default function Home() {
   useHeroScrollAnimation();
-  
+  const planeRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        planeRef.current,
+        {
+          x: 0,
+          y: 0,
+        },
+        {
+          x: () => -window.innerWidth * 10,
+          y: () => window.innerHeight * 10,
+          ease: "none",
+          scrollTrigger: {
+            trigger: "#hero-scroll-section",
+            start: "top top",
+            end: "bottom left",
+            scrub: 1,
+          },
+        }
+      );
+    }, planeRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <div className="flex bg-background min-h-screen flex-col ">
+    <div className="flex bg-background flex-col ">
       <Header />
 
       <div
         id="hero-scroll-section"
-        className="min-h-[calc(100vh)] bg-amber-500/00 z-10 pt-16"
+        className="min-h-[calc(100vh)] bg-amber-500/0 z-10"
       >
-        <div
-          id="desktop-app-image"
-          className="fixed right-0 bottom-0 w-[480px] h-[756px] rounded-b-none rounded-lg z-1002 overflow-hidden"
-        ></div>
-
-        <div
-          id="mobile-app-image"
-          className="fixed right-108 bottom-0 w-[208px] rounded-b-none rounded-lg z-1003 overflow-hidden border-0 border-red-500/100"
-        ></div>
-        <div className="relative overflow-hidden bg-red-500/00 p-0 w-full min-h-[calc(100vh-100px)] ">
+        <div className="relative overflow-hidden p-0 w-full min-h-[calc(200vh)] ">
           {/* Animated circles background */}
           <div
             id="hero-accent0"
-            className="absolute w-[200px] h-[200px] bg-background rounded-full z-1000"
+            className="absolute w-[200px] h-[200px] bg-background/20 rounded-full z-[1000]"
           ></div>
           <div
             id="hero-accent1"
@@ -107,140 +127,146 @@ export default function Home() {
 
           <div
             id="hero-scroll-container"
-            className="container mx-auto min-h-[calc(100vh-100px)] flex flex-col items-stretch lg:flex-row lg:items-stretch lg:h-[calc(100vh-100px)] justify-center px-4 md:px-6 bg-green-500/00 relative z-40"
+            className="container mx-auto flex flex-col items-stretch lg:flex-row lg:items-stretch lg:h-[calc(100vh)] justify-center px-4 md:px-6 relative z-40"
           >
             <div
               id="hero-left-col"
-              className="bg-lime-500/00 w-full grow h-full lg:min-w-2/3 bg-lime-500/00 lg:self-stretch md:flex md:flex-col md:justify-center"
+              className="bg-lime-500/00 w-full grow h-full lg:min-w-2/3 bg-lime-500/0 lg:self-stretch md:flex md:flex-col md:justify-center"
             >
-              <div className="flex flex-col gap-8 ">
-                <div className="flex flex-col gap-6">
-                  <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-4xl lg:text-5xl leading-none">
+              <div className="flex flex-col gap-4 md:gap-8 ">
+                <div className="flex flex-col gap-3 md:gap-6">
+                  <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-4xl lg:text-5xl leading-tight md:leading-none">
                     <span className="block">Want to grow twice as fast?</span>
-                    <span className="block text-foreground/80 mt-1">You have two choices:</span>
+                    <span className="block text-foreground/80 mt-1">
+                      You have two choices:
+                    </span>
                   </h1>
-                  
-                      <div className="flex flex-row gap-16">
+
+                  <div className="flex flex-col md:flex-row gap-6 md:gap-16">
                     <div className="space-y-2">
                       <div className="flex items-center gap-4">
-                        <FaIcon
-                          icon="circle-1"
-                          style="duotone"
-                          size={2}
-                          className="h-12 w-12 shrink-0 text-foreground"
-                        />
-                        <h3 className="text-xl font-bold text-foreground md:text-2xl">
+                        <span className="flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold border bg-muted text-foreground border-border group-hover:border-primary/50 group-hover:text-foreground">
+                          1
+                        </span>
+                        <h3 className="text-lg font-bold text-foreground md:text-2xl">
                           Throw good money after bad
                         </h3>
                       </div>
-                                            <div className="flex items-center gap-4">
-
-                      <ul className="flex flex-col gap-1.5 pl-14">
-                        <li className="flex items-start gap-3">
-                          <FaIcon
-                            icon="square"
-                            className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
-                          />
-                          <span className="text-lg text-foreground/80">
-                            Raise twice the cash
-                          </span>
-                        </li>
-                        <li className="flex items-start gap-3">
-                          <FaIcon
-                            icon="square"
-                            className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
-                          />
-                          <span className="text-lg text-foreground/80">
-                            Hire twice the staff
-                          </span>
-                        </li>
-                        <li className="flex items-start gap-3">
-                          <FaIcon
-                            icon="square"
-                            className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
-                          />
-                          <span className="text-lg text-foreground/80">
-                            Spend twice as much on ads
-                          </span>
-                        </li>
-                        <li className="flex items-start gap-3">
-                          <FaIcon
-                            icon="square"
-                            className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
-                          />
-                          <span className="text-lg text-foreground/80">
-                            Cross both your fingers
-                          </span>
-                        </li>
-                      </ul>
+                      <div className="flex items-center gap-4">
+                        <ul className="flex flex-col gap-1 pl-12 md:pl-16 md:gap-1.5">
+                          <li className="flex items-start gap-3">
+                            <FaIcon
+                              icon="square"
+                              className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
+                            />
+                            <span className="text-base md:text-lg text-foreground/80">
+                              Raise twice the cash
+                            </span>
+                          </li>
+                          <li className="flex items-start gap-3">
+                            <FaIcon
+                              icon="square"
+                              className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
+                            />
+                            <span className="text-base md:text-lg text-foreground/80">
+                              Hire twice the staff
+                            </span>
+                          </li>
+                          <li className="flex items-start gap-3">
+                            <FaIcon
+                              icon="square"
+                              className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
+                            />
+                            <span className="text-base md:text-lg text-foreground/80">
+                              Spend twice as much on ads
+                            </span>
+                          </li>
+                          <li className="flex items-start gap-3">
+                            <FaIcon
+                              icon="square"
+                              className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
+                            />
+                            <span className="text-base md:text-lg text-foreground/80">
+                              Cross both your fingers
+                            </span>
+                          </li>
+                        </ul>
                       </div>
-                      </div>
+                    </div>
 
                     <div className="space-y-2">
                       <div className="flex items-center gap-4">
-                        <FaIcon
-                          icon="circle-2"
-                          style="duotone"
-                          size={2}
-                          className="h-12 w-12 shrink-0 text-foreground"
-                        />
-                        <h3 className="text-xl font-bold text-foreground md:text-2xl">
-                          Optimise your UX
+                        <span className="flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold border bg-muted text-foreground border-border group-hover:border-primary/50 group-hover:text-foreground">
+                          2
+                        </span>
+                        <h3 className="text-lg font-bold text-foreground md:text-2xl">
+                          Optimise your user experience
                         </h3>
                       </div>
-                      <ul className="flex flex-col gap-1.5 pl-14">
+                      <ul className="flex flex-col gap-1 pl-12 md:pl-16 md:gap-1.5">
                         <li className="flex items-start gap-3">
                           <FaIcon
                             icon="square"
                             className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
                           />
-                          <span className="text-lg text-foreground/80">
-                            Increase conversions from 1% to 2% <br /><i>(That's twice as many)</i>
+                          <span className="text-base md:text-lg text-foreground/80">
+                            Increase conversions from 1% to 2% <br />
+                            <strong>(That's twice as many)</strong>
                           </span>
                         </li>
                       </ul>
                     </div>
                   </div>
 
-                  <p className="text-xl font-medium leading-relaxed text-foreground/80 max-w-2xl">
-                    Stop pouring money into websites & ads that don't convert. We optimise your digital presence to turn visitors into customers, not just traffic.
+                  <p className="text-base md:text-xl font-medium leading-normal md:leading-relaxed text-foreground/80 max-w-2xl pt-24">
+                    Stop pouring money into websites & ads that don't convert.
+                    We optimise your digital presence to turn visitors into
+                    customers, not just traffic.
                   </p>
                 </div>
-                
-
-
-                <div className="flex flex-col gap-4 w-full max-w-md">
-                  <UXAnalysisForm />
-                </div>
+                <UXAnalysisForm />
               </div>
             </div>
             <div
               id="hero-right-col"
-              className="bg-pink-500/00 w-full grow h-full lg:min-w-1/3 bg-red-500/00 lg:self-stretch"
+              className="bg-pink-500/00 w-full grow h-full lg:min-w-1/3 bg-red-500/0 lg:self-stretch order-first md:order-last"
             >
-            <div className="flex items-center justify-center h-full w-full">
-              <UXIllustration className="w-full h-auto" />
-            </div>
-
+              <div className="flex justify-center md:justify-center h-full">
+                <div
+                  ref={planeRef}
+                  className="w-32 md:w-full lg:w-[240%] lg:-mr-[50%] md:h-full flex flex-col justify-center -pt-24 z-[1001]"
+                >
+                  <PaperPlaneMoney className="w-full h-auto object-contain text-neutral-olive-200 dark:text-foreground" />
+                </div>
+              </div>
+              {/* <div className="flex items-center justify-center h-full">
+                <div className="w-64 md:w-full h-64 md:h-auto p-8">
+                  <UXIllustration className=" " />
+                  
+                </div>
+              </div> */}
             </div>
           </div>
-
+          <div className="relative min-h-[calc(100vh-100px)] flex flex-col justify-center items-center bg-foreground/00 z-[20000] ">
+            <UXProcessAccordion />
+          </div>
+          <div className="relative min-h-[calc(100vh-100px)] flex flex-col justify-center items-center bg-foreground/0 z-[20000] ">
+            <UXSkillsGrid />
+          </div>
         </div>
       </div>
-      <UXProcessAccordion />
       <FeatureSection
-          title="User-centric design"
-          description="At Bizbo, we believe that user-centric design is the cornerstone of successful digital experiences. By prioritising the needs of your users, we create intuitive interfaces that not only engage but also convert."
-          features={FEATURE_ITEMS}
-          className="bg-muted"
-        />
+        title="User-centric design"
+        description="At Bizbo, we believe that user-centric design is the cornerstone of successful digital experiences. By prioritising the needs of your users, we create intuitive interfaces that not only engage but also convert."
+        features={FEATURE_ITEMS}
+        className="bg-muted"
+      />
       <TestimonialsSection />
       <LogoSection />
       <AboutSection />
 
       <CtaSection variant="analysis" sectionTheme="dark" />
       <Footer />
-
     </div>
   );
 }

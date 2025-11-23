@@ -27,10 +27,10 @@ export const Header = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
-    <header className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur-sm">
+    <header className="fixed top-0 z-50 w-full bg-background/50 backdrop-blur-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
         <Link href="/" className="block hover:bg-foreground/10 rounded-4xl p-2">
-        <Logotype />
+          <Logotype />
         </Link>
         <nav className="hidden items-center gap-1 md:flex">
           <NavigationMenu>
@@ -86,7 +86,7 @@ export const Header = () => {
                           </div>
                         </Link>
                       </NavigationMenuLink>
-                    </li>                
+                    </li>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -145,8 +145,11 @@ export const Header = () => {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                  <Link href="#">Contact</Link>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}
+                >
+                  <Link href="/contact">Contact</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
@@ -181,36 +184,42 @@ export const Header = () => {
                     asChild
                     className="justify-start pl-6"
                   >
-                    <a href="#" onClick={() => setIsOpen(false)}>
+                    <Link
+                      href="/purpose-framework"
+                      onClick={() => setIsOpen(false)}
+                    >
                       Consultancy
-                    </a>
+                    </Link>
                   </Button>
                   <Button
                     variant="ghost"
                     asChild
                     className="justify-start pl-6"
                   >
-                    <a href="#" onClick={() => setIsOpen(false)}>
+                    <Link
+                      href="/design-thinker-workshops"
+                      onClick={() => setIsOpen(false)}
+                    >
                       Workshops
-                    </a>
+                    </Link>
                   </Button>
                   <Button
                     variant="ghost"
                     asChild
                     className="justify-start pl-6"
                   >
-                    <a href="#" onClick={() => setIsOpen(false)}>
+                    <Link href="/ux-design" onClick={() => setIsOpen(false)}>
                       UX Design
-                    </a>
+                    </Link>
                   </Button>
                   <Button
                     variant="ghost"
                     asChild
                     className="justify-start pl-6"
                   >
-                    <a href="#" onClick={() => setIsOpen(false)}>
+                    <Link href="/development" onClick={() => setIsOpen(false)}>
                       Development
-                    </a>
+                    </Link>
                   </Button>
                 </div>
                 <div className="flex flex-col gap-2 pt-2">
@@ -223,28 +232,28 @@ export const Header = () => {
                     asChild
                     className="justify-start pl-6"
                   >
-                    <a href="#" onClick={() => setIsOpen(false)}>
+                    <Link href="#" onClick={() => setIsOpen(false)}>
                       Shopify
-                    </a>
+                    </Link>
                   </Button>
                   <Button
                     variant="ghost"
                     asChild
                     className="justify-start pl-6"
                   >
-                    <a href="#" onClick={() => setIsOpen(false)}>
+                    <Link
+                      href="https://workshoppilot.ai"
+                      target="_blank"
+                      onClick={() => setIsOpen(false)}
+                    >
                       workshoppilot.ai
-                    </a>
+                    </Link>
                   </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  asChild
-                  className="justify-start"
-                >
-                  <a href="/contact1" onClick={() => setIsOpen(false)}>
+                <Button variant="ghost" asChild className="justify-start">
+                  <Link href="/contact" onClick={() => setIsOpen(false)}>
                     Contact
-                  </a>
+                  </Link>
                 </Button>
                 <div className="flex items-center justify-between gap-3 border-t pt-4">
                   <ThemeToggle />
