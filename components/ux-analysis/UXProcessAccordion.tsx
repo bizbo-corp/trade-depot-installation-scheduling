@@ -32,10 +32,10 @@ const steps: Step[] = [
   {
     id: "discovery",
     number: "01",
-    title: "Discovery",
+    title: "Receive Goods",
     description:
       "Understand exactly what your customers need and where the biggest opportunities lie",
-    mainIcon: "magnifying-glass",
+    mainIcon: "truck",
     details: [
       {
         icon: Target,
@@ -54,10 +54,10 @@ const steps: Step[] = [
   {
     id: "design",
     number: "02",
-    title: "Design",
+    title: "Book Installation",
     description:
       "Create a clear, streamlined experience that guides customers smoothly towards action",
-    mainIcon: "ruler-triangle",
+    mainIcon: "calendar-day",
     details: [
       {
         icon: Map,
@@ -76,10 +76,10 @@ const steps: Step[] = [
   {
     id: "test-grow",
     number: "03",
-    title: "Test and grow",
+    title: "Install",
     description:
       "Continuously improve your results through testing and measurement",
-    mainIcon: "display-chart-up",
+    mainIcon: "screwdriver-wrench",
     details: [
       {
         icon: Sparkles,
@@ -150,7 +150,7 @@ export function UXProcessAccordion({ className }: { className?: string }) {
                     className={cn(
                       "flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold border transition-colors duration-300 shrink-0",
                       isOpen
-                        ? "bg-lime-300 text-primary-background dark:bg-lime-300 dark:text-primary-foreground border-lime-300"
+                        ? "bg-primary text-primary-foreground border-none"
                         : "bg-muted text-muted-foreground border-border group-hover:border-primary/50 group-hover:text-foreground"
                     )}
                   >
