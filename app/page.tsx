@@ -71,18 +71,6 @@ export default function Home() {
       >
         <div className="relative overflow-hidden p-0 w-full min-h-[calc(200vh)] ">
           {/* Animated circles background */}
-          <div
-            id="hero-accent0"
-            className="absolute w-[200px] h-[200px] bg-background/20 rounded-full z-[1000]"
-          ></div>
-          <div
-            id="hero-accent1"
-            className="absolute w-[1200px] h-[400px] bg-olive-600/25 rounded-full z-30"
-          ></div>
-          <div
-            id="hero-accent2"
-            className="absolute w-[1600px] h-[800px] bg-olive-600/25 rounded-full z-20"
-          ></div>
 
           <div
             id="hero-scroll-container"
