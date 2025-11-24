@@ -38,7 +38,7 @@ export default function InstallationSchedulerPage() {
   return (
     <div className="flex bg-background flex-col ">
       <Header />
-      <div id="hero-scroll-section" className="bg-muted/50 min-h-screen">
+      <div id="hero-scroll-section" className="min-h-screen bg-foreground/10">
         <div className="container mx-auto flex flex-col items-stretch justify-center px-4 md:px-6 relative z-40 py-12">
           <div className="w-full grow h-full md:flex md:flex-col md:justify-center pt-24 gap-6">
             <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-4xl lg:text-5xl leading-tight md:leading-none text-center">
@@ -46,7 +46,7 @@ export default function InstallationSchedulerPage() {
             </h1>
 
             <div className="flex flex-col md:flex-row gap-6 md:gap-16">
-              <div className="space-y-2 w-full max-w-3xl mx-auto">
+              <div className="space-y-2 w-full max-w-4xl mx-auto">
                 <Suspense fallback={<div>Loading...</div>}>
                   <SchedulerPageContent />
                 </Suspense>

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FaCalendarAlt } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FaIcon } from "@/components/ui/fa-icon";
 
 type CustomerDetails = {
   orderId: string;
@@ -20,18 +21,59 @@ type BookingDetailsFormProps = {
   initialData?: Partial<CustomerDetails>;
 };
 
+const STORAGE_KEY = "booking-form-state";
+
+function loadFormStateFromStorage(): Partial<CustomerDetails> | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveFormStateToStorage(details: CustomerDetails) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(details));
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+export function clearBookingFormState() {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // Ignore storage errors
+  }
+}
+
 export function BookingDetailsForm({
   orderId: defaultOrderId,
   initialData,
 }: BookingDetailsFormProps) {
   const router = useRouter();
-  const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
-    orderId: defaultOrderId || initialData?.orderId || "",
-    firstName: initialData?.firstName || "",
-    lastName: initialData?.lastName || "",
-    email: initialData?.email || "",
-    phone: initialData?.phone || "",
+  
+  // Load from localStorage or use initial data
+  const storedState = loadFormStateFromStorage();
+  const [customerDetails, setCustomerDetails] = useState<CustomerDetails>(() => {
+    // Priority: URL params (initialData) > localStorage > defaults
+    return {
+      orderId: defaultOrderId || initialData?.orderId || storedState?.orderId || "",
+      firstName: initialData?.firstName || storedState?.firstName || "",
+      lastName: initialData?.lastName || storedState?.lastName || "",
+      email: initialData?.email || storedState?.email || "",
+      phone: initialData?.phone || storedState?.phone || "",
+    };
   });
+
+  // Save to localStorage whenever form data changes
+  useEffect(() => {
+    saveFormStateToStorage(customerDetails);
+  }, [customerDetails]);
 
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -153,10 +195,10 @@ export function BookingDetailsForm({
             className="mt-1"
           />
         </div>
-        <div className="flex gap-3 pt-4">
-          <Button type="submit" className="w-full">
+        <div className="flex gap-3 pt-4 justify-end">
+          <Button type="submit" className="">
             Continue to Booking
-            <FaCalendarAlt className="ml-2 h-4 w-4" />
+            <FaIcon icon="calendar" className="ml-2 h-4 w-4" />
           </Button>
         </div>
       </form>

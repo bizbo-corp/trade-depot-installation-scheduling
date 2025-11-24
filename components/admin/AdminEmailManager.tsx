@@ -59,7 +59,7 @@ export function AdminEmailManager() {
     setAdminMessage("");
 
     try {
-      const bookingLink = `${window.location.origin}?mode=booking&orderId=${adminOrderId}`;
+      const bookingLink = `${window.location.origin}/installation-details?orderId=${adminOrderId}`;
 
       const response = await fetch("/api/send-email", {
         method: "POST",

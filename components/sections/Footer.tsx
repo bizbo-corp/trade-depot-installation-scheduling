@@ -17,7 +17,7 @@ export const Footer = ({
     { name: "Home", href: "/" },
     { name: "Admin", href: "/admin" },
   ],
-  copyright = "Copyright © bizbo.co.nz",
+  copyright = "Copyright © tradedepot.co.nz",
   privacyPolicyHref = "#",
 }: FooterProps) => {
   return (

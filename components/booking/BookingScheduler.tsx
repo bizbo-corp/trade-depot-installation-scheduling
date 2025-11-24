@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { InlineWidget } from "react-calendly";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { clearBookingFormState } from "./BookingDetailsForm";
 
 type CustomerDetails = {
   orderId: string;
@@ -44,17 +45,20 @@ export function BookingScheduler({
       });
 
       if (response.ok) {
+        clearBookingFormState();
         onSuccess();
       } else {
         alert(
           "Booking recorded but notification failed. Please contact support."
         );
+        clearBookingFormState();
         onSuccess();
       }
     } catch (error) {
       alert(
         "Booking recorded but notification failed. Please contact support."
       );
+      clearBookingFormState();
       onSuccess();
     } finally {
       setLoading(false);
@@ -62,12 +66,9 @@ export function BookingScheduler({
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
+    <div className="">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Choose Your Time Slot
-        </h2>
-        <p className="text-gray-600">
+        <p className="text-foreground/50 text-center">
           Select a convenient time for your installation
         </p>
       </div>
@@ -100,14 +101,16 @@ export function BookingScheduler({
         />
       </div>
       {onBack && (
+        <div className="flex justify-end">
         <Button
           type="button"
-          variant="outline"
+          variant="secondary"
           onClick={onBack}
-          className="w-full mt-4"
+          className="mt-4"
         >
           Back to Details
         </Button>
+        </div>
       )}
       <CalendlyEventListener onEventScheduled={handleCalendlyEventScheduled} />
     </div>
