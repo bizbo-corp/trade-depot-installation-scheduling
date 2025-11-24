@@ -1,65 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { Header } from "@/components/header";
-import { Header as HeaderComponent } from "@/components/header"; // Alias to avoid conflict if needed, but Header is fine
-import { HeroSection } from "@/components/sections/HeroSection";
-import { ValuePropositionSection } from "@/components/sections/ValuePropositionSection";
-import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
-import { LogoSection } from "@/components/sections/LogoSection";
-import { CtaSection } from "@/components/sections/CtaSection";
 import { Footer } from "@/components/sections/Footer";
-import { CTAhome } from "@/components/sections/CTAhome";
-import { FeatureSection } from "@/components/sections/FeatureSection";
-
-import { bitmapImages, svgGraphics } from "@/lib/images";
-import { FaIcon } from "@/components/ui/fa-icon";
-import { Button } from "@/components/ui/button";
-import { LottieAnimation } from "@/components/LottieAnimation";
-import { animations } from "@/lib/images";
 
 import { UXProcessAccordion } from "@/components/ux-analysis/UXProcessAccordion";
 import { InstallationServices } from "@/components/sections/installation-services";
-import { PaperPlaneMoney } from "@/components/icons/PaperPlaneMoney";
-
-const FEATURE_ITEMS = [
-  {
-    icon: "hand-scissors",
-    title: "Eliminate user journey friction points",
-    description:
-      "We identify and remove the frustrating roadblocks on your website, from clunky forms to confusing checkout flows, so your visitors can convert into paying customers with ease.",
-  },
-  {
-    icon: "rocket-launch",
-    title: "Speed up your site and reduce bounce",
-    description:
-      "We optimise for fast loading times and responsiveness, making a great first impression and keeping people from leaving.",
-  },
-  {
-    icon: "bullseye-pointer",
-    title: "Reach more people and improve your SEO",
-    description:
-      "Don't let your website turn away potential customers. Our accessible designs are compliant for every visitor, naturally boosting your visibility and organic search rankings.",
-  },
-  {
-    icon: "filter",
-    title: "Continuous optimisation",
-    description:
-      "Let us help you run a hypothesis-driven optimisation to refine your website so it becomes the best tool it can be for generating leads and engaged customers.",
-  },
-  {
-    icon: "heart-pulse",
-    title: "Grow your business with a healthy sales funnel",
-    description:
-      "We guide visitors toward your goals, turning your website into an effective engine for leads, sign-ups, and sales.",
-  },
-  {
-    icon: "vial",
-    title: "Discover how your customers behave",
-    description:
-      "Our A/B and usability testing helps you understand what works and what doesn't, so you can make data-driven decisions that improve user experience and boost your bottom line.",
-  },
-];
+import { BookingFlow } from "@/components/BookingFlow";
 
 export default function Home() {
   return (
@@ -98,13 +44,8 @@ export default function Home() {
                       </div>
                       <ul className="flex flex-col gap-1 pl-12 md:pl-16 md:gap-1.5">
                         <li className="flex items-start gap-3">
-                          <FaIcon
-                            icon="square"
-                            className="h-4 w-4 shrink-0 text-foreground/80 mt-1.5"
-                          />
                           <span className="text-base md:text-lg text-foreground/80">
-                            Increase conversions from 1% to 2% <br />
-                            <strong>(That's twice as many)</strong>
+                            <BookingFlow orderId="12345" />
                           </span>
                         </li>
                       </ul>
@@ -112,9 +53,10 @@ export default function Home() {
                   </div>
 
                   <p className="text-base md:text-xl font-medium leading-normal md:leading-relaxed text-foreground/80 max-w-2xl pt-24">
-                    Stop pouring money into websites & ads that don't convert.
-                    We optimise your digital presence to turn visitors into
-                    customers, not just traffic.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Nullam nec metus nec ante finibus finibus. Nullam nec metus
+                    nec ante finibus finibus. Nullam nec metus nec ante finibus
+                    finibus.
                   </p>
                 </div>
               </div>

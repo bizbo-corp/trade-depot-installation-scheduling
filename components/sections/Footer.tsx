@@ -1,32 +1,24 @@
-import { Separator } from "@/components/ui/separator"
-import { Logotype } from "@/components/site-parts/logotype"
+import { Separator } from "@/components/ui/separator";
+import { Logotype } from "@/components/site-parts/logotype";
 
 export interface FooterLink {
-  name: string
-  href: string
+  name: string;
+  href: string;
 }
 
 export interface FooterProps {
-  links?: FooterLink[]
-  copyright?: string
-  privacyPolicyHref?: string
+  links?: FooterLink[];
+  copyright?: string;
+  privacyPolicyHref?: string;
 }
 
-export const Footer = ({ 
+export const Footer = ({
   links = [
     { name: "Home", href: "/" },
-    { name: "Consultancy workshops", href: "/design-thinker-workshops" },
-    { name: "UX Design", href: "/ux-design" },
-    { name: "Development", href: "/development" },
-    { name: "Automation", href: "/automation" },
-    { name: "Contact", href: "/contact" },
-    // { name: "Colour modes", href: "/color-modes" },
-    // { name: "Shopify", href: "#" },
-    // { name: "Purpose Framework", href: "/purpose-framework" },
-    // { name: "Icon Showcase", href: "/icon-showcase" },
+    { name: "Admin", href: "/admin" },
   ],
   copyright = "Copyright © bizbo.co.nz",
-  privacyPolicyHref = "#"
+  privacyPolicyHref = "#",
 }: FooterProps) => {
   return (
     <footer className="bg-background py-12 md:py-24">
@@ -36,7 +28,11 @@ export const Footer = ({
             <Logotype />
             <nav className="flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
               {links.map((link) => (
-                <a key={link.name} href={link.href} className="hover:text-foreground">
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="hover:text-foreground"
+                >
                   {link.name}
                 </a>
               ))}
@@ -46,10 +42,11 @@ export const Footer = ({
         <Separator />
         <div className="flex flex-col-reverse items-center justify-between gap-4 text-sm text-muted-foreground md:flex-row">
           <p>{copyright}</p>
-          <a href={privacyPolicyHref} className="hover:text-foreground">Privacy Policy</a>
+          <a href={privacyPolicyHref} className="hover:text-foreground">
+            Privacy Policy
+          </a>
         </div>
       </div>
     </footer>
-  )
-}
-
+  );
+};
