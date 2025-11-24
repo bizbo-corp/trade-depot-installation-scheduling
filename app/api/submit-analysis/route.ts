@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { upsertContact, addAnalysisMetadata, logAnalysisEngagement } from "@/lib/hubspot";
 import { sendVerificationEmail } from "@/lib/resend";
 import type {
@@ -48,49 +47,6 @@ export async function POST(request: NextRequest) {
     // Generate verification token
     const verificationToken = crypto.randomUUID();
 
-    // Calculate token expiry (24 hours from now)
-    const tokenExpiresAt = new Date();
-    tokenExpiresAt.setHours(tokenExpiresAt.getHours() + 24);
-
-    // Save to database
-    let analysisReport;
-    try {
-      analysisReport = await prisma.uXAnalysisReport.create({
-        data: {
-          url,
-          firstName,
-          lastName,
-          email,
-          mobile: mobile || null,
-          areaOfInterest,
-          report,
-          screenshot,
-          verificationToken,
-          tokenExpiresAt,
-          emailVerified: false,
-        },
-      });
-    } catch (dbError) {
-      console.error("Database error:", dbError);
-      const errorMessage =
-        dbError instanceof Error ? dbError.message : "Database operation failed";
-      
-      // Check if it's a connection error
-      if (errorMessage.includes("DATABASE_URL") || errorMessage.includes("connection")) {
-        return NextResponse.json<SubmitAnalysisErrorResponse>(
-          {
-            error: "Database connection error",
-            details: process.env.NODE_ENV === "development" 
-              ? "Please ensure DATABASE_URL is configured correctly" 
-              : "Service temporarily unavailable",
-          },
-          { status: 503 }
-        );
-      }
-      
-      throw dbError; // Re-throw to be caught by outer catch
-    }
-
     let hubspotContactId: string | null = null;
 
     // Sync to HubSpot (non-blocking - don't fail if this errors)
@@ -104,15 +60,12 @@ export async function POST(request: NextRequest) {
       });
       hubspotContactId = contactId;
 
-      // Generate report link
-      const reportLink = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/report/${verificationToken}`;
-
       // Add analysis metadata
       await addAnalysisMetadata({
         contactId,
         url,
         token: verificationToken,
-        reportLink,
+        reportLink: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}`,
         areaOfInterest,
       });
 
@@ -120,12 +73,6 @@ export async function POST(request: NextRequest) {
       await logAnalysisEngagement({
         contactId,
         url,
-      });
-
-      // Update database with HubSpot contact ID
-      await prisma.uXAnalysisReport.update({
-        where: { id: analysisReport.id },
-        data: { hubspotContactId: contactId },
       });
     } catch (hubspotError) {
       // Log error but don't fail the request
@@ -144,14 +91,12 @@ export async function POST(request: NextRequest) {
     } catch (emailError) {
       // If email fails, we should still return success but log the error
       console.error("Email sending error:", emailError);
-      // Consider whether to rollback the database record or not
-      // For now, we'll log it and return success with a warning
     }
 
     return NextResponse.json<SubmitAnalysisResponse>(
       {
         success: true,
-        message: "Analysis submitted successfully. Please check your email to verify and access your report.",
+        message: "Analysis submitted successfully. Please check your email for your report.",
       },
       { status: 200 }
     );
