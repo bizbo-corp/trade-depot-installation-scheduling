@@ -54,6 +54,11 @@ export default function RootLayout({
           defer
           src="//js-ap1.hs-scripts.com/442452565.js"
         ></Script>
+        <Script
+          type="text/javascript"
+          src="https://assets.calendly.com/assets/external/widget.js"
+          strategy="afterInteractive"
+        />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
           <Toaster />
