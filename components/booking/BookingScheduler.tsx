@@ -76,7 +76,7 @@ export function BookingScheduler({
         <InlineWidget
           url={
             process.env.NEXT_PUBLIC_CALENDLY_URL ||
-            "https://calendly.com/your-calendly-link"
+            "https://calendly.com/michael-bizbo?hide_landing_page_details=1&hide_gdpr_banner=1"
           }
           prefill={{
             name: `${customerDetails.firstName} ${customerDetails.lastName}`,
@@ -91,12 +91,12 @@ export function BookingScheduler({
           pageSettings={{
             hideEventTypeDetails: false,
             hideLandingPageDetails: false,
-            primaryColor: "00a2ff",
+            primaryColor: "1e1eaa",
             textColor: "4d5055",
             backgroundColor: "ffffff",
           }}
           styles={{
-            height: "700px",
+            height: "1200px",
           }}
         />
       </div>
