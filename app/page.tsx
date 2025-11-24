@@ -1,11 +1,26 @@
 "use client";
 
+import { Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/sections/Footer";
 
 import { UXProcessAccordion } from "@/components/ux-analysis/UXProcessAccordion";
 import { InstallationServices } from "@/components/sections/installation-services";
 import { BookingFlow } from "@/components/BookingFlow";
+import { DeliveryConfirmationGate } from "@/components/DeliveryConfirmationGate";
+
+function BookingFlowWrapper() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const orderId = searchParams.get("orderId") || "666";
+  return (
+    <DeliveryConfirmationGate
+      orderId={orderId}
+      onConfirm={() => router.push(`/installation-details?orderId=${orderId}`)}
+    />
+  );
+}
 
 export default function Home() {
   return (
@@ -20,7 +35,9 @@ export default function Home() {
 
             <div className="flex flex-col md:flex-row gap-6 md:gap-16">
               <div className="space-y-2 w-full">
-                <BookingFlow orderId="666" />
+                <Suspense fallback={<BookingFlow orderId="666" />}>
+                  <BookingFlowWrapper />
+                </Suspense>
               </div>
             </div>
           </div>
