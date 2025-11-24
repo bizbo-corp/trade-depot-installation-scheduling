@@ -14,18 +14,21 @@ interface Step {
 
 const steps: Step[] = [
   {
+    id: "step-1",
     number: "01",
     title: "Receive Goods",
     description: "Confirm delivery using the button above",
     mainIcon: "box-open",
   },
   {
+    id: "step-2",
     number: "02",
     title: "Book Installation",
     description: "Find the day and time that suits you",
     mainIcon: "calendar-day",
   },
   {
+    id: "step-3",
     number: "03",
     title: "Installation",
     description: "Make sure someone is present who can provide access",

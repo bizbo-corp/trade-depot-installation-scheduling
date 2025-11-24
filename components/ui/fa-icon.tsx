@@ -206,6 +206,14 @@ export function FaIcon({
 
     // If icon definition is found AND we are using the default solid base style, use FontAwesomeIcon (SVG approach)
     // For other base styles (thin, light), we fall back to CSS/Kit approach as standard 'fad' prefix is solid
+    // If icon definition is found AND we are using the default solid base style, use FontAwesomeIcon (SVG approach)
+    // For other base styles (thin, light), we fall back to CSS/Kit approach as standard 'fad' prefix is solid
+    /* 
+    // DISABLED TO PREVENT HYDRATION ERRORS:
+    // The server doesn't have icon definitions (loaded via Kit script), so it renders the fallback <i> tag.
+    // The client has definitions, so it renders <FontAwesomeIcon> (SVG).
+    // This causes a hydration mismatch. We force the CSS approach everywhere for consistency.
+    
     if (iconDef && duotoneBaseStyle === "solid") {
       // Build style object for CSS custom properties
       // Always set opacities: primary to 1.0, secondary to 0.4 by default
@@ -238,6 +246,7 @@ export function FaIcon({
         </span>
       );
     }
+    */
 
     // Fallback: Use CSS approach with proper stacking CSS for duotone
     // This ensures icons work even if FontAwesomeIcon can't find them

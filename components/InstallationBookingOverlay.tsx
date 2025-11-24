@@ -31,6 +31,8 @@ type InstallationBookingOverlayProps = {
   defaultOrderId?: string;
   onClose?: () => void;
   skipGate?: boolean;
+  forcedStep?: BookingStep;
+  onStepChange?: (step: BookingStep, details: CustomerDetails) => void;
 };
 
 export default function InstallationBookingOverlay({
@@ -39,6 +41,8 @@ export default function InstallationBookingOverlay({
   defaultOrderId,
   onClose,
   skipGate = false,
+  forcedStep,
+  onStepChange,
 }: InstallationBookingOverlayProps = {}) {
   const searchParams = useSearchParams();
   const mode = defaultMode || searchParams.get("mode");
@@ -52,16 +56,25 @@ export default function InstallationBookingOverlay({
   const [adminMessage, setAdminMessage] = useState("");
 
   // Customer state
-  const initialStep: BookingStep = skipGate || orderId ? "details" : "gate";
+  const initialStep: BookingStep =
+    (forcedStep as BookingStep) || (skipGate || orderId ? "details" : "gate");
   const [bookingStep, setBookingStep] = useState<BookingStep>(initialStep);
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
     orderId: orderId || "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
+    firstName: searchParams.get("firstName") || "",
+    lastName: searchParams.get("lastName") || "",
+    email: searchParams.get("email") || "",
+    phone: searchParams.get("phone") || "",
   });
   const [customerLoading, setCustomerLoading] = useState(false);
+
+  // Sync forcedStep if it changes
+  // Sync forcedStep if it changes
+  useEffect(() => {
+    if (forcedStep) {
+      setBookingStep(forcedStep as BookingStep);
+    }
+  }, [forcedStep]);
 
   // Return null if no mode parameter
   if (!mode) {
@@ -170,18 +183,30 @@ export default function InstallationBookingOverlay({
       });
 
       if (response.ok) {
-        setBookingStep("success");
+        if (onStepChange) {
+          onStepChange("success", customerDetails);
+        } else {
+          setBookingStep("success");
+        }
       } else {
         alert(
           "Booking recorded but notification failed. Please contact support."
         );
-        setBookingStep("success");
+        if (onStepChange) {
+          onStepChange("success", customerDetails);
+        } else {
+          setBookingStep("success");
+        }
       }
     } catch (error) {
       alert(
         "Booking recorded but notification failed. Please contact support."
       );
-      setBookingStep("success");
+      if (onStepChange) {
+        onStepChange("success", customerDetails);
+      } else {
+        setBookingStep("success");
+      }
     } finally {
       setCustomerLoading(false);
     }
@@ -202,8 +227,17 @@ export default function InstallationBookingOverlay({
       return;
     }
 
-    setBookingStep("scheduler");
+    if (onStepChange) {
+      onStepChange("scheduler", customerDetails);
+    } else {
+      setBookingStep("scheduler");
+    }
   };
+
+  // Helper for container classes
+  const containerClass = embedded
+    ? "w-full"
+    : "bg-white border border-gray-200 rounded-lg shadow-sm p-8";
 
   // Render Admin View
   if (mode === "admin") {
@@ -215,22 +249,24 @@ export default function InstallationBookingOverlay({
             : "fixed inset-0 z-[9999] bg-white overflow-y-auto"
         }
       >
-        <div className={embedded ? "w-full p-8" : "min-h-screen p-8"}>
+        <div className={embedded ? "w-full" : "min-h-screen p-8"}>
           <div className="max-w-4xl mx-auto">
             {/* Header */}
-            <div className="flex justify-between items-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">
-                Installation Email Manager
-              </h1>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleClose}
-                className="hover:bg-gray-100"
-              >
-                <FaTimes className="h-5 w-5" />
-              </Button>
-            </div>
+            {!embedded && (
+              <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold text-gray-900">
+                  Installation Email Manager
+                </h1>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleClose}
+                  className="hover:bg-gray-100"
+                >
+                  <FaTimes className="h-5 w-5" />
+                </Button>
+              </div>
+            )}
 
             {/* Admin Form */}
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
@@ -360,26 +396,28 @@ export default function InstallationBookingOverlay({
             : "fixed inset-0 z-[9999] bg-white overflow-y-auto"
         }
       >
-        <div className={embedded ? "w-full p-8" : "min-h-screen p-8"}>
-          <div className="max-w-3xl mx-auto">
+        <div className={embedded ? "w-full" : "min-h-screen p-8"}>
+          <div className={embedded ? "w-full" : "max-w-3xl mx-auto"}>
             {/* Header */}
-            <div className="flex justify-between items-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">
-                Schedule Your Installation
-              </h1>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleClose}
-                className="hover:bg-gray-100"
-              >
-                <FaTimes className="h-5 w-5" />
-              </Button>
-            </div>
+            {!embedded && (
+              <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold text-gray-900">
+                  Schedule Your Installation
+                </h1>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleClose}
+                  className="hover:bg-gray-100"
+                >
+                  <FaTimes className="h-5 w-5" />
+                </Button>
+              </div>
+            )}
 
             {/* Step 1: Gate */}
             {bookingStep === "gate" && (
-              <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8 text-center">
+              <div className={`${containerClass} text-center`}>
                 <div className="mb-6">
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
                     <FaTruck className="h-8 w-8 text-blue-600" />
@@ -405,7 +443,7 @@ export default function InstallationBookingOverlay({
 
             {/* Step 2: Customer Details */}
             {bookingStep === "details" && (
-              <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
+              <div className={containerClass}>
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">
                     Your Details
@@ -529,7 +567,7 @@ export default function InstallationBookingOverlay({
 
             {/* Step 3: Scheduler */}
             {bookingStep === "scheduler" && (
-              <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
+              <div className={containerClass}>
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">
                     Choose Your Time Slot
@@ -568,7 +606,7 @@ export default function InstallationBookingOverlay({
                 </div>
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="secondary"
                   onClick={() => setBookingStep("details")}
                   className="w-full mt-4"
                 >
@@ -579,7 +617,7 @@ export default function InstallationBookingOverlay({
 
             {/* Step 4: Success */}
             {bookingStep === "success" && (
-              <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8 text-center">
+              <div className={`${containerClass} text-center`}>
                 <div className="mb-6">
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
                     <FaCheckCircle className="h-8 w-8 text-green-600" />

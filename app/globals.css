@@ -14,6 +14,7 @@
   --primary: oklch(0.3663 0.2093 269.7402);
   --primary-foreground: oklch(1.0000 0 0);
   --secondary: oklch(0.1884 0.0128 248.5103);
+  --border-input: oklch(52.523% 0.12234 251.085);
   --secondary-foreground: oklch(1.0000 0 0);
   --muted: oklch(0.9222 0.0013 286.3737);
   --muted-foreground: oklch(0.1884 0.0128 248.5103);
