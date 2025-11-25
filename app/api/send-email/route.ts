@@ -44,6 +44,8 @@ export async function POST(request: NextRequest) {
       bookingLink,
       customerPhone,
       installerEmail,
+      bookingDate,
+      bookingTime,
     } = body;
 
     // Validate required fields based on type
@@ -116,6 +118,8 @@ export async function POST(request: NextRequest) {
             customerName,
             customerEmail,
             customerPhone,
+            bookingDate,
+            bookingTime,
           }),
         };
         break;

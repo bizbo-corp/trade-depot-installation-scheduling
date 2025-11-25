@@ -21,6 +21,8 @@ export interface InstallerNotificationEmailParams {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
+  bookingDate?: string;
+  bookingTime?: string;
 }
 
 /**
@@ -180,7 +182,7 @@ export function generateDeliveryEmailHtml(params: DeliveryEmailParams): string {
  * Generates the HTML for the installer notification email
  */
 export function generateInstallerNotificationEmailHtml(params: InstallerNotificationEmailParams): string {
-  const { orderId, customerName, customerEmail, customerPhone } = params;
+  const { orderId, customerName, customerEmail, customerPhone, bookingDate, bookingTime } = params;
   
   return `
     <!DOCTYPE html>
@@ -241,9 +243,14 @@ export function generateInstallerNotificationEmailHtml(params: InstallerNotifica
           <li><strong>Customer Name:</strong> ${customerName}</li>
           <li><strong>Email:</strong> ${customerEmail}</li>
           <li><strong>Phone:</strong> ${customerPhone}</li>
+          ${bookingDate ? `<li><strong>Booking Date:</strong> ${bookingDate}</li>` : ''}
+          ${bookingTime ? `<li><strong>Booking Time:</strong> ${bookingTime}</li>` : ''}
         </ul>
         
-        <p>Please check your Calendly dashboard for the specific time slot.</p>
+        ${bookingDate && bookingTime 
+          ? `<p><strong>Scheduled for:</strong> ${bookingDate} at ${bookingTime}</p>`
+          : '<p>Please check your <a href="https://calendly.com/app/scheduled_events/user/me" target="_blank">Calendly dashboard</a> for the specific time slot.</p>'
+        }
         
         <div class="footer">
           <p>This is an automated notification from the Trade Depot Installation Booking System.</p>

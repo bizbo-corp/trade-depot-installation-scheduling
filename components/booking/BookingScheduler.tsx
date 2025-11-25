@@ -33,10 +33,33 @@ export function BookingScheduler({
     setIsMounted(true);
   }, []);
 
-  const handleCalendlyEventScheduled = async () => {
+  const handleCalendlyEventScheduled = async (eventData?: any) => {
     setLoading(true);
 
     try {
+      // Extract booking date and time from Calendly event payload
+      let bookingDate: string | undefined;
+      let bookingTime: string | undefined;
+
+      if (eventData?.payload?.event) {
+        const startTime = eventData.payload.event.start_time;
+        if (startTime) {
+          const date = new Date(startTime);
+          // Format date as DD/MM/YYYY
+          bookingDate = date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          });
+          // Format time as HH:MM
+          bookingTime = date.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+          });
+        }
+      }
+
       const response = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -46,6 +69,8 @@ export function BookingScheduler({
           customerName: `${customerDetails.firstName} ${customerDetails.lastName}`,
           customerEmail: customerDetails.email,
           customerPhone: customerDetails.phone,
+          bookingDate,
+          bookingTime,
         }),
       });
 
@@ -131,12 +156,13 @@ export function BookingScheduler({
 function CalendlyEventListener({
   onEventScheduled,
 }: {
-  onEventScheduled: () => void;
+  onEventScheduled: (eventData?: any) => void;
 }) {
   useEffect(() => {
     const handleCalendlyEvent = (e: MessageEvent) => {
       if (e.data.event && e.data.event === "calendly.event_scheduled") {
-        onEventScheduled();
+        // Pass the full event data so we can extract booking details
+        onEventScheduled(e.data);
       }
     };
 
