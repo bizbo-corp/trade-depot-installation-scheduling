@@ -2,11 +2,11 @@
 
 ## Overview
 
-This document outlines the Git workflow, branching strategy, and commit conventions for the Bizbo Brochure project. Following these guidelines ensures a clean, organised git history and facilitates collaboration.
+This document outlines the Git workflow, branching strategy, and commit conventions for the Trade Depot Installation Scheduling project. Following these guidelines ensures a clean, organised git history and facilitates collaboration.
 
 ## Repository Information
 
-- **Repository:** https://github.com/bizbo-corp/bizbo-brochure
+- **Repository:** https://github.com/bizbo-corp/trade-depot-installation-scheduling
 - **Organization:** bizbo-corp
 - **Primary Branch:** main
 - **Visibility:** Private

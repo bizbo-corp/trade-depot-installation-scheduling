@@ -605,7 +605,7 @@ Start with Server Components, enhance with Client Components only when needed.
 ### Current Structure
 
 ```
-bizbo-brochure/
+trade-depot-installation-scheduling/
 ├── app/                 # Next.js App Router
 │   ├── layout.tsx
 │   ├── page.tsx

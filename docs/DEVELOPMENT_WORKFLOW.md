@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the development workflow, local setup procedures, and development best practices for the Bizbo Brochure project. Follow these guidelines to ensure a smooth development experience and maintain code quality.
+This document outlines the development workflow, local setup procedures, and development best practices for the Trade Depot Installation Scheduling project. Follow these guidelines to ensure a smooth development experience and maintain code quality.
 
 ## Table of Contents
 
@@ -44,8 +44,8 @@ This document outlines the development workflow, local setup procedures, and dev
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/bizbo-corp/bizbo-brochure.git
-cd bizbo-brochure
+git clone https://github.com/bizbo-corp/trade-depot-installation-scheduling.git
+cd trade-depot-installation-scheduling
 ```
 
 ### 2. Install Dependencies

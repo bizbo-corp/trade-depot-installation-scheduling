@@ -124,7 +124,7 @@ This document outlines all technologies, frameworks, and tools used in the Bizbo
 ## File Structure
 
 ```
-bizbo-brochure/
+trade-depot-installation-scheduling/
 ├── app/                    # Next.js App Router
 │   ├── globals.css        # Global styles with Tailwind
 │   ├── layout.tsx         # Root layout with fonts

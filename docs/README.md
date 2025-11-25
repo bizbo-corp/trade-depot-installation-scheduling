@@ -1,6 +1,6 @@
 # Project Documentation
 
-Welcome to the Bizbo Brochure project documentation. This directory contains comprehensive documentation covering all aspects of the project.
+Welcome to the Trade Depot Installation Scheduling project documentation. This directory contains comprehensive documentation covering all aspects of the project.
 
 ## Documentation Index
 

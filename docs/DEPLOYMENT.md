@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the deployment process, build procedures, and environment management for the Bizbo Brochure project. Following these guidelines ensures reliable, consistent deployments.
+This document outlines the deployment process, build procedures, and environment management for the Trade Depot Installation Scheduling project. Following these guidelines ensures reliable, consistent deployments.
 
 ## Table of Contents
 
@@ -191,7 +191,7 @@ NEXT_PUBLIC_API_URL=https://api.bizbo.com
 
 1. **Access your project:**
    - Go to [vercel.com/dashboard](https://vercel.com/dashboard)
-   - Find your `bizbo-brochure` project
+   - Find your `trade-depot-installation-scheduling` project
    - Click on the project name
 
 2. **Navigate to Settings:**
@@ -376,8 +376,8 @@ CMD ["node", "server.js"]
 Build and run:
 
 ```bash
-docker build -t bizbo-brochure .
-docker run -p 3000:3000 bizbo-brochure
+docker build -t trade-depot-installation-scheduling .
+docker run -p 3000:3000 trade-depot-installation-scheduling
 ```
 
 ## CI/CD
