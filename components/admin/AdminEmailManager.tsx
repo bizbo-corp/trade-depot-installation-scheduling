@@ -1,12 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { FaEnvelope, FaTruck, FaUserCog } from "react-icons/fa";
+import { useState, useMemo } from "react";
+import { FaEnvelope, FaTruck, FaUserCog, FaEye, FaEyeSlash } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  generatePurchaseEmailHtml,
+  generateDeliveryEmailHtml,
+  generateInstallerNotificationEmailHtml,
+  getPurchaseEmailSubject,
+  getDeliveryEmailSubject,
+  getInstallerNotificationEmailSubject,
+} from "@/lib/email-templates";
 
 export function AdminEmailManager() {
   const [adminOrderId, setAdminOrderId] = useState(() => 
@@ -19,6 +27,8 @@ export function AdminEmailManager() {
   const [emailType, setEmailType] = useState("purchase");
   const [adminLoading, setAdminLoading] = useState(false);
   const [adminMessage, setAdminMessage] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewKey, setPreviewKey] = useState(0);
 
   const handleSendPurchaseEmail = async () => {
     if (!adminOrderId || !adminEmail || !adminName) {
@@ -229,6 +239,47 @@ export function AdminEmailManager() {
     }
   };
 
+  // Generate email preview HTML based on current form values
+  const emailPreviewHtml = useMemo(() => {
+    if (emailType === "purchase") {
+      if (!adminOrderId || !adminEmail || !adminName) return null;
+      return generatePurchaseEmailHtml({
+        customerName: adminName,
+        orderId: adminOrderId,
+      });
+    } else if (emailType === "delivery") {
+      if (!adminOrderId || !adminEmail || !adminName) return null;
+      const bookingLink = typeof window !== "undefined" 
+        ? `${window.location.origin}/?orderId=${adminOrderId}`
+        : `/?orderId=${adminOrderId}`;
+      return generateDeliveryEmailHtml({
+        customerName: adminName,
+        orderId: adminOrderId,
+        bookingLink,
+      });
+    }
+    return null;
+  }, [emailType, adminOrderId, adminEmail, adminName]);
+
+  const installerEmailPreviewHtml = useMemo(() => {
+    if (!adminOrderId || !adminEmail || !adminName || !adminPhone) return null;
+    return generateInstallerNotificationEmailHtml({
+      orderId: adminOrderId,
+      customerName: adminName,
+      customerEmail: adminEmail,
+      customerPhone: adminPhone,
+    });
+  }, [adminOrderId, adminEmail, adminName, adminPhone]);
+
+  const getEmailSubject = () => {
+    if (emailType === "purchase") {
+      return getPurchaseEmailSubject();
+    } else if (emailType === "delivery") {
+      return getDeliveryEmailSubject(adminOrderId);
+    }
+    return "";
+  };
+
   return (
     <div className="bg-white max-w-4xl mx-auto">
       <div className="space-y-6">
@@ -300,7 +351,7 @@ export function AdminEmailManager() {
                       >
                         <div className="flex items-center">
                           <FaEnvelope className="mr-2 h-4 w-4" />
-                          <span className="font-medium">Post-Purchase Email</span>
+                          <span className="font-medium">Post-Purchase Email (Trigger: Post Purchase)</span>
                         </div>
                       </Label>
                     </div>
@@ -316,7 +367,7 @@ export function AdminEmailManager() {
                       >
                         <div className="flex items-center">
                           <FaTruck className="mr-2 h-4 w-4" />
-                          <span className="font-medium">Delivery & Booking Email</span>
+                          <span className="font-medium">Installation Booking Email (Trigger: Post Delivery)</span>
                         </div>
                       </Label>
                     </div>
@@ -328,12 +379,57 @@ export function AdminEmailManager() {
                         <h3 className="font-semibold text-blue-900 mb-2">
                           Post-Purchase Email
                         </h3>
-                        <p className="text-sm text-blue-800">
-                          Sends an informational email to the customer about their
-                          installation purchase. This email does NOT include a booking
-                          link.
+                        <p className="text-sm text-blue-800 mb-4">
+                        This email variant is sent only if the customer has purchased the installation service. 
+                        Sends an informational email to the customer about their
+                          order and the next steps for installation. This email does NOT include a booking
+                          link but a link to download the order.
                         </p>
+                        <Button
+                          onClick={() => {
+                            setShowPreview(!showPreview);
+                            setPreviewKey((prev) => prev + 1);
+                          }}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          {showPreview ? (
+                            <>
+                              <FaEyeSlash className="mr-2 h-4 w-4" />
+                              Hide Preview
+                            </>
+                          ) : (
+                            <>
+                              <FaEye className="mr-2 h-4 w-4" />
+                              Show Preview
+                            </>
+                          )}
+                        </Button>
                       </div>
+                      {showPreview && emailPreviewHtml && (
+                        <div className="border border-gray-200 rounded-lg overflow-hidden mt-4">
+                          <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
+                            <p className="text-sm font-medium text-gray-700">
+                              <strong>To:</strong> {adminEmail}
+                            </p>
+                            <p className="text-sm font-medium text-gray-700">
+                              <strong>Subject:</strong> {getEmailSubject()}
+                            </p>
+                          </div>
+                          <div className="bg-white" style={{ height: "600px", overflow: "auto" }}>
+                            <iframe
+                              key={`preview-${emailType}-${previewKey}`}
+                              srcDoc={emailPreviewHtml}
+                              className="w-full h-full border-0"
+                              title="Email Preview"
+                              onLoad={() => {
+                                // Force re-render if needed
+                                if (previewKey === 0) setPreviewKey(1);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <Button
                         onClick={handleSendPurchaseEmail}
                         disabled={adminLoading}
@@ -349,14 +445,54 @@ export function AdminEmailManager() {
                     <div className="space-y-4 mt-4">
                       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                         <h3 className="font-semibold text-green-900 mb-2">
-                          Delivery & Booking Email
+                          Installation Booking Email (Triggered - Post Delivery)
                         </h3>
-                        <p className="text-sm text-green-800">
+                        <p className="text-sm text-green-800 mb-4">
                           Sends an email with a booking link for the customer to schedule
                           their installation. The link will direct them to the booking
                           flow.
                         </p>
+                        <Button
+                          onClick={() => {
+                            setShowPreview(!showPreview);
+                            setPreviewKey((prev) => prev + 1);
+                          }}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          {showPreview ? (
+                            <>
+                              <FaEyeSlash className="mr-2 h-4 w-4" />
+                              Hide Preview
+                            </>
+                          ) : (
+                            <>
+                              <FaEye className="mr-2 h-4 w-4" />
+                              Show Preview
+                            </>
+                          )}
+                        </Button>
                       </div>
+                      {showPreview && emailPreviewHtml && (
+                        <div className="border border-gray-200 rounded-lg overflow-hidden mt-4">
+                          <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
+                            <p className="text-sm font-medium text-gray-700">
+                              <strong>To:</strong> {adminEmail}
+                            </p>
+                            <p className="text-sm font-medium text-gray-700">
+                              <strong>Subject:</strong> {getEmailSubject()}
+                            </p>
+                          </div>
+                          <div className="bg-white" style={{ height: "600px", overflow: "auto" }}>
+                            <iframe
+                              key={`preview-delivery-${previewKey}`}
+                              srcDoc={emailPreviewHtml}
+                              className="w-full h-full border-0"
+                              title="Email Preview"
+                            />
+                          </div>
+                        </div>
+                      )}
                       <Button
                         onClick={handleSendDeliveryEmail}
                         disabled={adminLoading}
@@ -441,11 +577,51 @@ export function AdminEmailManager() {
                   <h3 className="font-semibold text-purple-900 mb-2">
                     Installer Notification Email
                   </h3>
-                  <p className="text-sm text-purple-800">
+                  <p className="text-sm text-purple-800 mb-4">
                     Simulates the email sent to the installer when a customer completes
                     their booking. This email contains customer details and order information.
                   </p>
+                  <Button
+                    onClick={() => {
+                      setShowPreview(!showPreview);
+                      setPreviewKey((prev) => prev + 1);
+                    }}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    {showPreview ? (
+                      <>
+                        <FaEyeSlash className="mr-2 h-4 w-4" />
+                        Hide Preview
+                      </>
+                    ) : (
+                      <>
+                        <FaEye className="mr-2 h-4 w-4" />
+                        Show Preview
+                      </>
+                    )}
+                  </Button>
                 </div>
+                {showPreview && installerEmailPreviewHtml && (
+                  <div className="border border-gray-200 rounded-lg overflow-hidden mt-4">
+                    <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
+                      <p className="text-sm font-medium text-gray-700">
+                        <strong>To:</strong> {installerEmail}
+                      </p>
+                      <p className="text-sm font-medium text-gray-700">
+                        <strong>Subject:</strong> {getInstallerNotificationEmailSubject(adminOrderId)}
+                      </p>
+                    </div>
+                    <div className="bg-white" style={{ height: "600px", overflow: "auto" }}>
+                      <iframe
+                        key={`preview-installer-${previewKey}`}
+                        srcDoc={installerEmailPreviewHtml}
+                        className="w-full h-full border-0"
+                        title="Email Preview"
+                      />
+                    </div>
+                  </div>
+                )}
                 <Button
                   onClick={handleSendInstallerEmail}
                   disabled={adminLoading}

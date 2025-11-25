@@ -295,7 +295,7 @@ export function FaIcon({
 
     return (
       <span className={wrapperClassName}>
-        <i className={cn(classes)} style={duotoneStyle} {...(props as any)} />
+        <i className={cn(classes)} style={duotoneStyle} {...(props as any)} aria-hidden="true" />
       </span>
     );
   }
@@ -317,7 +317,7 @@ export function FaIcon({
 
   return (
     <span className={wrapperClassName}>
-      <i className={cn(classes)} {...(props as any)} />
+      <i className={cn(classes)} {...(props as any)} aria-hidden="true" />
     </span>
   );
 }

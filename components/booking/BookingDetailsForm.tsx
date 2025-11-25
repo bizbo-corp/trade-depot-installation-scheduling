@@ -119,7 +119,6 @@ export function BookingDetailsForm({
                 orderId: e.target.value,
               })
             }
-            disabled={!!defaultOrderId}
             className="mt-1"
             placeholder="e.g., 12345"
           />
