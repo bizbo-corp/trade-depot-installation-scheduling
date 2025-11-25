@@ -12,7 +12,7 @@ import { DeliveryConfirmationGate } from "@/components/DeliveryConfirmationGate"
 function BookingFlowWrapper() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const orderId = searchParams.get("orderId") || "666";
+  const orderId = searchParams.get("orderId") || "";
   return (
     <DeliveryConfirmationGate
       orderId={orderId}

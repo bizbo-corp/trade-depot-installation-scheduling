@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
       customerName,
       bookingLink,
       customerPhone,
+      installerEmail,
     } = body;
 
     // Validate required fields based on type
@@ -211,7 +212,7 @@ export async function POST(request: NextRequest) {
 
       case "installer_notification":
         // Installer Notification Email
-        if (!orderId || !customerName || !customerEmail || !customerPhone) {
+        if (!orderId || !customerName || !customerEmail || !customerPhone || !installerEmail) {
           return NextResponse.json(
             { error: "Missing required fields for installer notification" },
             { status: 400 }
@@ -220,7 +221,7 @@ export async function POST(request: NextRequest) {
 
         emailData = {
           from: process.env.RESEND_FROM_EMAIL || "michael@bizbo.co.nz",
-          to: "michael@bizbo.co.nz",
+          to: installerEmail,
           subject: `NEW BOOKING: Order #${orderId}`,
           html: `
             <!DOCTYPE html>

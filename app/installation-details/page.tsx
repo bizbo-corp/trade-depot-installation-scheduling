@@ -9,7 +9,7 @@ import { BookingDetailsForm } from "@/components/booking/BookingDetailsForm";
 
 function BookingPageContent() {
   const searchParams = useSearchParams();
-  const orderId = searchParams.get("orderId") || "666";
+  const orderId = searchParams.get("orderId") || "";
   const firstName = searchParams.get("firstName") || "";
   const lastName = searchParams.get("lastName") || "";
   const email = searchParams.get("email") || "";

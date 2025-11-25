@@ -13,7 +13,7 @@ function SchedulerPageContent() {
   const router = useRouter();
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const orderId = searchParams.get("orderId") || "666";
+  const orderId = searchParams.get("orderId") || "";
   const firstName = searchParams.get("firstName") || "";
   const lastName = searchParams.get("lastName") || "";
   const email = searchParams.get("email") || "";
