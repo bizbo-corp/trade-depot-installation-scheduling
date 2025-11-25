@@ -27,6 +27,11 @@ export function BookingScheduler({
 }: BookingSchedulerProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleCalendlyEventScheduled = async () => {
     setLoading(true);
@@ -73,32 +78,38 @@ export function BookingScheduler({
         </p>
       </div>
       <div className="calendly-widget-container">
-        <InlineWidget
-          url={
-            process.env.NEXT_PUBLIC_CALENDLY_URL ||
-            "https://calendly.com/michael-bizbo?hide_landing_page_details=1&hide_gdpr_banner=1"
-          }
-          prefill={{
-            name: `${customerDetails.firstName} ${customerDetails.lastName}`,
-            email: customerDetails.email,
-            customAnswers: {
-              a1: customerDetails.phone,
-            },
-          }}
-          utm={{
-            utmContent: customerDetails.orderId,
-          }}
-          pageSettings={{
-            hideEventTypeDetails: false,
-            hideLandingPageDetails: false,
-            primaryColor: "1e1eaa",
-            textColor: "4d5055",
-            backgroundColor: "ffffff",
-          }}
-          styles={{
-            height: "1200px",
-          }}
-        />
+        {isMounted ? (
+          <InlineWidget
+            url={
+              process.env.NEXT_PUBLIC_CALENDLY_URL ||
+              "https://calendly.com/michael-bizbo?hide_landing_page_details=1&hide_gdpr_banner=1"
+            }
+            prefill={{
+              name: `${customerDetails.firstName} ${customerDetails.lastName}`,
+              email: customerDetails.email,
+              customAnswers: {
+                a1: customerDetails.phone,
+              },
+            }}
+            utm={{
+              utmContent: customerDetails.orderId,
+            }}
+            pageSettings={{
+              hideEventTypeDetails: false,
+              hideLandingPageDetails: false,
+              primaryColor: "1e1eaa",
+              textColor: "4d5055",
+              backgroundColor: "ffffff",
+            }}
+            styles={{
+              height: "1200px",
+            }}
+          />
+        ) : (
+          <div className="flex items-center justify-center" style={{ height: "1200px" }}>
+            <div className="text-foreground/50">Loading calendar...</div>
+          </div>
+        )}
       </div>
       {onBack && (
         <div className="flex justify-end">

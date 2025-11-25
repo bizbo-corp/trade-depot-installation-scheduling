@@ -93,7 +93,7 @@ export function AdminEmailManager() {
     setAdminMessage("");
 
     try {
-      const bookingLink = `${window.location.origin}/installation-details?orderId=${adminOrderId}`;
+      const bookingLink = `${window.location.origin}/?orderId=${adminOrderId}`;
 
       console.log("[Delivery & Booking Email] Sending email:", {
         type: "delivery",
