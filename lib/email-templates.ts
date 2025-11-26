@@ -30,8 +30,7 @@ export interface InstallerNotificationEmailParams {
  */
 export function generatePurchaseEmailHtml(params: PurchaseEmailParams): string {
   const { customerName } = params;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
-  const headerImageUrl = `${siteUrl}/bitmap/trade-depot-email-header.png`;
+  const headerImageUrl = 'https://tradedepotinstallation.bizbo.co.nz/bitmap/trade-depot-email-header.png';
   
   return `
     <!DOCTYPE html>
@@ -83,11 +82,11 @@ export function generatePurchaseEmailHtml(params: PurchaseEmailParams): string {
         
         <p>Thanks for choosing Trade Depot! We see that you have selected installation for your new items.</p>
         
-        <p>To ensure everything goes smoothly, please note that delivery and installation happen separately. The delivery driver will drop off your goods, and you will need to book the installation for a later date. Keep an eye on your inbox—we'll email you as soon as your order is delivered.</p>
+        <p>To ensure everything goes smoothly, please note that delivery and installation happen separately. The delivery driver will drop off your goods, and you will need to book the installation for a later date. <strong>Keep an eye on your inbox—we'll email you as soon as your order is delivered.</strong></p>
         
-        <p><strong>A quick tip to avoid extra costs:</strong></p>
+        <p><strong>A quick tip</strong></p>
         
-        <p>Please unpack and inspect your items as soon as they arrive. If the installer arrives and finds damaged goods, they won't be able to do the work, and a callout fee will apply. We definitely want to avoid that, so please let us know immediately if you spot any issues!</p>
+        <p>Please unpack and inspect your items as soon as they arrive. If the installer arrives and finds damaged goods, they won't be able to do the work, and a callout fee will apply. We definitely want to avoid that, so please let us know immediately <a href="https://tradedepot.co.nz/contact-us/" target="_blank">here</a> if you spot any issues!</p>
         
         <div class="footer">
           <p>Best regards,<br/>The Trade Depot Team</p>
@@ -102,8 +101,7 @@ export function generatePurchaseEmailHtml(params: PurchaseEmailParams): string {
  */
 export function generateDeliveryEmailHtml(params: DeliveryEmailParams): string {
   const { customerName, bookingLink } = params;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
-  const headerImageUrl = `${siteUrl}/bitmap/trade-depot-email-header.png`;
+  const headerImageUrl = 'https://tradedepotinstallation.bizbo.co.nz/bitmap/trade-depot-email-header.png';
   
   return `
     <!DOCTYPE html>

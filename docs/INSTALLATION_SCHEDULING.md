@@ -33,6 +33,12 @@ RESEND_API_KEY=your_resend_api_key_here
 
 # Calendly URL (for the booking widget)
 NEXT_PUBLIC_CALENDLY_URL=https://calendly.com/your-calendly-link
+
+# Calendly API Token (for fetching installer email from events)
+CALENDLY_API_TOKEN=your_calendly_api_token_here
+
+# Installer Email (fallback if Calendly API fails)
+INSTALLER_EMAIL=installer@example.com
 ```
 
 ### Getting Your API Keys
@@ -50,6 +56,20 @@ NEXT_PUBLIC_CALENDLY_URL=https://calendly.com/your-calendly-link
 2. Go to your event type
 3. Copy the scheduling link
 4. Add to `.env.local`
+
+**Calendly API Token:**
+
+1. Log into your Calendly account
+2. Go to [Integrations > API & Webhooks](https://calendly.com/integrations/api_webhooks)
+3. Click "Personal Access Tokens"
+4. Create a new token with appropriate permissions
+5. Copy the token and add to `.env.local` as `CALENDLY_API_TOKEN`
+
+**Installer Email (Optional Fallback):**
+
+- Set `INSTALLER_EMAIL` to the default installer email address
+- This will be used if Calendly API fails or is not configured
+- If not set, the system will return an error when Calendly API is unavailable
 
 ## Usage
 
@@ -152,7 +172,7 @@ http://localhost:3000?mode=booking&orderId=12345
 
 **Trigger:** Customer completes Calendly booking
 
-**To:** michael@bizbo.co.nz
+**To:** Automatically extracted from Calendly event host/organizer (or fallback to `INSTALLER_EMAIL`)
 
 **Subject:** "NEW BOOKING: Order #[orderId]"
 
@@ -161,6 +181,7 @@ http://localhost:3000?mode=booking&orderId=12345
 - Booking confirmation
 - Customer details (name, email, phone)
 - Order ID
+- Booking date and time (if available)
 - Link to Calendly dashboard
 
 **Variables:**
@@ -169,6 +190,9 @@ http://localhost:3000?mode=booking&orderId=12345
 - `customerName`
 - `customerEmail`
 - `customerPhone`
+- `bookingDate` (optional)
+- `bookingTime` (optional)
+- `installerEmail` (automatically fetched from Calendly event)
 
 ## API Endpoint
 
@@ -200,7 +224,10 @@ http://localhost:3000?mode=booking&orderId=12345
   orderId: string,
   customerName: string,
   customerEmail: string,
-  customerPhone: string
+  customerPhone: string,
+  installerEmail: string,  // Required - fetched from Calendly event
+  bookingDate?: string,    // Optional - DD/MM/YYYY format
+  bookingTime?: string     // Optional - HH:MM format
 }
 ```
 
@@ -261,11 +288,29 @@ The component listens for Calendly's `event_scheduled` message:
 ```typescript
 window.addEventListener("message", (e) => {
   if (e.data.event === "calendly.event_scheduled") {
+    // Extract event URI from payload
+    // Fetch installer email from Calendly API
     // Trigger installer notification email
     // Move to success step
   }
 });
 ```
+
+### Installer Email Extraction
+
+When a booking is completed, the system:
+
+1. Extracts the event URI from the Calendly event payload (`eventData.payload.event.uri`)
+2. Calls `/api/calendly/get-installer-email` with the event URI
+3. The API endpoint fetches event details from Calendly API
+4. Extracts the host/organizer email from `event_memberships`
+5. Returns the installer email to the client
+6. Includes the installer email in the notification email request
+
+**Fallback Behaviour:**
+
+- If Calendly API fails or is not configured, falls back to `INSTALLER_EMAIL` environment variable
+- If no fallback is available, the email request will fail with a clear error message
 
 ### Prefill Configuration
 
@@ -290,6 +335,49 @@ utm={{
   utmContent: orderId
 }}
 ```
+
+## Calendly API Integration
+
+### API Endpoint: `/api/calendly/get-installer-email`
+
+**Purpose:** Fetches the installer/host email from a Calendly scheduled event.
+
+**Method:** POST
+
+**Request Body:**
+```typescript
+{
+  eventUri: string  // Calendly event URI (e.g., "https://api.calendly.com/scheduled_events/ABC123")
+}
+```
+
+**Response:**
+```typescript
+// Success
+{
+  installerEmail: string,
+  source: 'calendly' | 'fallback'
+}
+
+// Error
+{
+  error: string,
+  details?: string
+}
+```
+
+**Implementation Details:**
+
+- Uses Calendly Personal Access Token for authentication
+- Fetches event details from `/scheduled_events/{uuid}` endpoint
+- Extracts user URI from `event_memberships[0].user`
+- Fetches user details from `/users/{uuid}` endpoint
+- Returns user email address
+- Falls back to `INSTALLER_EMAIL` environment variable if API fails
+
+**Files:**
+- `lib/calendly.ts` - Calendly API integration functions
+- `app/api/calendly/get-installer-email/route.ts` - API endpoint
 
 ## Styling
 
@@ -352,6 +440,18 @@ utm={{
 3. Calendly account is active
 4. Check browser console for errors
 
+### Installer Email Not Being Sent
+
+**Check:**
+
+1. `CALENDLY_API_TOKEN` is set in `.env.local`
+2. Calendly API token has correct permissions
+3. `INSTALLER_EMAIL` is set as fallback (optional but recommended)
+4. Check browser console for API errors
+5. Check server logs for Calendly API errors
+6. Verify event URI is being extracted from Calendly payload
+7. Test `/api/calendly/get-installer-email` endpoint directly
+
 ### Overlay Not Appearing
 
 **Check:**
@@ -367,10 +467,13 @@ utm={{
 
 - [ ] Set `RESEND_API_KEY` in production environment
 - [ ] Set `NEXT_PUBLIC_CALENDLY_URL` in production environment
+- [ ] Set `CALENDLY_API_TOKEN` in production environment
+- [ ] Set `INSTALLER_EMAIL` in production environment (fallback)
 - [ ] Verify Resend domain in production
 - [ ] Update email sender domain from `tradedepot.co.nz`
 - [ ] Test all email types in production
 - [ ] Test complete booking flow
+- [ ] Verify installer email is being fetched correctly
 - [ ] Update placeholder header images
 - [ ] Configure Calendly custom fields
 - [ ] Set up email monitoring/logging

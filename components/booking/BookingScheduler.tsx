@@ -40,9 +40,16 @@ export function BookingScheduler({
       // Extract booking date and time from Calendly event payload
       let bookingDate: string | undefined;
       let bookingTime: string | undefined;
+      let eventUri: string | undefined;
 
       if (eventData?.payload?.event) {
-        const startTime = eventData.payload.event.start_time;
+        const event = eventData.payload.event;
+        
+        // Extract event URI for fetching installer email
+        eventUri = event.uri;
+        
+        // Extract start time for booking date/time
+        const startTime = event.start_time;
         if (startTime) {
           const date = new Date(startTime);
           // Format date as DD/MM/YYYY
@@ -60,24 +67,62 @@ export function BookingScheduler({
         }
       }
 
+      // Fetch installer email from Calendly event
+      let installerEmail: string | undefined;
+      
+      if (eventUri) {
+        try {
+          const installerResponse = await fetch("/api/calendly/get-installer-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ eventUri }),
+          });
+
+          if (installerResponse.ok) {
+            const installerData = await installerResponse.json();
+            installerEmail = installerData.installerEmail;
+            console.log('[BookingScheduler] Retrieved installer email:', installerEmail);
+          } else {
+            console.warn('[BookingScheduler] Failed to fetch installer email, will try without it');
+            const errorData = await installerResponse.json().catch(() => ({}));
+            console.warn('[BookingScheduler] Error details:', errorData);
+          }
+        } catch (installerError) {
+          console.error('[BookingScheduler] Error fetching installer email:', installerError);
+          // Continue without installer email - API will handle validation
+        }
+      } else {
+        console.warn('[BookingScheduler] Event URI not found in payload, cannot fetch installer email');
+      }
+
+      // Send installer notification email
+      const emailPayload: any = {
+        type: "installer_notification",
+        orderId: customerDetails.orderId,
+        customerName: `${customerDetails.firstName} ${customerDetails.lastName}`,
+        customerEmail: customerDetails.email,
+        customerPhone: customerDetails.phone,
+        bookingDate,
+        bookingTime,
+      };
+
+      // Only include installerEmail if we successfully retrieved it
+      if (installerEmail) {
+        emailPayload.installerEmail = installerEmail;
+      }
+
       const response = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "installer_notification",
-          orderId: customerDetails.orderId,
-          customerName: `${customerDetails.firstName} ${customerDetails.lastName}`,
-          customerEmail: customerDetails.email,
-          customerPhone: customerDetails.phone,
-          bookingDate,
-          bookingTime,
-        }),
+        body: JSON.stringify(emailPayload),
       });
 
       if (response.ok) {
         clearBookingFormState();
         onSuccess();
       } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('[BookingScheduler] Email send failed:', errorData);
         alert(
           "Booking recorded but notification failed. Please contact support."
         );
@@ -85,6 +130,7 @@ export function BookingScheduler({
         onSuccess();
       }
     } catch (error) {
+      console.error('[BookingScheduler] Unexpected error:', error);
       alert(
         "Booking recorded but notification failed. Please contact support."
       );
