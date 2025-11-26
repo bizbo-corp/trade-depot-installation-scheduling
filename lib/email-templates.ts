@@ -82,7 +82,7 @@ export function generatePurchaseEmailHtml(params: PurchaseEmailParams): string {
         
         <p>Thanks for choosing Trade Depot! We see that you have selected installation for your new items.</p>
         
-        <p>To ensure everything goes smoothly, please note that delivery and installation happen separately. The delivery driver will drop off your goods, and you will need to book the installation for a later date. <strong>Keep an eye on your inbox—we'll email you as soon as your order is delivered.</strong></p>
+        <p>To ensure everything goes smoothly, please note that delivery and installation happen separately. The delivery driver will drop off your goods, and <strong>you will need to book the installation for a later date. Keep an eye on your inbox—we'll email you as soon as your order is delivered.</p>
         
         <p><strong>A quick tip</strong></p>
         
